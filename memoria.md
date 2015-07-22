@@ -15,18 +15,15 @@ A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se 
 
 Asi que en definitiva, algunos de los parámetros que se pasan són:
 
->- arraybuffer con información de los vértices: 
->  - posicion, 
->  - vector normal al vértice, 
->  - coordenadas de textura,
->  - color
->- mapas de textura:
->  - textura
->  - shadow maps
->  - bump maps
->  - cubemaps
+>- arraybuffer con información de los vértices:  el Vertex Buffer
+>  - R<sup>3</sup> :: posición 
+>  - R<sup>3</sup> :: vector normal
+>  - R<sup>2</sup> :: coordenadas de textura
+>  - R<sup>4</sup> :: color rgba
+>- mapas de textura de tipo:
+>  - texturas 2D (texturas normales, shadow maps, bump maps...)
+>  - texturas 3D (cubemaps, environment maps)
 >- MAS COSAS
 
 ---
 ##1.2 Primitive Processing
-Hola pepito
