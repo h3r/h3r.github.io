@@ -1,4 +1,6 @@
 
+[return](/)
+
 #**TFG**: Physically based rendering over web technologies#
 
 
@@ -11,7 +13,8 @@
 
 #1 **Funcionamiento del Pipeline**
 ![](http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png)
-Documentación OpenGL 2.0[^1:a]
+
+Documentación OpenGL ES[^1:a]
 
 
 
@@ -53,4 +56,4 @@ La API nos permite pasar al toda una serie de datos como entrada para la siguien
 
 
 <!-- anexos -->
-[^1:a]: Documentación OpenGL 2.0 : [**link**](https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf)
+[^1:a]: Documentación OpenGL ES @ [**kronos.org**](https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf)
