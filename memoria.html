@@ -19,7 +19,7 @@
 <ul>
 <li><a href="#tfg-physically-based-rendering-over-web-technologies">TFG: Physically based rendering over web technologies</a></li>
 <li><a href="#index">Index</a></li>
-<li><a href="#1-funcionamiento-del-fixed-pipeline">1 Funcionamiento del Fixed Pipeline</a><ul>
+<li><a href="#1-funcionamiento-del-pipeline">1 Funcionamiento del Pipeline</a><ul>
 <li><a href="#11-la-api-opengl">1.1 la API: OpenGL</a></li>
 <li><a href="#12-primitive-processing">1.2 Primitive Processing</a></li>
 </ul>
@@ -30,22 +30,25 @@
 
 <hr>
 
-<h1 id="1-funcionamiento-del-fixed-pipeline">1 <strong>Funcionamiento del Fixed Pipeline</strong></h1>
-
-<p><img src="http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png" alt="" title=""></p>
 
 
+<h1 id="1-funcionamiento-del-pipeline">1 <strong>Funcionamiento del Pipeline</strong></h1>
+
+<p><img src="http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png" alt="" title=""> <br>
+Documentación OpenGL 2.0<a href="#fn:1a" id="fnref:1a" title="See footnote" class="footnote">1</a>
+
+</p>
 
 <h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
 
-<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. Nos permite pasar información en forma de arraybuffers que contienen los datos básicos para el renderizado.</p>
-
-<p>A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para modificar el funcionamiento de diferentes fases del pipeline: shaders. Pero ya entraremos más adelante con los shaders.</p>
-
-<p>Asi que en definitiva, algunos de los parámetros que se pasan són:</p>
+<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. Nos permite pasar información en forma de arraybuffers que contienen los datos básicos para el renderizado. <br>
+A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders. <br>
+La API nos permite pasar al toda una serie de datos como entrada para la siguiente fase, datos como:</p>
 
 <blockquote>
   <ul>
+  <li>flags para cambiar ciertos parámetros <br>
+  <ul><li>Depth Test (enabled / disabled): ve</li></ul></li>
   <li>arraybuffer con información de los vértices:  el Vertex Buffer <br>
   <ul><li>R<sup>3</sup> :: posición </li>
   <li>R<sup>3</sup> :: vector normal</li>
@@ -62,5 +65,9 @@
 
 
 
-<h2 id="12-primitive-processing">1.2 Primitive Processing</h2></div></body>
+<h2 id="12-primitive-processing">1.2 Primitive Processing</h2>
+
+<!-- anexos -->
+
+<div class="footnotes"><hr><ol><li id="fn:1a">Documentación OpenGL 2.0 : <a href="https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf"><strong>link</strong></a> <a href="#fnref:1a" title="Return to article" class="reversefootnote">↩</a></li></ol></div></div></body>
 </html>
