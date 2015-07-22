@@ -1,10 +1,12 @@
 
 [return](/)
 
+> **Nota:** No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con [**stackedit.io**](stackedit.io)
+
 #**TFG**: Physically based rendering over web technologies#
 ######  {#autor}
 
-
+<div class="page-break-after"></div>
 -----------------------------------------------------------
 
 #Index
@@ -25,7 +27,7 @@ A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se 
 La API nos permite pasar al toda una serie de datos como entrada para la siguiente fase, datos como:
 
 >- flags para cambiar ciertos parámetros
->  - Depth Test (enabled / disabled): ve
+>  - Depth Test (enabled / disabled): 
 >- arraybuffer con información de los vértices:  el Vertex Buffer
 >  - R<sup>3</sup> :: posición 
 >  - R<sup>3</sup> :: vector normal
