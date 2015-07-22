@@ -32,11 +32,29 @@
 
 <h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
 
-<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. Nos permite pasar información en forma de Arrays que contienen los datos básicos para el renderizado. A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para modificar el funcionamiento de diferentes fases del pipeline: shaders. Pero ya entraremos más adelante con los shaders.</p>
+<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. Nos permite pasar información en forma de arraybuffers que contienen los datos básicos para el renderizado.</p>
+
+<p>A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para modificar el funcionamiento de diferentes fases del pipeline: shaders. Pero ya entraremos más adelante con los shaders.</p>
+
+<p>Asi que en definitiva, algunos de los parámetros que se pasan són:</p>
+
+<blockquote>
+  <ul>
+  <li>arraybuffer con información de los vértices:  <br>
+  <ul><li>posicion, </li>
+  <li>vector normal al vértice, </li>
+  <li>coordenadas de textura,</li>
+  <li>color</li></ul></li>
+  <li>mapas de textura: <br>
+  <ul><li>textura</li>
+  <li>shadow maps</li>
+  <li>bump maps</li>
+  <li>cubemaps</li></ul></li>
+  <li>MAS COSAS</li>
+  </ul>
+</blockquote>
 
 <hr>
-
-
 
 <h2 id="12-primitive-processing">1.2 Primitive Processing</h2></div></body>
 </html>
