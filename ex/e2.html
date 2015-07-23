@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>h3r | Experimento 2</title>
+
+    <style>
+        html{height:100%;}
+        body{overflow:hidden;height:100%;margin:0;padding:0;background:magenta}
+        header h2{
+            position:absolute;
+            margin-left: 20px;
+            padding:5px;
+            color:whitesmoke;
+            background: rgba(0,0,0,0.1);
+            box-shadow:2px 2px 50px rgba(0,0,0,0.1);
+            left:0;
+            z-index:100;
+            font-family: sans-serif;
+        }
+
+
+
+        .full{ height:100%; width:100%;}
+        #canvas-container{background:whitesmoke}
+    </style>
+</head>
+
+<body>
+    <header><h2>Experimento 2 : Texturas </h2></header>
+    <div id="canvas-container" class="full"></div>
+
+<script src="../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
+<script src="../js/datgui/dat.gui.js" type="application/javascript"></script>
+<script src="../js/litegl/litegl.js" type="application/javascript"></script>
+<script src="../js/rgb2hsv/rgb2hsv.js" type="application/javascript"></script>
+
+    <script type="application/javascript">
+        "use strict";
+        /* dat-gui setup */
+
+        var FizzyText = function() {
+        };
+        window.onload = function() {
+
+            var text = new FizzyText();
+            this.gui = new dat.GUI();
+            this.gui.addColor(window, 'color');
+
+            var f1 = this.gui.addFolder('Light');
+            f1.add(window, 'lx');
+            f1.add(window, 'ly');
+            f1.add(window, 'lz');
+            f1.open();
+
+
+        };/*end dat-gui setup*/
+
+        /*litegl experiment 1*/
+        var placer = document.getElementById('canvas-container');
+        var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
+        placer.appendChild( gl.canvas );
+
+
+        var mesh = GL.Mesh.cube({size:10});
+        var ready = false;
+        var tex = GL.Texture.fromURL('../textures/minecraft_dirt.png',{},function(){
+            console.log('hola');
+            ready = true;
+        },gl);
+
+        var proj = mat4.create();
+        var view = mat4.create();
+        var model = mat4.create();
+        var mvp = mat4.create();
+        var temp = mat4.create();
+        mat4.perspective(proj, 45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+        mat4.lookAt(view, [0,30,30],[0,0,0], [0,1,0]);
+
+
+        var color = [ 255, 16, 0, 0.3 ];
+        var speed = 0.01;
+        var lx = 1;
+        var ly = 1;
+        var lz = 1;
+        var r = 1/255;
+        console.log(rgb2hsv(color[0],color[1],color[2]));
+
+        //basic phong shader
+        var shader = new Shader('\
+				precision highp float;\
+				attribute vec3 a_vertex;\
+				attribute vec3 a_normal;\
+				attribute vec2 a_coord;\
+				varying vec3 v_normal;\
+				varying vec2 v_coord;\
+				uniform mat4 u_mvp;\
+				uniform mat4 u_model;\
+				void main() {\
+					v_coord = a_coord;\
+					v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
+					gl_Position = u_mvp * vec4(a_vertex,1.0);\
+				}\
+				', '\
+				precision highp float;\
+				varying vec3 v_normal;\
+				varying vec2 v_coord;\
+				uniform vec3 u_lightvector;\
+				uniform vec4 u_color;\
+				void main() {\
+				  vec3 N = normalize(v_normal);\
+				  vec4 color = u_color;\
+				  gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
+				}\
+			');
+
+        gl.captureMouse();
+        gl.onmousedown = function(e) { if(e.dragging)
+            mat4.rotateY(model,model,e.deltax * speed);
+        };
+
+        gl.onupdate = function(dt) {
+            mat4.rotateY(model,model,dt*0.2);
+        };
+
+
+
+        gl.clearColor(0.9,0.9,0.9,1);
+        gl.enable( gl.DEPTH_TEST );
+        gl.ondraw = function() {
+            if(!ready) return;
+            gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+            //create modelview and projection matrices
+            mat4.multiply(temp,view,model);
+            mat4.multiply(mvp,proj,temp);
+
+            //compute rotation matrix for normals
+
+            //render mesh using the shader
+            shader.uniforms({
+                u_color: vec4.multiply(vec4.create(),color,vec4.fromValues(r,r,r)),
+                u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(lx,ly, lz)),
+                u_model: model,
+                u_mvp: mvp
+            }).draw(mesh);
+        };
+        gl.animate();
+        /*end litegl experiment 1*/
+
+        /*=============================================
+         / Window Resie Handling
+         /==============================================*/
+        var resize = function() {
+
+            gl.canvas.width   = placer.clientWidth;
+            gl.canvas.height  = placer.clientHeight;
+            mat4.perspective(proj, 45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        };
+
+        window.onresize = resize;
+
+    </script>
+</body>
+</html>
