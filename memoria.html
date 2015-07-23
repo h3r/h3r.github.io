@@ -14,6 +14,8 @@
   <p><strong>Nota:</strong> No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con <a href="https://stackedit.io"><strong>stackedit.io</strong></a></p>
 </blockquote>
 
+
+
 <h1 id="tfg-physically-based-rendering-over-web-technologies"><strong>TFG</strong>: Physically based rendering over web technologies</h1>
 
 
@@ -54,6 +56,7 @@
 <li><a href="#12-primitive-processing">1.2 Primitive Processing</a></li>
 </ul>
 </li>
+<li><a href="#n-texturas">N Texturas</a></li>
 </ul>
 </div>
 </p>
@@ -72,20 +75,29 @@
 
 <h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
 
-<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. Nos permite pasar información en forma de arraybuffers que contienen los datos básicos para el renderizado. <br>
-A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders. <br>
-La API nos permite pasar al toda una serie de datos como entrada para la siguiente fase, datos como:</p>
+<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. </p>
+
+<p>A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para en forma de pequeños programas para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders.</p>
+
+<p>La API nos permite pasar al toda una serie  información básica ssobre el modo que se realiza el renderizado como:</p>
+
+<p>Nos permite asignar y subir a la gráfica información básica sobre el modo que se realiza el renderizado</p>
 
 <blockquote>
   <ul>
-  <li>flags para cambiar ciertos parámetros <br>
-  <ul><li>Depth Test (enabled / disabled): </li></ul></li>
-  <li>arraybuffer con información de los vértices:  el Vertex Buffer <br>
+  <li>La primitiva con la que vamos a interpretar los VertexBuffers</li>
+  <li>Arraybuffers con información de los vértices:  los <em>Vertex Buffers</em> <br>
   <ul><li>R<sup>3</sup> :: posición </li>
   <li>R<sup>3</sup> :: vector normal</li>
   <li>R<sup>2</sup> :: coordenadas de textura</li>
   <li>R<sup>4</sup> :: color rgba</li></ul></li>
-  <li>mapas de textura de tipo: <br>
+  <li><p>Flags para cambiar ciertos parámetros</p>
+  
+  <ul><li>Depth Test (enabled / disabled): </li>
+  <li>Alpha Blending</li>
+  <li>Clear Color</li></ul></li>
+  <li><p>mapas de textura de tipo:</p>
+  
   <ul><li>texturas 2D (texturas normales, shadow maps, bump maps…)</li>
   <li>texturas 3D (cubemaps, environment maps)</li></ul></li>
   <li>MAS COSAS</li>
@@ -97,6 +109,12 @@ La API nos permite pasar al toda una serie de datos como entrada para la siguien
 
 
 <h2 id="12-primitive-processing">1.2 Primitive Processing</h2>
+
+<p>–</p>
+
+
+
+<h1 id="n-texturas">N Texturas</h1>
 
 <!-- anexos -->
 
