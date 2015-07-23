@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TFG: Memoria - Hermann</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+
+</head>
+<body><div class="container"><p><a href="/">return</a></p>
+
+<blockquote>
+  <p><strong>Nota:</strong> No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con <a href="https://stackedit.io"><strong>stackedit.io</strong></a></p>
+</blockquote>
+
+
+
+<h1 id="tfg-physically-based-rendering-over-web-technologies"><strong>TFG</strong>: Physically based rendering over web technologies</h1>
+
+
+
+<h6 id="autor"> </h6>
+
+
+
+<div class="page-break-after"></div>
+
+<hr>
+
+
+
+<h1 id="index">Index</h1>
+
+<p><div class="toc">
+<ul>
+<li><a href="#tfg-physically-based-rendering-over-web-technologies">TFG: Physically based rendering over web technologies</a><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><a href="#autor"> </a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#index">Index</a></li>
+<li><a href="#1-funcionamiento-del-pipeline">1 Funcionamiento del Pipeline</a><ul>
+<li><a href="#11-la-api-opengl">1.1 la API: OpenGL</a></li>
+<li><a href="#12-primitive-processing">1.2 Primitive Processing</a></li>
+</ul>
+</li>
+<li><a href="#n-texturas">N Texturas</a></li>
+</ul>
+</div>
+</p>
+
+<hr>
+
+
+
+<h1 id="1-funcionamiento-del-pipeline">1 <strong>Funcionamiento del Pipeline</strong></h1>
+
+<p><img src="http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png" alt="" title=""></p>
+
+<p>Documentación OpenGL ES<a href="#fn:1a" id="fnref:1a" title="See footnote" class="footnote">1</a>
+
+</p>
+
+<h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
+
+<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. </p>
+
+<p>A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para en forma de pequeños programas para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders.</p>
+
+<p>La API nos permite pasar al toda una serie  información básica ssobre el modo que se realiza el renderizado como:</p>
+
+<p>Nos permite asignar y subir a la gráfica información básica sobre el modo que se realiza el renderizado</p>
+
+<blockquote>
+  <ul>
+  <li>La primitiva con la que vamos a interpretar los VertexBuffers</li>
+  <li>Arraybuffers con información de los vértices:  los <em>Vertex Buffers</em> <br>
+  <ul><li>R<sup>3</sup> :: posición </li>
+  <li>R<sup>3</sup> :: vector normal</li>
+  <li>R<sup>2</sup> :: coordenadas de textura</li>
+  <li>R<sup>4</sup> :: color rgba</li></ul></li>
+  <li><p>Flags para cambiar ciertos parámetros</p>
+  
+  <ul><li>Depth Test (enabled / disabled): </li>
+  <li>Alpha Blending</li>
+  <li>Clear Color</li></ul></li>
+  <li><p>mapas de textura de tipo:</p>
+  
+  <ul><li>texturas 2D (texturas normales, shadow maps, bump maps…)</li>
+  <li>texturas 3D (cubemaps, environment maps)</li></ul></li>
+  <li>MAS COSAS</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+
+
+<h2 id="12-primitive-processing">1.2 Primitive Processing</h2>
+
+<p>–</p>
+
+
+
+<h1 id="n-texturas">N Texturas</h1>
+
+<!-- anexos -->
+
+<div class="footnotes"><hr><ol><li id="fn:1a">Documentación OpenGL ES @ <a href="https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf"><strong>kronos.org</strong></a> <a href="#fnref:1a" title="Return to article" class="reversefootnote">↩</a></li></ol></div></div></body>
+</html>
