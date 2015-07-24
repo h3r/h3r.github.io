@@ -34,16 +34,18 @@
 <script src="../js/rgb2hsv/rgb2hsv.js" type="application/javascript"></script>
     <script id="camera">
         function Camera(){
-            this.proj = mat4.create();
-            this.view = mat4.create();
-            this.mvp = mat4.create();
-            this.temp = mat4.create();
+            this.proj   = mat4.create();
+            this.view   = mat4.create();
+            this.mvp    = mat4.create();
+            this.temp   = mat4.create();
+            this.model  = mat4.create();
         }
         Camera.prototype = {
             proj    :null,
             view    :null,
             mvp     :null,
             temp    :null,
+            model   :null,
             updated :true,
             perspective: function(fov, aspect, near, far){
                 mat4.perspective(this.proj, fov, aspect, near, far);
@@ -74,12 +76,14 @@
             this.mesh = typeof mesh !== 'undefined' ? mesh  : null;
             this.tex  = typeof tex  !== 'undefined' ? tex   : null;
             this.model = mat4.create();
+            this.primitive = gl.TRIANGLES;
         }
         Entity.prototype = {
             id:null,
             mesh:null,
             tex :null,
             model:null,
+            primitive:null,
             getModel:function(){
                 return this.model;
             }
@@ -95,6 +99,15 @@
             if(typeof gl.meshes[url] != 'undefined')
                 return gl.meshes[url];
             return GL.Mesh.fromURL(url,options,callback,gl);
+        }
+    </script>
+    <script id="tools">
+        function getColorVec4(){
+            if(typeof color === 'string'){
+                var a = JSON.parse('['+ color.substring(color.indexOf("(")+1,color.indexOf(")")) +']');
+                color = vec4.fromValues(a[0],a[1],a[2],a[3]);
+            }
+            return color;
         }
     </script>
     <script type="application/javascript">
@@ -122,16 +135,25 @@
         placer.appendChild( gl.canvas );
 
         var ready = false;
-        var obj = new Entity(false,
+        var entities = {};
+        entities["obj"] = new Entity(false,
                             GL.Mesh.cube({size:10}),
-                            loadTexture('../textures/minecraft_dirt.png',{},function(){ready = true;},gl)
+                            loadTexture('../textures/crate.jpg',{},function(){ready = true;}, gl),
+                            gl
         );
+
+        entities["grid"] = new Entity(false,
+                            GL.Mesh.grid({size:200, lines:41}),
+                            loadTexture('../textures/crate.jpg',{},function(){ready = true;},gl),
+                            gl
+        );
+        entities["grid"].primitive = gl.LINES;
 
         var camera = new Camera();
         camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
         camera.lookAt([0,30,30],[0,0,0], [0,1,0]);
 
-        var color = [ 255, 16, 0, 0.3 ];
+        var color = [ 255, 255, 255, 0.3 ];
         var speed = 0.1;
         var lx = 1;
         var ly = 1;
@@ -159,9 +181,10 @@
             varying vec2 v_coord;\
             uniform vec3 u_lightvector;\
             uniform vec4 u_color;\
+            uniform sampler2D u_texture;\
             void main() {\
               vec3 N = normalize(v_normal);\
-              vec4 color = u_color;\
+              vec4 color = u_color * texture2D( u_texture, v_coord);\
               gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
             }\
         ');
@@ -169,15 +192,15 @@
         gl.captureMouse();
         gl.onmousedown = function(e) {
             console.log(e);
-            if(e.dragging)
-                camera.pan(vec3.fromValues(e.deltax,0,0));
+            if(e.dragging){}
+                //camera.pan(vec3.fromValues(e.deltax,0,0));
                 //mat4.rotateY(obj.model,obj.model,e.deltax * speed);
 
         };
 
         gl.onupdate = function(dt) {
             camera.update();
-            mat4.rotateY(obj.model, obj.model,dt * speed);
+            mat4.rotateY(entities['obj'].model, entities['obj'].model,dt * speed);
         };
 
 
@@ -190,12 +213,23 @@
             //compute rotation matrix for normals
 
             //render mesh using the shader
-            shader.uniforms({
-                u_color: vec4.multiply(vec4.create(),color,vec4.fromValues(r,r,r)),
-                u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(lx,ly, lz)),
-                u_model: obj.getModel(),
-                u_mvp: camera.getMVP(obj.getModel())                                                                             //create modelview and projection matrices
-            }).draw(obj.mesh);
+            for(var i in entities){
+                if(entities[i].tex != null)
+                    entities[i].tex.bind(0);
+
+                shader.uniforms({
+                    u_texture: 0,
+                    u_color: vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r)),
+                    u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(lx,ly, lz)),
+                    u_model: entities[i].getModel(),
+                    u_mvp: camera.getMVP(entities[i].getModel())                                                                             //create modelview and projection matrices
+                }).draw(entities[i].mesh, entities[i].primitive);
+
+                if(entities[i].tex != null)
+                   entities[i].tex.unbind(0);
+            }
+
+
         };
         gl.animate();
         /*end litegl experiment 1*/
