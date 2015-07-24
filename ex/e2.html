@@ -18,11 +18,9 @@
             z-index:100;
             font-family: sans-serif;
         }
-
-
-
         .full{ height:100%; width:100%;}
         #canvas-container{background:whitesmoke}
+
     </style>
 </head>
 
@@ -34,11 +32,74 @@
 <script src="../js/datgui/dat.gui.js" type="application/javascript"></script>
 <script src="../js/litegl/litegl.js" type="application/javascript"></script>
 <script src="../js/rgb2hsv/rgb2hsv.js" type="application/javascript"></script>
-
+    <script id="camera">
+        function Camera(){
+            this.proj = mat4.create();
+            this.view = mat4.create();
+            this.mvp = mat4.create();
+            this.temp = mat4.create();
+        }
+        Camera.prototype = {
+            proj    :null,
+            view    :null,
+            mvp     :null,
+            temp    :null,
+            updated :true,
+            perspective: function(fov, aspect, near, far){
+                mat4.perspective(this.proj, fov, aspect, near, far);
+            },
+            lookAt: function(eye, center, up){
+                mat4.lookAt(this.view, eye, center, up);
+            },
+            getMVP : function (model){
+                mat4.multiply(this.temp,this.view,model);
+                mat4.multiply(this.mvp,this.proj,this.temp);
+                return this.mvp;
+            },
+            pan:function(vec3){
+                mat4.translate(this.view,this.view,vec3);
+            },
+            orbit:function(vec3){
+                mat4.translate(this.view,this.view,vec3);
+            },
+            update:function(dt){
+                if(this.updated) return;
+            }
+        }
+    </script>
+    <script id="entity">
+        var idcount = 0;
+        function Entity(id,mesh,tex,gl){
+            this.id = idcount++;
+            this.mesh = typeof mesh !== 'undefined' ? mesh  : null;
+            this.tex  = typeof tex  !== 'undefined' ? tex   : null;
+            this.model = mat4.create();
+        }
+        Entity.prototype = {
+            id:null,
+            mesh:null,
+            tex :null,
+            model:null,
+            getModel:function(){
+                return this.model;
+            }
+        }
+    </script>
+    <script id="managers">
+        function loadTexture (url,options,callback,gl){
+            if(typeof gl.textures[url] != 'undefined')
+                return gl.textures[url];
+            return GL.Texture.fromURL(url,options,callback,gl);
+        }
+        function loadMesh (url,options,callback,gl){
+            if(typeof gl.meshes[url] != 'undefined')
+                return gl.meshes[url];
+            return GL.Mesh.fromURL(url,options,callback,gl);
+        }
+    </script>
     <script type="application/javascript">
         "use strict";
         /* dat-gui setup */
-
         var FizzyText = function() {
         };
         window.onload = function() {
@@ -53,7 +114,6 @@
             f1.add(window, 'lz');
             f1.open();
 
-
         };/*end dat-gui setup*/
 
         /*litegl experiment 1*/
@@ -61,68 +121,64 @@
         var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
         placer.appendChild( gl.canvas );
 
-
-        var mesh = GL.Mesh.cube({size:10});
         var ready = false;
-        var tex = GL.Texture.fromURL('../textures/minecraft_dirt.png',{},function(){
-            console.log('hola');
-            ready = true;
-        },gl);
+        var obj = new Entity(false,
+                            GL.Mesh.cube({size:10}),
+                            loadTexture('../textures/minecraft_dirt.png',{},function(){ready = true;},gl)
+        );
 
-        var proj = mat4.create();
-        var view = mat4.create();
-        var model = mat4.create();
-        var mvp = mat4.create();
-        var temp = mat4.create();
-        mat4.perspective(proj, 45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
-        mat4.lookAt(view, [0,30,30],[0,0,0], [0,1,0]);
-
+        var camera = new Camera();
+        camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+        camera.lookAt([0,30,30],[0,0,0], [0,1,0]);
 
         var color = [ 255, 16, 0, 0.3 ];
-        var speed = 0.01;
+        var speed = 0.1;
         var lx = 1;
         var ly = 1;
         var lz = 1;
         var r = 1/255;
-        console.log(rgb2hsv(color[0],color[1],color[2]));
 
         //basic phong shader
         var shader = new Shader('\
-				precision highp float;\
-				attribute vec3 a_vertex;\
-				attribute vec3 a_normal;\
-				attribute vec2 a_coord;\
-				varying vec3 v_normal;\
-				varying vec2 v_coord;\
-				uniform mat4 u_mvp;\
-				uniform mat4 u_model;\
-				void main() {\
-					v_coord = a_coord;\
-					v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
-					gl_Position = u_mvp * vec4(a_vertex,1.0);\
-				}\
-				', '\
-				precision highp float;\
-				varying vec3 v_normal;\
-				varying vec2 v_coord;\
-				uniform vec3 u_lightvector;\
-				uniform vec4 u_color;\
-				void main() {\
-				  vec3 N = normalize(v_normal);\
-				  vec4 color = u_color;\
-				  gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
-				}\
-			');
+            precision highp float;\
+            attribute vec3 a_vertex;\
+            attribute vec3 a_normal;\
+            attribute vec2 a_coord;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform mat4 u_mvp;\
+            uniform mat4 u_model;\
+            void main() {\
+                v_coord = a_coord;\
+                v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
+                gl_Position = u_mvp * vec4(a_vertex,1.0);\
+            }\
+            ', '\
+            precision highp float;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform vec3 u_lightvector;\
+            uniform vec4 u_color;\
+            void main() {\
+              vec3 N = normalize(v_normal);\
+              vec4 color = u_color;\
+              gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
+            }\
+        ');
 
         gl.captureMouse();
-        gl.onmousedown = function(e) { if(e.dragging)
-            mat4.rotateY(model,model,e.deltax * speed);
+        gl.onmousedown = function(e) {
+            console.log(e);
+            if(e.dragging)
+                camera.pan(vec3.fromValues(e.deltax,0,0));
+                //mat4.rotateY(obj.model,obj.model,e.deltax * speed);
+
         };
 
         gl.onupdate = function(dt) {
-            mat4.rotateY(model,model,dt*0.2);
+            camera.update();
+            mat4.rotateY(obj.model, obj.model,dt * speed);
         };
-
 
 
         gl.clearColor(0.9,0.9,0.9,1);
@@ -131,31 +187,27 @@
             if(!ready) return;
             gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
-            //create modelview and projection matrices
-            mat4.multiply(temp,view,model);
-            mat4.multiply(mvp,proj,temp);
-
             //compute rotation matrix for normals
 
             //render mesh using the shader
             shader.uniforms({
                 u_color: vec4.multiply(vec4.create(),color,vec4.fromValues(r,r,r)),
                 u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(lx,ly, lz)),
-                u_model: model,
-                u_mvp: mvp
-            }).draw(mesh);
+                u_model: obj.getModel(),
+                u_mvp: camera.getMVP(obj.getModel())                                                                             //create modelview and projection matrices
+            }).draw(obj.mesh);
         };
         gl.animate();
         /*end litegl experiment 1*/
 
         /*=============================================
-         / Window Resie Handling
-         /==============================================*/
+        / Window Resie Handling
+        /==============================================*/
         var resize = function() {
 
             gl.canvas.width   = placer.clientWidth;
             gl.canvas.height  = placer.clientHeight;
-            mat4.perspective(proj, 45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+            camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
         };
