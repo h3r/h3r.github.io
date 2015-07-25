@@ -4,19 +4,27 @@
     <meta charset="UTF-8">
     <title>h3r | Experimento 1</title>
     <style>
-        body{margin:0;padding:0;}
-        header{
+        html{height:100%;}
+        body{overflow:hidden;height:100%;margin:0;padding:0;background:magenta}
+        header h2{
             position:absolute;
-            padding:0 1em;
+            margin-left: 20px;
+            padding:5px;
             color:whitesmoke;
-            background: rgba(0,0,0,0.1);
-            box-shadow:2px 2px 50px rgba(0,0,0,0.1);
+            background: rgba(250,250,250,0.5);
+            box-shadow:2px 2px 50px rgba(250,250,250,0.5);
+            left:0;
+            z-index:100;
+            font-family: sans-serif;
         }
+        .full{ height:100%; width:100%;}
+        #canvas-container{background:magenta}
     </style>
 </head>
 <body >
-<header><h2>Experimento 1 : Render Basico</h2></header>
-<div id="canvas-container"></div>
+<header>
+    <h2>Experimento 1 : Render Basico</h2></header>
+    <div id="canvas-container" class="full"></div>
 <script src="../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
 <script src="../js/datgui/dat.gui.js" type="application/javascript"></script>
 <script src="../js/litegl/litegl.js" type="application/javascript"></script>
@@ -104,7 +112,7 @@
 
 
 
-        gl.clearColor(0.9,0.9,0.9,1);
+        gl.clearColor(0.15,0.15,0.15,1);
         gl.enable( gl.DEPTH_TEST );
         gl.ondraw = function() {
             gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );

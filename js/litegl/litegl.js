@@ -7472,7 +7472,8 @@ global.BBox = GL.BBox = {
 		{
 			var corner = corners.subarray(i*3, i*3+3);
 			vec3.multiply( corner, halfsize, corner );
-			vec3.add( corner, corner, center );
+			vec3.ad
+            d( corner, corner, center );
 			mat4.multiplyVec3(corner, mat, corner);
 		}
 

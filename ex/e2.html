@@ -12,14 +12,14 @@
             margin-left: 20px;
             padding:5px;
             color:whitesmoke;
-            background: rgba(0,0,0,0.1);
-            box-shadow:2px 2px 50px rgba(0,0,0,0.1);
+            background: rgba(250,250,250,0.5);
+            box-shadow:2px 2px 50px rgba(250,250,250,0.5);
             left:0;
             z-index:100;
             font-family: sans-serif;
         }
         .full{ height:100%; width:100%;}
-        #canvas-container{background:whitesmoke}
+        #canvas-container{background:magenta}
 
     </style>
 </head>
@@ -33,6 +33,7 @@
 <script src="../js/litegl/litegl.js" type="application/javascript"></script>
 <script src="../js/rgb2hsv/rgb2hsv.js" type="application/javascript"></script>
     <script id="camera">
+        var up = vec3.fromValues(0,1,0);
         function Camera(){
             this.proj   = mat4.create();
             this.view   = mat4.create();
@@ -58,11 +59,25 @@
                 mat4.multiply(this.mvp,this.proj,this.temp);
                 return this.mvp;
             },
-            pan:function(vec3){
-                mat4.translate(this.view,this.view,vec3);
+            pan:function(v3){
+                mat4.invert(this.temp,this.view);
+                var right = this.temp.subarray(0,3);
+
+                mat4.translate(this.view,this.view,vec3.fromValues(right[0] * -v3[0], 0, right[2] * -v3[0]));
+                mat4.translate(this.view,this.view,vec3.fromValues(0,v3[1],0));
             },
-            orbit:function(vec3){
-                mat4.translate(this.view,this.view,vec3);
+            orbit:function(v3){
+                mat4.invert(this.temp,this.view);
+                var right = this.temp.subarray(0,3);
+
+                mat4.rotate(this.view,this.view,v3[1],right);//ok
+                mat4.rotateY(this.view,this.view, v3[0]);
+            },
+            zoom:function(d){
+                mat4.invert(this.temp,this.view);
+                var front = this.temp.subarray(8,11);
+
+                mat4.translate(this.view,this.view,vec3.fromValues(front[0] * d,front[1] * d,front[2] * d));
             },
             update:function(dt){
                 if(this.updated) return;
@@ -119,13 +134,16 @@
 
             var text = new FizzyText();
             this.gui = new dat.GUI();
-            this.gui.addColor(window, 'color');
-
+            this.gui.add(window, 'grid');
+            this.gui.add(window, 'Mode', { Mesh: 0, Shaded: 1, Texturized: 2 } );
             var f1 = this.gui.addFolder('Light');
-            f1.add(window, 'lx');
-            f1.add(window, 'ly');
-            f1.add(window, 'lz');
+            f1.add(window.light, 'x');
+            f1.add(window.light, 'y');
+            f1.add(window.light, 'z');
+            f1.addColor(window, 'color');
             f1.open();
+
+
 
         };/*end dat-gui setup*/
 
@@ -144,7 +162,7 @@
 
         entities["grid"] = new Entity(false,
                             GL.Mesh.grid({size:200, lines:41}),
-                            loadTexture('../textures/crate.jpg',{},function(){ready = true;},gl),
+                            null,
                             gl
         );
         entities["grid"].primitive = gl.LINES;
@@ -154,10 +172,10 @@
         camera.lookAt([0,30,30],[0,0,0], [0,1,0]);
 
         var color = [ 255, 255, 255, 0.3 ];
-        var speed = 0.1;
-        var lx = 1;
-        var ly = 1;
-        var lz = 1;
+        var speed = 0.5;
+        var grid = true;
+        var Mode = 2;
+        var light = {x:1,y:1,z:1};
         var r = 1/255;
 
         //basic phong shader
@@ -188,14 +206,55 @@
               gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
             }\
         ');
+        var phong = new Shader('\
+            precision highp float;\
+            attribute vec3 a_vertex;\
+            attribute vec3 a_normal;\
+            attribute vec2 a_coord;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform mat4 u_mvp;\
+            uniform mat4 u_model;\
+            void main() {\
+                v_coord = a_coord;\
+                v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
+                gl_Position = u_mvp * 2.2 * vec4(a_vertex,1.0);\
+            }\
+            ', '\
+            precision highp float;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform vec3 u_lightvector;\
+            uniform vec4 u_color;\
+            void main() {\
+              vec3 N = normalize(v_normal);\
+              vec4 color = u_color;\
+              gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
+            }\
+        ');
 
-        gl.captureMouse();
+
+
+        gl.captureMouse(true);
         gl.onmousedown = function(e) {
-            console.log(e);
+
             if(e.dragging){}
                 //camera.pan(vec3.fromValues(e.deltax,0,0));
                 //mat4.rotateY(obj.model,obj.model,e.deltax * speed);
 
+        };
+        gl.onmousemove = function (e) {
+            if (e.dragging) {
+                if (e.leftButton) {
+                    camera.orbit(vec3.fromValues(e.deltax *  0.005,e.deltay *  0.003, 0));
+                }
+                if (e.rightButton){
+                    camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0));
+                }
+            }
+        };
+        gl.onmousewheel = function(e){
+            camera.zoom(e.deltaY * 0.01);
         };
 
         gl.onupdate = function(dt) {
@@ -204,7 +263,7 @@
         };
 
 
-        gl.clearColor(0.9,0.9,0.9,1);
+        gl.clearColor(0.15,0.15,0.15,1);
         gl.enable( gl.DEPTH_TEST );
         gl.ondraw = function() {
             if(!ready) return;
@@ -214,18 +273,30 @@
 
             //render mesh using the shader
             for(var i in entities){
-                if(entities[i].tex != null)
+                if(i == 'grid' && !grid) return;
+
+                if(entities[i].tex != null && Mode == 2)
                     entities[i].tex.bind(0);
-
-                shader.uniforms({
-                    u_texture: 0,
-                    u_color: vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r)),
-                    u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(lx,ly, lz)),
-                    u_model: entities[i].getModel(),
-                    u_mvp: camera.getMVP(entities[i].getModel())                                                                             //create modelview and projection matrices
-                }).draw(entities[i].mesh, entities[i].primitive);
-
-                if(entities[i].tex != null)
+                if(Mode == 2)
+                {
+                    shader.uniforms({
+                        u_texture: 0,
+                        u_color: vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r)),
+                        u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z)),
+                        u_model: entities[i].getModel(),
+                        u_mvp: camera.getMVP(entities[i].getModel())                                                        //create modelview and projection matrices
+                    }).draw(entities[i].mesh, (Mode == 0 && i != 'grid')?gl.LINES : entities[i].primitive);
+                }
+                else{
+                    phong.uniforms({
+                        u_texture: 0,
+                        u_color: vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r,1)),
+                        u_lightvector: vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z)),
+                        u_model: entities[i].getModel(),
+                        u_mvp: camera.getMVP(entities[i].getModel())                                                        //create modelview and projection matrices
+                    }).draw(entities[i].mesh, (Mode == 0 && i != 'grid')?gl.LINES : entities[i].primitive);
+                }
+                if(entities[i].tex != null && entities[i].tex.ready && Mode == 2)
                    entities[i].tex.unbind(0);
             }
 
