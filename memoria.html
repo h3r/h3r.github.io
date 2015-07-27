@@ -16,6 +16,8 @@
   <p><strong>Nota:</strong> No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con <a href="https://stackedit.io"><strong>stackedit.io</strong></a></p>
 </blockquote>
 
+
+
 <h1 id="tfg-physically-based-rendering-over-web-technologies"><strong>TFG</strong>: Physically based rendering over web technologies</h1>
 
 
@@ -27,6 +29,8 @@
 <div class="pagebreak"></div>
 
 <hr>
+
+
 
 <h1 id="index">Index</h1>
 
@@ -66,13 +70,15 @@
 
 <div class="pagebreak"></div>
 
+
+
 <h1 id="1-funcionamiento-del-pipeline">1 <strong>Funcionamiento del Pipeline</strong></h1>
 
 <p><img src="http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png" alt="" title=""></p>
 
-<p>Documentación OpenGL ES<a href="#fn:1a" id="fnref:1a" title="See footnote" class="footnote">1</a>
+<p>Documentación OpenGL ES<a href="#fn:1a" id="fnref:1a" title="See footnote" class="footnote">1</a> </p>
 
-</p>
+
 
 <h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
 
@@ -107,6 +113,8 @@
 
 <hr>
 
+
+
 <h2 id="12-primitive-processing">1.2 Primitive Processing</h2>
 
 <p>Tras haber subido la información relacionada con los objetos en forma de arraybuffers a la memoria <em>gddr</em> de la tarjeta gráfica, se prepara la información para su renderizado.  <br>
@@ -114,15 +122,17 @@ Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array
 
 <pre class="prettyprint"><code class="language-javascript hljs ">vertexBuffer = 
 [
-    [-<span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>],
-    [ <span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>],
-    [ <span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>],
-    [-<span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>],
-    [-<span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>],
-    [ <span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>],
-    [ <span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>],
-    [-<span class="hljs-number">1.0</span>,  <span class="hljs-number">1.0</span>, -<span class="hljs-number">1.0</span>]
+    [ <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span> ],
+    [ <span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span> ],
+    [ <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span> ],
+    [ <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span> ],
+    [ <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span> ],
+    [ <span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span> ],
+    [ <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span> ],
+    [ <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span> ]
 ]</code></pre>
+
+<p><img src="http://www.cores2.com/3D_Tutorial/_images/CubeVertices.png" alt="" title=""></p>
 
 <p>El modo en que esta información ha de ser interpretada va directamente ligado a la primitiva que hayamos definido:</p>
 
@@ -137,13 +147,13 @@ Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array
 
 <p>Por cada secuencia de vértices definidos en funcion de la primitiva que se ha cargado (puntos, lineas o triangulos).</p>
 
-<p>Documentación OpenGL ES<a href="#fn:12primitivas" id="fnref:12primitivas" title="See footnote" class="footnote">2</a>
+<p><small>Documentación OpenGL ES<a href="#fn:12primitivas" id="fnref:12primitivas" title="See footnote" class="footnote">2</a>
 
-</p><p></p>
+</small></p><p></p>
 
 <h2 id="13-vertex-shader">1.3 Vertex Shader</h2>
 
-<p>Cada llamada al </p>
+
 
 <h2 id="14-fragment-shader">1.4 Fragment Shader</h2>
 
@@ -156,6 +166,8 @@ Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array
 <div class="pagebreak"></div>
 
 <!-- anexos -->
+
+
 
 <h1 id="enlaces">Enlaces</h1>
 
