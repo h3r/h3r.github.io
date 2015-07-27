@@ -16,7 +16,7 @@
 #1 **Funcionamiento del Pipeline**
 ![](http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png)
 
-Documentación OpenGL ES[^1:a]
+Documentación OpenGL ES[^1:a] 
 
 
 
@@ -52,20 +52,21 @@ Nos permite asignar y subir a la gráfica información básica sobre el modo que
 Tras haber subido la información relacionada con los objetos en forma de arraybuffers a la memoria *gddr* de la tarjeta gráfica, se prepara la información para su renderizado. 
 Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array que contiene las coordenadas 3D de cada vertice de la malla:
 
-
 ``` javascript
 vertexBuffer = 
 [
-	[-1.0, -1.0,  1.0],
-	[ 1.0, -1.0,  1.0],
-	[ 1.0,  1.0,  1.0],
-	[-1.0,  1.0,  1.0],
-	[-1.0, -1.0, -1.0],
-	[ 1.0, -1.0, -1.0],
-	[ 1.0,  1.0, -1.0],
-	[-1.0,  1.0, -1.0]
+	[ 0.0, 0.0, 1.0 ],
+	[ 1.0, 0.0, 1.0 ],
+	[ 1.0, 1.0, 1.0 ],
+	[ 0.0, 1.0, 1.0 ],
+	[ 0.0, 0.0, 0.0 ],
+	[ 1.0, 0.0, 0.0 ],
+	[ 1.0, 1.0, 0.0 ],
+	[ 0.0, 1.0, 0.0 ]
 ]
 ```
+![](http://www.cores2.com/3D_Tutorial/_images/CubeVertices.png)
+
 
 El modo en que esta información ha de ser interpretada va directamente ligado a la primitiva que hayamos definido:
 
@@ -78,11 +79,10 @@ El modo en que esta información ha de ser interpretada va directamente ligado a
 
 Por cada secuencia de vértices definidos en funcion de la primitiva que se ha cargado (puntos, lineas o triangulos).
 
-Documentación OpenGL ES[^1.2:primitivas]
+<small>Documentación OpenGL ES[^1.2:primitivas]
 
 
 ##1.3 Vertex Shader
-Cada llamada al 
 
 
 ##1.4 Fragment Shader
