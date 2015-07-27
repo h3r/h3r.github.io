@@ -1,12 +1,10 @@
 
-[return](/)
-
 > **Nota:** No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con [**stackedit.io**](https://stackedit.io)
 
 #**TFG**: Physically based rendering over web technologies
 ######  {#autor}
 
-<div class="page-break-after"></div>
+<div class="pagebreak"></div>
 -----------------------------------------------------------
 
 #Index
@@ -14,6 +12,7 @@
 
 -----------------------------------------------------------
 
+<div class="pagebreak"></div>
 #1 **Funcionamiento del Pipeline**
 ![](http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png)
 
@@ -47,7 +46,46 @@ Nos permite asignar y subir a la gráfica información básica sobre el modo que
 >- MAS COSAS
 
 ---
+
 ##1.2 Primitive Processing
+
+Tras haber subido la información relacionada con los objetos en forma de arraybuffers a la memoria *gddr* de la tarjeta gráfica, se prepara la información para su renderizado. 
+Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array que contiene las coordenadas 3D de cada vertice de la malla:
+
+
+``` javascript
+vertexBuffer = 
+[
+	[-1.0, -1.0,  1.0],
+	[ 1.0, -1.0,  1.0],
+	[ 1.0,  1.0,  1.0],
+	[-1.0,  1.0,  1.0],
+	[-1.0, -1.0, -1.0],
+	[ 1.0, -1.0, -1.0],
+	[ 1.0,  1.0, -1.0],
+	[-1.0,  1.0, -1.0]
+]
+```
+
+El modo en que esta información ha de ser interpretada va directamente ligado a la primitiva que hayamos definido:
+
+- **Puntos**: Solo se tiene en cuenta cada vértice individualmente.
+- **Lineas**: Se interpreta la información a pares de vértices, lo cual forma una linea
+- **Triangulos**: La primera de las primitivas poligonales, la información se procesa por paquetes de tres vértices, lo cual forma la superficie mínima, cuyos vértices serán siempre coplanares. Tenemos diferentes flags para la misma primitiva:
+	- **GL_TRIANGLES**:  Se interpreta el vertex buffer como triángulos independientes,no comparten vértice alguno con ningún otro triángulo.
+	- **GL_TRIANGLE_STRIP**: Los triángulos están contectados, los vértices pueden pertenecer a diferentes superficies/triángulos.
+	- **GL_TRIANGLE_FAN**:
+
+Por cada secuencia de vértices definidos en funcion de la primitiva que se ha cargado (puntos, lineas o triangulos).
+
+Documentación OpenGL ES[^1.2:primitivas]
+
+
+##1.3 Vertex Shader
+Cada llamada al 
+
+
+##1.4 Fragment Shader
 
 --
 #N Texturas
@@ -68,6 +106,10 @@ Nos permite asignar y subir a la gráfica información básica sobre el modo que
 
 
 
-
+<div class="pagebreak"></div>
 <!-- anexos -->
+
+#Enlaces
+[^1.2:primitivas]: Primitivas en OpenGL @ [**Black-Byte**](http://black-byte.com/tutorial/primitivas-en-opengl/)
+
 [^1:a]: Documentación OpenGL ES @ [**kronos.org**](https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf)
