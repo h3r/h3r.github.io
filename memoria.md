@@ -15,8 +15,7 @@
 
 <div class="pagebreak"></div>
 #1 **Funcionamiento del Pipeline**
-![](http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png)
-
+>![Programmable Pipeline](http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png)
 Documentación OpenGL ES[^1:docmentacion]
 
 ---
@@ -64,7 +63,8 @@ vertexBuffer =
 	[ 0.0, 1.0, 0.0 ]
 ]
 ```
-![](http://www.cores2.com/3D_Tutorial/_images/CubeVertices.png)
+>![Vertices en un cubo](http://www.cores2.com/3D_Tutorial/_images/CubeVertices.png)
+
 El modo en que esta información ha de ser interpretada va directamente ligado a la primitiva que hayamos definido:
 
 - **Puntos**: Solo se tiene en cuenta cada vértice individualmente.
@@ -75,20 +75,24 @@ El modo en que esta información ha de ser interpretada va directamente ligado a
 	- **GL_TRIANGLE_STRIP**: Los triángulos están contectados, los vértices pueden pertenecer a diferentes superficies/triángulos.
 	- **GL_TRIANGLE_FAN**: El primer vertice define el centro de la geometria y cada par de vertices que añadimos añade un triangulo al objeto.
 	
-		![](http://black-byte.com/wp-content/uploads/2007/01/triangulos.png)
+		>![Primitivas](http://black-byte.com/wp-content/uploads/2007/01/triangulos.png)
 		<small>Primitivas en OpenGL ES[^1.2:primitivas]
 
 
 ##1.3 Vertex Processing : el vertex shader
 
-El Vertex Shader es el primer modulo que vamos a encontrar en el pipeline encargado de definir el comportamiento con el que la gpu tiene que procesar los vértices. Su ejecución se realiza exclusivamente una vez por cada vértice que recibe.  La información que tiene disponible se limita a la del vértice que esta siendo procesado (posicion, normal, uv) y las variables que podamos haber cargado desde nuestra CPU denominadas *Uniforms*.
+El Vertex Shader es el primer modulo que vamos a encontrar en el pipeline encargado de definir el comportamiento con el que la gpu tiene que procesar los vértices, en concreto, **definir cuales son las coordenadas de pantalla que el pixel ocupa**.
+
+Su ejecución se realiza exclusivamente una vez por cada vértice que recibe.  La información que tiene disponible se limita a la del vértice que esta siendo procesado (posicion, normal, uv) y las variables que podamos haber cargado desde nuestra CPU denominadas *Uniforms*.
 
 El prefijo ***uniform*** hace referencia a unos datos cargados en memoria que son constantes inalterables durante toda la ejecución del renderizado y, por lo tanto, por cada ejecución del vertex shader por cada vértice que reciba por entrada dispondrá de los mismos valores.
 
- 
+ Adicionalmente podemos definir unas variables de salida, una variables denominadas (en esta versión) ***varyings***. El funcionamiento o objetivo de las *varyings* es pasar información al ***fragment shader***. El valor obtenido en el *fragment shader* es el resultado de la interpretación lineal entre los diferentes vértices de la primitiva procesada.   Las *varyings* pueden ser de tipo **float, vec2, vec3, vec4, mat2, mat3, mat4** y arrays de los respectivos. 
 
+Un uso muy común de las varyings suele ser para definir el color que recibirá un pixel.
 
-
+>![Interpolacion lineal de color](http://3.bp.blogspot.com/-kgKg2kiBvD0/TarT8eoeV9I/AAAAAAAAAaI/-P36pCTG56s/s1600/BilinearGradient.png)
+><small>Interpolacion lineal del color definido en cada vértice del cuad.
 
 ---
 
@@ -97,6 +101,21 @@ El prefijo ***uniform*** hace referencia a unos datos cargados en memoria que so
 ---
 
 ##1.5 Rasterizer
+
+Entendemos por Raserizado 3D como el método que permite proyectar y pintar sobre un plano 2D( la pantalla ) un modelo 3D.
+
+La primera fase del rasterizado se trata en proyectar las coordenadas 3D de cada vértice en el plano 2D de la pantalla. Para ello hacemos uso de una serie de matrices de cambio de base, en concreto queremos transformar los ejes de coordenadas del espacio global a un eje de coordenadas de cámara, donde el front de la cámara define la profundidad y el top y el right el eje de ordenadas y abscisas respectivamente. Es importante esta transformación ya que nos permitirá almacenar la profundidad de cada punto en el espacio, obteniendo el Z-Buffer que posteriormente podemos utilizar para detectar oclusiones (que objeto queda ocluido por la presencia de otro).
+
+El segundo paso se trata de traducir estas coordenadas de cámara a un plano 2D de un tamaño fijo que es nuestra pantalla, alineada con los ejes de ordenadas y abscisas de la cámara. Para ello recorreremos secuencialmente vértice de cada cara de cada objeto de la escena y los pintaremos en pantalla. Además guardaremos la coordenada z del vértice y lo almacenaremos en un buffer que tiene el mismo tamaño de la pantalla que estamos pintando y registramos ,a profundidad con valor entre 0 y 1. Usualmente el 0 hace referencia a la distancia a la que se encuentra el near plane (el plano más cercano que limita el espacio que renderizamos) y el 1 a la distancia del far plane (el plano más alejado).
+
+Tras haber situado la posición en pantalla de cada vértice, se procede a pintar las aristas.
+
+Para pintar un punto de la arista lo que lo que vamos a hacer es calcular la pendiente de la recta que une los dos pixeles correspondientes a los vértices. Tras saber la posición que corresponde al nuevo punto de la arista consultamos primero el Z-buffer, si el valor de profundidad es más pequeño que el valor registrado en el Z-buffer el pixel se ve, sino este queda oculto y permanece el color ya existente.
+Una vez terminado de pintar las aristas pasamos a pintar el interior de la geometría. Vamos a ir fila a fila y pintaremos todo aquello que este entre pares de pixeles ya pintados.
+
+>![](http://www.codeproject.com/KB/GDI/3DSoftwareRenderingEngine/scanlinerasterizer.png)
+
+Una vez que sabemos si podemos pintar o no un pixel, el fixed pipeline de la tarjeta gráfica nos permite escoger un modelo de iluminación local para obtener el color final que corresponde al píxel.
 
 ---
 
