@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TFG: Memoria - Hermann</title>
 <link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
-<link rel="stylesheet" href="https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/monokai_sublime.css" />
-
 <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
-<style>
-.pagebreak{page-break-after: always;}
-</style>
 </head>
-<body><div class="container"><blockquote>
+<body><div class="container"><p><a href="/">return</a></p>
+
+<blockquote>
   <p><strong>Nota:</strong> No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con <a href="https://stackedit.io"><strong>stackedit.io</strong></a></p>
 </blockquote>
 
@@ -76,44 +73,41 @@
 
 <p><img src="http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png" alt="" title=""></p>
 
-<p>Documentación OpenGL ES<a href="#fn:1a" id="fnref:1a" title="See footnote" class="footnote">1</a> </p>
+<p>Documentación OpenGL ES<a href="#fn:1docmentacion" id="fnref:1docmentacion" title="See footnote" class="footnote">1</a>
 
+</p><hr>
 
+<p></p>
 
 <h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
 
-<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica. </p>
+<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica.</p>
 
 <p>A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para en forma de pequeños programas para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders.</p>
 
-<p>La API nos permite pasar al toda una serie  información básica ssobre el modo que se realiza el renderizado como:</p>
+<p>La API nos permite pasar al toda una serie información básica ssobre el modo que se realiza el renderizado como:</p>
 
 <p>Nos permite asignar y subir a la gráfica información básica sobre el modo que se realiza el renderizado</p>
 
 <blockquote>
   <ul>
   <li>La primitiva con la que vamos a interpretar los VertexBuffers</li>
-  <li>Arraybuffers con información de los vértices:  los <em>Vertex Buffers</em> <br>
+  <li>Arraybuffers con información de los vértices:  el Vertex Buffer <br>
   <ul><li>R<sup>3</sup> :: posición </li>
   <li>R<sup>3</sup> :: vector normal</li>
-  <li>R<sup>2</sup> :: coordenadas de textura</li>
+  <li>R<sup>2</sup> :: coordenadas de textura <em>uv</em></li>
   <li>R<sup>4</sup> :: color rgba</li></ul></li>
-  <li><p>Flags para cambiar ciertos parámetros</p>
-  
-  <ul><li>Depth Test (enabled / disabled): </li>
-  <li>Alpha Blending</li>
-  <li>Clear Color</li></ul></li>
-  <li><p>mapas de textura de tipo:</p>
-  
-  <ul><li>texturas 2D (texturas normales, shadow maps, bump maps…)</li>
-  <li>texturas 3D (cubemaps, environment maps)</li></ul></li>
-  <li>MAS COSAS</li>
+  <li>Flags para cambiar ciertos parámetros <br>
+  <ul><li><strong><em>Depth Test</em></strong> : habilitar / deshabilitar la oclusión entre objetos de la escena </li>
+  <li><strong><em>Alpha Blending</em></strong> : habilitar / deshabilitar la transparencia</li>
+  <li><strong><em>Clear Color</em></strong>: establecer el color de fondo con el que vamos a pintar</li></ul></li>
+  <li>Mapas de textura de tipo: <br>
+  <ul><li><strong>texturas 2D</strong> : texturas normales, shadow maps, bump maps…. Se utiliza un par de coordenadas R<sup>2</sup>::<em>uv</em> para mapear su contenido.</li>
+  <li><strong>texturas 3D</strong>: <em>cubemaps</em>, <em>environment maps</em>… Se utiliza un vector  R<sup>3</sup> para mapear su contenido.</li></ul></li>
   </ul>
 </blockquote>
 
 <hr>
-
-
 
 <h2 id="12-primitive-processing">1.2 Primitive Processing</h2>
 
@@ -132,34 +126,43 @@ Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array
     [ <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span> ]
 ]</code></pre>
 
-<p><img src="http://www.cores2.com/3D_Tutorial/_images/CubeVertices.png" alt="" title=""></p>
-
-<p>El modo en que esta información ha de ser interpretada va directamente ligado a la primitiva que hayamos definido:</p>
+<p><img src="http://www.cores2.com/3D_Tutorial/_images/CubeVertices.png" alt="" title=""> <br>
+El modo en que esta información ha de ser interpretada va directamente ligado a la primitiva que hayamos definido:</p>
 
 <ul>
 <li><strong>Puntos</strong>: Solo se tiene en cuenta cada vértice individualmente.</li>
 <li><strong>Lineas</strong>: Se interpreta la información a pares de vértices, lo cual forma una linea</li>
-<li><strong>Triangulos</strong>: La primera de las primitivas poligonales, la información se procesa por paquetes de tres vértices, lo cual forma la superficie mínima, cuyos vértices serán siempre coplanares. Tenemos diferentes flags para la misma primitiva: <br>
+<li><p><strong>Triangulos</strong>: La primera de las primitivas poligonales, la información se procesa por paquetes de tres vértices, lo cual forma la superficie mínima, cuyos vértices serán siempre coplanares. Tenemos diferentes flags para la misma primitiva:</p>
+
 <ul><li><strong>GL_TRIANGLES</strong>:  Se interpreta el vertex buffer como triángulos independientes,no comparten vértice alguno con ningún otro triángulo.</li>
 <li><strong>GL_TRIANGLE_STRIP</strong>: Los triángulos están contectados, los vértices pueden pertenecer a diferentes superficies/triángulos.</li>
-<li><strong>GL_TRIANGLE_FAN</strong>:</li></ul></li>
+<li><p><strong>GL_TRIANGLE_FAN</strong>: El primer vertice define el centro de la geometria y cada par de vertices que añadimos añade un triangulo al objeto.</p>
+
+<p><img src="http://black-byte.com/wp-content/uploads/2007/01/triangulos.png" alt="" title=""> <br>
+<small>Primitivas en OpenGL ES<a href="#fn:12primitivas" id="fnref:12primitivas" title="See footnote" class="footnote">1</a></small></p></li></ul></li>
 </ul>
 
-<p>Por cada secuencia de vértices definidos en funcion de la primitiva que se ha cargado (puntos, lineas o triangulos).</p>
-
-<p><small>Documentación OpenGL ES<a href="#fn:12primitivas" id="fnref:12primitivas" title="See footnote" class="footnote">2</a>
-
-</small></p><p></p>
-
-<h2 id="13-vertex-shader">1.3 Vertex Shader</h2>
 
 
+<h2 id="13-vertex-processing-el-vertex-shader">1.3 Vertex Processing : el vertex shader</h2>
 
-<h2 id="14-fragment-shader">1.4 Fragment Shader</h2>
+<p>El Vertex Shader es el primer modulo que vamos a encontrar en el pipeline encargado de definir el comportamiento con el que la gpu tiene que procesar los vértices. Su ejecución se realiza exclusivamente una vez por cada vértice que recibe.  La información que tiene disponible se limita a la del vértice que esta siendo procesado (posicion, normal, uv) y las variables que podamos haber cargado desde nuestra CPU denominadas <em>Uniforms</em>.</p>
 
-<p>–</p>
+<p>El prefijo <strong><em>uniform</em></strong> hace referencia a unos datos cargados en memoria que son constantes inalterables durante toda la ejecución del renderizado y, por lo tanto, por cada ejecución del vertex shader por cada vértice que reciba por entrada dispondrá de los mismos valores.</p>
+
+<hr>
+
+<h2 id="14-primitive-assembly">1.4 Primitive Assembly</h2>
+
+<hr>
 
 
+
+<h2 id="15-rasterizer">1.5 Rasterizer</h2>
+
+<hr>
+
+<h2 id="16-fragment-shader">1.6 Fragment Shader</h2>
 
 <h1 id="n-texturas">N Texturas</h1>
 
@@ -167,9 +170,9 @@ Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array
 
 <!-- anexos -->
 
+<hr>
 
 
-<h1 id="enlaces">Enlaces</h1>
 
-<div class="footnotes"><hr><ol><li id="fn:1a">Documentación OpenGL ES @ <a href="https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf"><strong>kronos.org</strong></a> <a href="#fnref:1a" title="Return to article" class="reversefootnote">↩</a></li><li id="fn:12primitivas">Primitivas en OpenGL @ <a href="http://black-byte.com/tutorial/primitivas-en-opengl/"><strong>Black-Byte</strong></a> <a href="#fnref:12primitivas" title="Return to article" class="reversefootnote">↩</a></li></ol></div></div></body>
+<h1 id="enlaces">Enlaces</h1><div class="footnotes"><hr><ol><li id="fn:1docmentacion">Documentación OpenGL ES @ <a href="https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf"><strong>kronos.org</strong></a> <a href="#fnref:1docmentacion" title="Return to article" class="reversefootnote">↩</a></li><li id="fn:12primitivas">Primitivas en OpenGL ES@ <a href="http://black-byte.com/tutorial/primitivas-en-opengl/"><strong>Black-Byte</strong></a> <a href="#fnref:12primitivas" title="Return to article" class="reversefootnote">↩</a></li></ol></div></div></body>
 </html>
