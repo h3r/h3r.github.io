@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>h3r | Experimento 4</title>
+
+    <style>
+        html{height:100%;}
+        body{overflow:hidden;height:100%;margin:0;padding:0;background:magenta}
+        header h2{
+            position:absolute;
+            margin-left: 20px;
+            padding:5px;
+            color:whitesmoke;
+            background: rgba(250,250,250,0.5);
+            box-shadow:2px 2px 50px rgba(250,250,250,0.5);
+            left:0;
+            z-index:100;
+            font-family: sans-serif;
+        }
+        .full{ height:100%; width:100%;}
+        #canvas-container{background:magenta}
+
+    </style>
+</head>
+
+<body>
+    <header><h2>Experimento 3 : Luz Reflejada </h2></header>
+    <div id="canvas-container" class="full"></div>
+
+<script src="../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
+<script src="../js/datgui/dat.gui.js" type="application/javascript"></script>
+<script src="../js/litegl/litegl.js" type="application/javascript"></script>
+<script src="../js/rgb2hsv/rgb2hsv.js" type="application/javascript"></script>
+    <script id="camera">
+        var up = vec3.fromValues(0,1,0);
+        function Camera(){
+            this.proj   = mat4.create();
+            this.view   = mat4.create();
+            this.mvp    = mat4.create();
+            this.temp   = mat4.create();
+            this.model  = mat4.create();
+        }
+        Camera.prototype = {
+            proj    :null,
+            view    :null,
+            mvp     :null,
+            temp    :null,
+            model   :null,
+            updated :true,
+            perspective: function(fov, aspect, near, far){
+                mat4.perspective(this.proj, fov, aspect, near, far);
+            },
+            lookAt: function(eye, center, up){
+                mat4.lookAt(this.view, eye, center, up);
+            },
+            getMVP : function (model){
+                mat4.multiply(this.temp,this.view,model);
+                mat4.multiply(this.mvp,this.proj,this.temp);
+                return this.mvp;
+            },
+            pan:function(v3){
+                mat4.invert(this.temp,this.view);
+                var right = this.temp.subarray(0,3);
+
+                mat4.translate(this.view,this.view,vec3.fromValues(right[0] * -v3[0], 0, right[2] * -v3[0]));
+                mat4.translate(this.view,this.view,vec3.fromValues(0,v3[1],0));
+            },
+            orbit:function(v3){
+                mat4.invert(this.temp,this.view);
+                var right = this.temp.subarray(0,3);
+
+                mat4.rotate(this.view,this.view,v3[1],right);//ok
+                mat4.rotateY(this.view,this.view, v3[0]);
+            },
+            zoom:function(d){
+                mat4.invert(this.temp,this.view);
+                var front = this.temp.subarray(8,11);
+
+                mat4.translate(this.view,this.view,vec3.fromValues(front[0] * d,front[1] * d,front[2] * d));
+            },
+            update:function(dt){
+                if(this.updated) return;
+            }
+        }
+    </script>
+    <script id="entity">
+        var idcount = 0;
+        function Entity(id,mesh,tex,gl){
+            this.id = idcount++;
+            this.mesh = typeof mesh !== 'undefined' ? mesh  : null;
+            this.tex  = typeof tex  !== 'undefined' ? tex   : null;
+            this.model = mat4.create();
+            this.primitive = gl.TRIANGLES;
+        }
+        Entity.prototype = {
+            id:null,
+            mesh:null,
+            tex :null,
+            model:null,
+            primitive:null,
+            getModel:function(){
+                return this.model;
+            }
+        }
+    </script>
+    <script id="managers">
+        function loadTexture (url,options,callback,gl){
+            if(typeof gl.textures[url] != 'undefined'){
+                callback();
+                return gl.textures[url];
+            }
+            return GL.Texture.fromURL(url,options,callback,gl);
+        }
+        function loadMesh (url,options,callback,gl){
+            if(typeof gl.meshes[url] != 'undefined'){
+                callback();
+                return gl.meshes[url];
+            }
+            return GL.Mesh.fromURL(url,options,callback,gl);
+        }
+    </script>
+    <script id="tools">
+        function getColorVec4(){
+            if(typeof color === 'string'){
+                var a = JSON.parse('['+ color.substring(color.indexOf("(")+1,color.indexOf(")")) +']');
+                color = vec4.fromValues(a[0],a[1],a[2],a[3]);
+            }
+            return color;
+        }
+    </script>
+    <script type="application/javascript">
+        "use strict";
+        /* dat-gui setup */
+
+        window.onload = function()
+        {
+
+            this.gui = new dat.GUI();
+
+            this.gui.add(window, 'grid');
+            this.gui.add(window, 'Mode', { Mesh: 0, Shaded: 1, Texturized: 2 } );
+
+            var f1 = this.gui.addFolder('Light');
+                f1.add(window.light, 'x');
+                f1.add(window.light, 'y');
+                f1.add(window.light, 'z');
+                f1.addColor(window, 'color');
+                f1.open();
+
+        };/*end dat-gui setup*/
+
+        /*litegl experiment 1*/
+        var placer = document.getElementById('canvas-container');
+        var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
+        placer.appendChild( gl.canvas );
+
+        var ready = 0;
+        var entities = {};
+
+        entities["obj"] = new Entity(false,
+            GL.Mesh.sphere({size:10, lat: 20, 'long':100}),
+            loadTexture('../textures/test.dds',{},function(){ready++;}, gl),
+            gl
+        );
+        entities["obj"].ref_map   = loadTexture('../textures/OutputCube.dds',{},function(){ready++;}, gl);
+
+        var skybox = new Entity(false,
+            GL.Mesh.cube({size:1000, lat: 20, 'long':100}),
+            loadTexture('../textures/OutputCube.dds',{},function(){ready++;}, gl),
+            gl
+        );
+
+        entities["grid"] = new Entity(false,
+            GL.Mesh.grid({size:200, lines:41}),
+            loadTexture('../textures/crate.jpg',{},function(){ready++;},gl),
+            gl
+        );
+        entities["grid"].primitive = gl.LINES;
+
+        var camera = new Camera();
+        camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+        camera.lookAt([0,30,30],[0,0,0], [0,1,0]);
+
+        var color = [ 255, 255, 255, 0.3 ];
+        var speed = 0.5;
+        var grid = true;
+        var Mode = 2;
+        var light = {x:1,y:1,z:1};
+        var r = 1/255;
+
+        //basic phong shader
+        var shader = new Shader('\
+            precision highp float;\
+            attribute vec3 a_vertex;\
+            attribute vec3 a_normal;\
+            attribute vec2 a_coord;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform mat4 u_mvp;\
+            uniform mat4 u_model;\
+            void main() {\
+                v_coord = a_coord;\
+                v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
+                gl_Position = u_mvp * vec4(a_vertex,1.0);\
+            }\
+            ', '\
+            precision highp float;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform vec3 u_lightvector;\
+            uniform vec4 u_color;\
+            uniform sampler2D u_texture;\
+            void main() {\
+              vec3 N = normalize(v_normal);\
+              vec4 color = u_color * texture2D( u_texture, v_coord);\
+              gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
+            }\
+        ');
+        var phong = new Shader('\
+            precision highp float;\
+            attribute vec3 a_vertex;\
+            attribute vec3 a_normal;\
+            attribute vec2 a_coord;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform mat4 u_mvp;\
+            uniform mat4 u_model;\
+            void main() {\
+                v_coord = a_coord;\
+                v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
+                gl_Position = u_mvp * vec4(a_vertex,1.0);\
+            }\
+            ', '\
+            precision highp float;\
+            varying vec3 v_normal;\
+            varying vec2 v_coord;\
+            uniform vec3 u_lightvector;\
+            uniform vec4 u_color;\
+            void main() {\
+              vec3 N = normalize(v_normal);\
+              vec4 color = u_color;\
+              gl_FragColor = color * max(0.0, dot(u_lightvector,N));\
+            }\
+        ');
+        var cubemap_shader = new Shader('\
+			precision highp float;\
+			attribute vec3 a_vertex;\
+			attribute vec3 a_normal;\
+			varying vec3 v_pos;\
+			varying vec3 v_normal;\
+			uniform mat4 u_mvp;\
+			uniform mat4 u_model;\
+			void main() {\
+				v_pos = a_vertex.xyz;\
+				v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
+				gl_Position = u_mvp * vec4(a_vertex,1.0);\
+			}\
+			', '\
+			precision highp float;\
+			varying vec3 v_normal;\
+			varying vec3 v_pos;\
+			uniform vec3 u_lightvector;\
+			uniform vec4 u_color;\
+			uniform samplerCube u_texture;\
+			uniform samplerCube u_refl_map;\
+			uniform bool u_has_tex;\
+			uniform bool u_has_ref;\
+			vec4 reflection(){\
+			    vec4 ref_color = vec4(1.0,1.0,1.0,1.0);\
+			    if(u_has_ref){\
+			        ref_color = textureCube( u_refl_map, vec3(v_normal.x,v_normal.y,-v_normal.z) );\
+			    }\
+			    return ref_color;\
+			}\
+			vec4 diffuse(){\
+			    vec4  diff_color = u_color;\
+			    if(u_has_tex){\
+			        diff_color = textureCube( u_texture, v_pos );\
+			    }\
+			    return diff_color;\
+			}\
+			void main() {\
+			  vec3 N = normalize(v_normal);\
+			  gl_FragColor = (diffuse() * 0.75 + reflection() * 0.25 );\
+			}\
+		');
+        //* max(0.0, dot(u_lightvector,N));\
+        var sky_shader = new Shader('\
+			precision highp float;\
+			attribute vec3 a_vertex;\
+			varying vec3 v_vertex;\
+			uniform mat4 u_mvp;\
+			void main() {\
+				v_vertex = a_vertex;\
+				gl_Position = u_mvp * vec4(a_vertex,1.0);\
+			}\
+			', '\
+			precision highp float;\
+            varying vec3 v_vertex;\
+            uniform samplerCube u_texture;\
+            void main(){\
+                gl_FragColor = vec4(1.0,1.0,1.0,1.0) * textureCube(u_texture, vec3(v_vertex.x,v_vertex.y,-v_vertex.z));\
+            }\
+        ');
+        //textureCube(u_texture, vec3(v_vertex.x,v_vertex.y,-v_vertex.z));
+        gl.captureMouse(true);
+        gl.onmousedown = function(e) {};
+
+        gl.onmousemove = function (e) {
+            if (e.dragging) {
+                if (e.leftButton)
+                {
+                    camera.orbit(vec3.fromValues(e.deltax *  0.005,e.deltay *  0.003, 0) );
+                }
+                if (e.rightButton)
+                {
+                    camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
+                }
+            }
+        };
+        gl.onmousewheel = function(e){
+            camera.zoom(e.deltaY * 0.01);
+        };
+
+        gl.onupdate = function(dt) {
+            camera.update();
+            mat4.rotateY(entities['obj'].model, entities['obj'].model,dt * speed);
+        };
+
+
+        gl.clearColor(0.15,0.15,0.15,1);
+        gl.enable( gl.DEPTH_TEST );
+        gl.ondraw = function() {
+
+            gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+            //compute rotation matrix for normals
+            var uniforms = {
+                u_texture:      0,
+                u_color:        vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r)),
+                u_lightvector:  vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
+            }
+
+            if(skybox.tex != null && Mode == 2){
+                skybox.tex.bind(0);
+
+                uniforms.u_model = skybox.getModel();
+                uniforms.u_mvp   = camera.getMVP(skybox.getModel());
+                sky_shader.uniforms(uniforms).draw(skybox.mesh, skybox.primitive);
+            }
+
+
+            //render mesh using the shader
+            for(var i in entities){
+                if(i == 'grid' && !grid) return;
+
+                if(entities[i].tex != null && Mode == 2){
+                    entities[i].tex.bind(0);
+                    uniforms.u_has_tex = true;
+                }else{uniforms.u_has_tex = false;}
+
+
+                if(Mode == 2)
+                {
+                    if(entities[i].tex.texture_type == gl.TEXTURE_CUBE_MAP)
+                    {
+                        uniforms.u_model = entities[i].getModel();
+                        uniforms.u_mvp   = camera.getMVP(entities[i].getModel());
+
+                        if(entities[i].ref_map != false){
+                            entities[i].ref_map.bind(1);
+                            uniforms.u_refl_map = 1;
+                            uniforms.u_has_ref = true;
+                        }else{uniforms.u_has_ref = false;}
+
+                        cubemap_shader
+                        .uniforms(uniforms)
+                        .draw(entities[i].mesh, entities[i].primitive);
+                    }
+                    else{
+                        uniforms.u_model = entities[i].getModel();
+                        uniforms.u_mvp   = camera.getMVP(entities[i].getModel());
+
+                        shader
+                        .uniforms(uniforms)
+                        .draw(entities[i].mesh, entities[i].primitive);
+                    }
+                }
+                else{
+                        uniforms.u_model = entities[i].getModel();
+                        uniforms.u_mvp   = camera.getMVP(entities[i].getModel());
+
+                        phong
+                        .uniforms(uniforms)
+                        .draw(entities[i].mesh, (Mode == 0 && i != 'grid')?gl.LINES : entities[i].primitive);
+                }
+                if(entities[i].tex != null && Mode == 2)
+                   entities[i].tex.unbind(0);
+            }
+
+
+        };
+        gl.animate();
+        /*end litegl experiment 1*/
+
+        /*=============================================
+        / Window Resie Handling
+        /==============================================*/
+        var resize = function() {
+
+            gl.canvas.width   = placer.clientWidth;
+            gl.canvas.height  = placer.clientHeight;
+            camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        };
+
+        window.onresize = resize;
+
+    </script>
+</body>
+</html>
