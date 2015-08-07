@@ -3,9 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TFG: Memoria - Hermann</title>
+<title>TFG Hermann Plass</title>
 <link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<link rel="stylesheet" href="https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/monokai_sublime.css" />
+
 <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+<style>
+.pagebreak{page-break-after: always;}
+</style>
 </head>
 <body><div class="container"><p><a href="/">return</a></p>
 
@@ -84,7 +89,7 @@
 
 <h2 id="11-la-api-opengl">1.1 la API: <em>OpenGL</em></h2>
 
-<p>No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica.</p>
+<p>No vamos a meternos de pleno, OpenGL es una librería que proporciona una serie de métodos y atributos con los que podemos modificar y definir el funcionamiento de la gpu.</p>
 
 <p>A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para en forma de pequeños programas para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders.</p>
 
@@ -111,8 +116,6 @@
 </blockquote>
 
 <hr>
-
-
 
 <h2 id="12-primitive-processing">1.2 Primitive Processing</h2>
 
@@ -175,6 +178,8 @@ Los arraybuffers, en el siguiente ejemplo el vertex buffer, es un array de array
 
 <hr>
 
+
+
 <h2 id="14-primitive-assembly">1.4 Primitive Assembly</h2>
 
 <hr>
@@ -201,6 +206,8 @@ Una vez terminado de pintar las aristas pasamos a pintar el interior de la geome
 <p>Una vez que sabemos si podemos pintar o no un pixel, el fixed pipeline de la tarjeta gráfica nos permite escoger un modelo de iluminación local para obtener el color final que corresponde al píxel.</p>
 
 <hr>
+
+
 
 <h2 id="16-fragment-shader">1.6 Fragment Shader</h2>
 
