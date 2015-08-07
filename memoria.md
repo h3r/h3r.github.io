@@ -21,7 +21,7 @@ Documentación OpenGL ES[^1:docmentacion]
 ---
 
 ##1.1 la API: *OpenGL*
-No vamos a meternos de pleno, OpenGL es una librería que hace de puente entre nuestro código y la tarjeta gráfica.
+No vamos a meternos de pleno, OpenGL es una librería que proporciona una serie de métodos y atributos con los que podemos modificar y definir el funcionamiento de la gpu.
 
 A partir de la versión OpenGL 2.0, se cambia la logica del fixed pipeline y se permite introducir “hacks” para en forma de pequeños programas para modificar el funcionamiento de diferentes fases del pipeline. Pero ya entraremos más adelante con los shaders.
 
@@ -148,3 +148,4 @@ Una vez que sabemos si podemos pintar o no un pixel, el fixed pipeline de la tar
 [^1:docmentacion]:Documentación OpenGL ES @ [**kronos.org**](https://www.khronos.org/registry/gles/specs/2.0/es_cm_spec_2.0.24.pdf)
 
 [^1.2:primitivas]: Primitivas en OpenGL ES@ [**Black-Byte**](http://black-byte.com/tutorial/primitivas-en-opengl/)
+
