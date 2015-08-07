@@ -1,12 +1,3 @@
-<div id='nav'>
-<ul>
-<li><i class=" icon-left-big"><a href='/'>Return</a></i>
-<li><i class=" icon-up-big"><a href='#index'>Index</a></i>
-</ul>
-
-</div>
-
-
 
 > **Nota:** No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con [**stackedit.io**](https://stackedit.io)
 
