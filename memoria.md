@@ -1,5 +1,13 @@
+<div id='nav'>
+<ul>
+<li><i class=" icon-left-big"><a href='/'>Return</a></i>
+<li><i class=" icon-up-big"><a href='#index'>Index</a></i>
+</ul>
 
-[return](/)
+</div>
+
+
+
 > **Nota:** No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con [**stackedit.io**](https://stackedit.io)
 
 #**TFG**: Physically based rendering over web technologies
@@ -8,7 +16,7 @@
 <div class="pagebreak"></div>
 -----------------------------------------------------------
 
-#Index
+#Index {#index}
 [TOC]
 
 -----------------------------------------------------------
@@ -17,8 +25,6 @@
 #1 **Funcionamiento del Pipeline**
 >![Programmable Pipeline](http://malideveloper.arm.com/downloads/deved/tutorial/SDK/android/2.0/pipeline.png)
 Documentación OpenGL ES[^1:docmentacion]
-
----
 
 ##1.1 la API: *OpenGL*
 No vamos a meternos de pleno, OpenGL es una librería que proporciona una serie de métodos y atributos con los que podemos modificar y definir el funcionamiento de la gpu.
