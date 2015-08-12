@@ -3999,6 +3999,8 @@ Texture.fromURL = function(url, options, on_complete, gl) {
 			texture.texture_type = t.texture_type;
 			texture.handler = t;
 			delete texture["ready"]; //texture.ready = true;
+            if(on_complete)
+                on_complete(t);
 		});
 	}
 	else
@@ -4928,6 +4930,7 @@ Shader.fromURL = function( vs_path, fs_path, on_complete )
 		for(var i in true_shader)
 			shader[i] = true_shader[i];
 		shader.ready = true;
+        on_complete(shader);
 	}
 
 	return shader;
