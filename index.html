@@ -3,19 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>h3r | Landing</title>
+    <style>
+        html,body{height:100%; padding:0; margin:0;}
+        iframe{
+            border:none;
+            padding:0;
+            margin:0;
+            width:100%;
+            height:99%;
+        }
+        #ex{
+            font-family: sans-serif;
+            position:absolute;
+            list-style-type: none;
+        }
+        #ex h2{
+            color:whitesmoke;
+            text-border:1px solid black;
+            text-shadow:0 0 5px gray;
+        }
+        #ex li{
+            margin-top:15px;
+        }
+        #ex li a{
+            background: #afb0b4;
+            box-shadow: 0px 3px 0px #87888c;
+            padding:0.25em 0.5em 0.25em 0.25em;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left:0em;
+            color:whitesmoke;
+            text-decoration:none;
+        }
+
+        #ex li a:hover{
+            background: #cbfff3;
+            box-shadow: 0px 3px 0px #96beb2;
+            color: gray;
+        }
+
+
+
+    </style>
 </head>
 <body>
 
-    <ul>
-
-        <li><a href="memoria.html" target="_blank"> Memoria </a></li>
-        <li> <a href="ex/e1.html" target="_blank"> Experimento 1 : Render Basico</a> </li>
-        <li> <a href="ex/e2.html" target="_blank"> Experimento 2 : Texturas</a> </li>
-        <li> <a href="ex/e3.html" target="_blank"> Experimento 3 : Cubemaps</a> </li>
-        <li> <a href="ex/e4.html" target="_blank"> Experimento 4 : Luz Reflejada</a> </li>
-        <li> <a href="ex/e5/e5.html" target="_blank"> Experimento 5 : Code Separation</a> </li>
+    <ul id="ex">
+        <h2>Experimentos</h2>
+        <!--<li><a href="memoria.html" target="_blank"> Memoria </a></li>-->
+        <li> <a href="ex/e1.html" target="_blank"> Render Basico</a> </li>
+        <li> <a href="ex/e2.html" target="_blank"> Texturas</a> </li>
+        <li> <a href="ex/e3.html" target="_blank"> Cubemaps</a> </li>
+        <li> <a href="ex/e4.html" target="_blank"> Luz Reflejada</a> </li>
+        <li> <a href="ex/e5/e5.html" target="_blank"> Code Separation</a> </li>
 
     </ul>
+    <iframe src="memoria.html"></iframe>
 
 </body>
 </html>
