@@ -80,8 +80,14 @@
                 mat4.translate(this.view,this.view,vec3.fromValues(front[0] * d,front[1] * d,front[2] * d));
             },
             update:function(dt){
-                if(this.updated) return;
+                if(this.updated)
+                    return;
+            },
+            getEye: function(){
+
+                return mat4.getTranslation(vec3.create(),this.view);
             }
+
         }
     </script>
     <script id="entity">
@@ -266,6 +272,7 @@
 			uniform samplerCube u_refl_map;\
 			uniform bool u_has_tex;\
 			uniform bool u_has_ref;\
+			uniform vec3 u_eye;\
 			vec4 reflection(){\
 			    vec4 ref_color = vec4(1.0,1.0,1.0,1.0);\
 			    if(u_has_ref){\
@@ -293,14 +300,16 @@
 			uniform mat4 u_mvp;\
 			void main() {\
 				v_vertex = a_vertex;\
-				gl_Position = u_mvp * vec4(a_vertex,1.0);\
+				gl_Position = u_mvp * vec4(a_vertex,1);\
 			}\
 			', '\
 			precision highp float;\
             varying vec3 v_vertex;\
             uniform samplerCube u_texture;\
+            uniform vec3 u_eye;\
             void main(){\
-                gl_FragColor = vec4(1.0,1.0,1.0,1.0) * textureCube(u_texture, vec3(v_vertex.x,v_vertex.y,-v_vertex.z));\
+                vec3 fix = u_eye + v_vertex;\
+                gl_FragColor = vec4(1.0,1.0,1.0,1.0) * textureCube(u_texture, vec3(v_vertex.x + fix.x ,v_vertex.y + fix.y ,- (v_vertex.z + fix.z)) );\
             }\
         ');
         //textureCube(u_texture, vec3(v_vertex.x,v_vertex.y,-v_vertex.z));
@@ -338,14 +347,13 @@
             //compute rotation matrix for normals
             var uniforms = {
                 u_texture:      0,
+                u_eye   :       camera.getEye(),
                 u_color:        vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r)),
                 u_lightvector:  vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
             }
 
             if(skybox.tex != null && Mode == 2){
                 skybox.tex.bind(0);
-
-                uniforms.u_model = skybox.getModel();
                 uniforms.u_mvp   = camera.getMVP(skybox.getModel());
                 sky_shader.uniforms(uniforms).draw(skybox.mesh, skybox.primitive);
             }
