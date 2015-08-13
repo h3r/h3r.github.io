@@ -30,3 +30,6 @@ header h2 {
     background-position: center;
     background-size: 128px 128px;
 }
+canvas{
+    display:none !important;
+}

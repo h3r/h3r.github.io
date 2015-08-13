@@ -11,6 +11,7 @@
     <header><h2>Experimento 6 : Pintar en textura </h2></header>
     <div id="canvas-container" class="full"></div>
 
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="../../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
 <script src="../../js/datgui/dat.gui.js" type="application/javascript"></script>
 <script src="../../js/litegl/litegl.js" type="application/javascript"></script>
@@ -40,6 +41,7 @@
         ],function(){
             placer.appendChild( gl.canvas );
             gl.animate();
+            $('canvas').fadeIn("slow");
         },gl);
 
 
