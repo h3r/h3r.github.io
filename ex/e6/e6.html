@@ -7,6 +7,7 @@
 </head>
 
 <body>
+
     <header><h2>Experimento 6 : Pintar en textura </h2></header>
     <div id="canvas-container" class="full"></div>
 
@@ -25,7 +26,7 @@
         /*litegl experiment 5*/
         var placer = document.getElementById('canvas-container');
         var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
-        placer.appendChild( gl.canvas );
+
 
         var resources = new ResourceLoader([
             '../../textures/test.dds',
@@ -36,7 +37,10 @@
             ['../../shaders/sky.vs','../../shaders/sky.fs'],
             ['../../shaders/phong.vs','../../shaders/phong.fs'],
 
-        ],function(){ gl.animate(); },gl);
+        ],function(){
+            placer.appendChild( gl.canvas );
+            gl.animate();
+        },gl);
 
 
 
