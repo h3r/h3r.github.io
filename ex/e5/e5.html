@@ -10,6 +10,7 @@
     <header><h2>Experimento 5 : Luz Reflejada </h2></header>
     <div id="canvas-container" class="full"></div>
 
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="../../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
 <script src="../../js/datgui/dat.gui.js" type="application/javascript"></script>
 <script src="../../js/litegl/litegl.js" type="application/javascript"></script>
@@ -25,7 +26,6 @@
         /*litegl experiment 5*/
         var placer = document.getElementById('canvas-container');
         var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
-        placer.appendChild( gl.canvas );
 
         var resources = new ResourceLoader([
             '../../textures/test.dds',
@@ -36,7 +36,11 @@
             ['../../shaders/sky.vs','../../shaders/sky.fs'],
             ['../../shaders/phong.vs','../../shaders/phong.fs'],
 
-        ],function(){ gl.animate(); },gl);
+        ],function(){
+            placer.appendChild( gl.canvas );
+            gl.animate();
+            $('canvas').fadeIn("slow");
+        },gl);
 
 
 
