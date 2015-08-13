@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>h3r | Experimento 5</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+    <header><h2>Experimento 6 : Pintar en textura </h2></header>
+    <div id="canvas-container" class="full"></div>
+
+<script src="../../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
+<script src="../../js/datgui/dat.gui.js" type="application/javascript"></script>
+<script src="../../js/litegl/litegl.js" type="application/javascript"></script>
+<script src="tools.js"  type="application/javascript"></script>
+<script src="gui.js"    type="application/javascript"></script>
+<script src="Entity.js" type="application/javascript"></script>
+<script src="Camera.js" type="application/javascript"></script>
+<script src="ResourceLoader.js"  type="application/javascript"></script>
+
+    <script type="application/javascript">
+        "use strict";
+
+        /*litegl experiment 5*/
+        var placer = document.getElementById('canvas-container');
+        var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
+        placer.appendChild( gl.canvas );
+
+        var resources = new ResourceLoader([
+            '../../textures/test.dds',
+            '../../textures/OutputCube.dds',
+            '../../textures/crate.jpg',
+            ['../../shaders/s5.vs','../../shaders/s5.fs'],
+            ['../../shaders/cubemap.vs','../../shaders/cubemap.fs'],
+            ['../../shaders/sky.vs','../../shaders/sky.fs'],
+            ['../../shaders/phong.vs','../../shaders/phong.fs'],
+
+        ],function(){ gl.animate(); },gl);
+
+
+
+        var entities = {};
+
+        entities["obj"] = new Entity(false,
+            GL.Mesh.sphere({size:10, lat: 20, 'long':100}),
+            loadTexture('../../textures/test.dds',{},null, gl),
+            gl
+        );
+        entities["obj"].ref_map   = loadTexture('../../textures/OutputCube.dds',{},null, gl);
+
+        var skybox = new Entity(false,
+            GL.Mesh.cube({size:1000, lat: 20, 'long':100}),
+            loadTexture('../../textures/OutputCube.dds',{},null, gl),
+            gl
+        );
+
+        entities["grid"] = new Entity(false,
+            GL.Mesh.grid({size:200, lines:41}),
+            loadTexture('../../textures/crate.jpg',{},null,gl),
+            gl
+        );
+        entities["grid"].primitive = gl.LINES;
+
+
+
+        var camera = new Camera();
+        camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+        camera.lookAt([0,30,30],[0,0,0], [0,1,0]);
+
+        var color = [ 255, 255, 255, 0.99];
+        var background = [ 0, 0, 0, 0.99];
+        var gamma = 2.2;
+        var i_refl = 0.25;
+        var speed = 0.5;
+        var grid = true;
+        var Mode = 2;
+        var light = {x:1,y:1,z:1};
+        var r = 1/255;
+
+        //basic phong shader
+        var shader = gl.shaders['phong'];
+        var phong = gl.shaders['phong'];
+        var cubemap_shader = gl.shaders['cubemap'];
+        var sky_shader = gl.shaders['sky'];
+
+
+        //textureCube(u_texture, vec3(v_vertex.x,v_vertex.y,-v_vertex.z));
+        gl.captureMouse(true);
+        gl.onmousedown = function(e) {};
+
+        gl.onmousemove = function (e) {
+            if (e.dragging) {
+                if (e.leftButton)
+                {
+                    camera.orbit(vec3.fromValues(e.deltax *  0.005,e.deltay *  0.003, 0) );
+                }
+                if (e.rightButton)
+                {
+                    camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
+                }
+            }
+        };
+        gl.onmousewheel = function(e){
+            camera.zoom(e.deltaY * 0.01);
+        };
+
+        gl.onupdate = function(dt) {
+            camera.update();
+            mat4.rotateY(entities['obj'].model, entities['obj'].model,dt * speed);
+        };
+
+
+        gl.enable( gl.DEPTH_TEST );
+
+        gl.ondraw = function() {
+
+            gl.clearColor(0.15,0.15,0.15,1);
+            gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+            //compute rotation matrix for normals
+            var uniforms = {
+                u_texture:      0,
+                u_refl:         i_refl,
+                u_gamma:        1/gamma,
+                u_color:        vec4.multiply(vec4.create(),getColorVec4(color),vec4.fromValues(r,r,r)),
+                u_lightvector:  vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
+            };
+            //console.log(mat4.getTranslation(vec3.create(), camera.view));
+            if(skybox.tex != null && Mode == 2){
+                skybox.tex.bind(0);
+                uniforms.u_eye  = mat4.getTranslation(vec3.create(), mat4.invert(camera.temp,camera.view));
+                uniforms.u_model = skybox.getModel();
+                uniforms.u_mvp   = camera.getMVP(skybox.getModel());
+                sky_shader.uniforms(uniforms).draw(skybox.mesh, skybox.primitive);
+            }
+
+
+            //render mesh using the shader
+            for(var i in entities){
+                if(i == 'grid' && !grid) return;
+
+                if(entities[i].tex != null && Mode == 2){
+                    entities[i].tex.bind(0);
+                    uniforms.u_has_tex = true;
+                }else{uniforms.u_has_tex = false;}
+
+
+                if(Mode == 2)
+                {
+                    if(entities[i].tex.texture_type == gl.TEXTURE_CUBE_MAP)
+                    {
+                        uniforms.u_model = entities[i].getModel();
+                        uniforms.u_mvp   = camera.getMVP(entities[i].getModel());
+
+                        if(entities[i].ref_map != false){
+                            entities[i].ref_map.bind(1);
+                            uniforms.u_refl_map = 1;
+                            uniforms.u_has_ref = true;
+                        }else{uniforms.u_has_ref = false;}
+
+                        cubemap_shader
+                        .uniforms(uniforms)
+                        .draw(entities[i].mesh, entities[i].primitive);
+                    }
+                    else{
+                        uniforms.u_model = entities[i].getModel();
+                        uniforms.u_mvp   = camera.getMVP(entities[i].getModel());
+
+                        shader
+                        .uniforms(uniforms)
+                        .draw(entities[i].mesh, entities[i].primitive);
+                    }
+                }
+                else{
+                        uniforms.u_model = entities[i].getModel();
+                        uniforms.u_mvp   = camera.getMVP(entities[i].getModel());
+
+                        phong
+                        .uniforms(uniforms)
+                        .draw(entities[i].mesh, (Mode == 0 && i != 'grid')?gl.LINES : entities[i].primitive);
+                }
+                if(entities[i].tex != null && Mode == 2)
+                   entities[i].tex.unbind(0);
+            }
+
+
+        };
+
+        /*end litegl experiment 1*/
+
+        /*=============================================
+        / Window Resie Handling
+        /==============================================*/
+        var resize = function() {
+
+            gl.canvas.width   = placer.clientWidth;
+            gl.canvas.height  = placer.clientHeight;
+            camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        };
+
+        window.onresize = resize;
+
+    </script>
+</body>
+</html>

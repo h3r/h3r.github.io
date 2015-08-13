@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>h3r | Landing</title>
     <style>
         html,body{height:100%; padding:0; margin:0;}
@@ -43,23 +43,28 @@
             color: gray;
         }
 
-
-
     </style>
+
 </head>
 <body>
 
     <ul id="ex">
         <h2>Experimentos</h2>
-        <!--<li><a href="memoria.html" target="_blank"> Memoria </a></li>-->
+        <li><a href="memoria.html" target="_blank"> Memoria </a></li>
         <li> <a href="ex/e1.html" target="_blank"> Render Basico</a> </li>
         <li> <a href="ex/e2.html" target="_blank"> Texturas</a> </li>
         <li> <a href="ex/e3.html" target="_blank"> Cubemaps</a> </li>
         <li> <a href="ex/e4.html" target="_blank"> Luz Reflejada</a> </li>
         <li> <a href="ex/e5/e5.html" target="_blank"> Code Separation</a> </li>
+        <li> <a href="ex/e6/e6.html" target="_blank"> Pintar en Textura</a> </li>
 
     </ul>
-    <iframe src="memoria.html"></iframe>
+
+    <script>
+        var x = 20;
+        var y = 15;
+        document.body.style.background = "radial-gradient(circle at "+x+"% "+y+"%, #16222A, transparent 100%),radial-gradient(circle at 97.97% 30.06%, #3A6073, transparent 100%),radial-gradient(circle at 50% 50%, #52ff9d, #52ff9d 100%)";
+    </script>
 
 </body>
 </html>
