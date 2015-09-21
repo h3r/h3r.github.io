@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>h3r | Experimento 6</title>
+    <title>h3r | Experimento 7</title>
     <link rel="stylesheet" href="style.css"/>
 </head>
 
 <body>
 
-    <header><h2>Experimento 6 : Pintar en textura </h2></header>
+    <header><h2>Experimento 7 : Reflexiones avanzadas</h2></header>
     <div id="canvas-container" class="full"></div>
 
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -42,20 +42,42 @@
 
         var entities = {};
 
-        entities["obj"] = new Entity(false,
-            GL.Mesh.plane({size:25}),
+        entities["plane"] = new Entity(false,
+            GL.Mesh.plane({size:20}),
             null,
             gl
         );
-        var cube = new Entity(false,
-                GL.Mesh.cube({size:25}),
+        entities["plane"].camera = new Camera();
+        entities["plane"].camera.perspective(45* DEG2RAD, 1.0, 10, 1000);
+        entities["plane"].camera.lookAt([0,1,-10],[0,1,0], [0,1,0]);
+
+
+        entities["cube"] = new Entity(false,
+                GL.Mesh.cube({size:5}),
                 loadTexture('../../textures/crate.jpg',{},null, gl),
                 gl
         );
+        mat4.translate(entities["cube"].model,entities["cube"].model,vec3.fromValues(0,0,17));
+        entities["cube1"] = new Entity(false,
+                GL.Mesh.cube({size:5}),
+                loadTexture('../../textures/crate.jpg',{},null, gl),
+                gl
+        );
+        mat4.translate(entities["cube1"].model,entities["cube1"].model,vec3.fromValues(-17,7,17));
+        entities["cube2"] = new Entity(false,
+                GL.Mesh.cube({size:5}),
+                loadTexture('../../textures/crate.jpg',{},null, gl),
+                gl
+        );
+        mat4.translate(entities["cube2"].model,entities["cube2"].model,vec3.fromValues(27,0,27));
+        entities["cube3"] = new Entity(false,
+                GL.Mesh.cube({size:5}),
+                loadTexture('../../textures/crate.jpg',{},null, gl),
+                gl
+        );
+        mat4.translate(entities["cube3"].model,entities["cube3"].model,vec3.fromValues(0,-5,-17));
 
-        var model2 = mat4.create();
         var texture = new GL.Texture(512,512, { magFilter: gl.LINEAR });
-
 
         entities["grid"] = new Entity(false,
             GL.Mesh.grid({size:200, lines:41}),
@@ -66,7 +88,7 @@
 
         var camera = new Camera();
         camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
-        camera.lookAt([0,30,30],[0,0,0], [0,1,0]);
+        camera.lookAt([0,1,20],[0,1,0], [0,1,0]);
 
         var color = [ 255, 255, 255, 0.99];
         var background = [ 0, 0, 0, 0.99];
@@ -101,29 +123,56 @@
         gl.onmousewheel = function(e){
             camera.zoom(e.deltaY * 0.01);
         };
-
+        var temp = mat4.create();
         gl.onupdate = function(dt) {
             camera.update();
-            mat4.rotateY(entities['obj'].model, entities['obj'].model,dt * speed);
+
+            mat4.rotateX(entities['cube'].model, entities['cube'].model,dt * speed);
+            mat4.rotateY(entities['cube'].model, entities['cube'].model,dt * speed);
+            mat4.invert(temp,entities['cube'].model);
+            mat4.rotateY(temp, temp,dt * -speed);
+            mat4.invert(entities['cube'].model, temp);
+
+            mat4.rotateX(entities['cube1'].model, entities['cube1'].model,dt * speed);
+            mat4.rotateY(entities['cube1'].model, entities['cube1'].model,dt * speed);
+            mat4.invert(temp,entities['cube1'].model);
+            mat4.rotateY(temp, temp,dt * -speed);
+            mat4.invert(entities['cube1'].model, temp);
+
+            mat4.rotateX(entities['cube2'].model, entities['cube2'].model,dt * speed);
+            mat4.rotateY(entities['cube2'].model, entities['cube2'].model,dt * speed);
+            mat4.invert(temp,entities['cube2'].model);
+            mat4.rotateY(temp, temp,dt * -speed);
+            mat4.invert(entities['cube2'].model, temp);
+
+            mat4.rotateX(entities['cube3'].model, entities['cube3'].model,dt * speed);
+            mat4.rotateY(entities['cube3'].model, entities['cube3'].model,dt * speed);
+            mat4.invert(temp,entities['cube3'].model);
+            mat4.rotateY(temp, temp,dt * -speed);
+            mat4.invert(entities['cube3'].model, temp);
         };
 
 
         gl.enable( gl.DEPTH_TEST );
-
 
         gl.ondraw = function() {
             texture.fill(vec4.fromValues(0.0,0.0,0.0, 0.0));
             texture.drawTo(function(){
                 gl.clearColor(0.1,0.3,0.4,1);
 
+                for(var i in entities){
+                    if(!entities[i].mesh || i == 'plane'){
+                        continue;
+                    }
+                    shader.uniforms({
+                        u_color:        [Math.sin( GL.getTime() * 0.001 ),0.3,0.1,1],
+                        u_gamma:        1/gamma,
+                        u_texture:      (entities[i].tex)?entities[i].tex.bind(1):0,
+                        u_model:        entities[i].getModel(),
+                        u_mvp:          entities['plane'].camera.getMVP(entities[i].getModel())
+                    }).draw(entities[i].mesh,entities[i].primitive);
+                }
 
-                shader.uniforms({
-                    u_color:[Math.sin( GL.getTime() * 0.001 ),0.3,0.1,1],
-                    u_gamma:        1/gamma,
-                    u_texture: cube.tex.bind(1),
-                    u_model: cube.getModel(),
-                    u_mvp: camera.getMVP(cube.getModel())
-                }).draw(cube.mesh,cube.primitive);
             });
             gl.clearColor(0.15,0.15,0.15,1);
             gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );

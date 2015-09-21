@@ -368,7 +368,7 @@
                 u_eye   :       camera.getEye(),
                 u_color:        vec4.multiply(vec4.create(),getColorVec4(),vec4.fromValues(r,r,r)),
                 u_lightvector:  vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
-            }
+            };
 
             if(skybox.tex != null && Mode == 2){
                 skybox.tex.bind(0);
