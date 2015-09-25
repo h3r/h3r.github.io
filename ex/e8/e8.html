@@ -20,11 +20,12 @@
     <script src="Entity.js" type="application/javascript"></script>
     <script src="Camera.js" type="application/javascript"></script>
     <script src="ResourceLoader.js"  type="application/javascript"></script>
+    <script src="ShaderManager.js"  type="application/javascript"></script>
 
     <script type="application/javascript">
         "use strict";
 
-        /*litegl experiment 5*/
+        /*litegl experiment 8*/
         var placer = document.getElementById('canvas-container');
         var gl = GL.create({width:placer.clientWidth, height:placer.clientHeight});
 
@@ -172,18 +173,25 @@
                 u_ref_i:        i_refl || 0.5,
                 u_gamma:        1.0/gamma || 2.2,
                 u_color:        vec4.multiply(vec4.create(),getColorVec4(color),vec4.fromValues(r,r,r)),
-                u_lightvector:  vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
+                u_light:        vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
             };
             var ent = null;
             for(var i in entities){
                 if(i == 'grid' && !grid) continue;
                 ent = entities[i];
-                uniforms.u_tex      = (ent.tex) ? ent.tex.bind(1) : 0;
-                uniforms.u_ref      = (ent.ref) ? ent.ref.bind(2) : 0;
-                uniforms.u_model    = ent.getModel();
-                uniforms.u_mvp      = camera.getMVP(ent.getModel());
+                if(ent.flags & smf.T_SPECULAR){
+                    uniforms.u_eye          = camera.getEye();
+                    uniforms.u_reflection   = (ent.reflection) ? ent.reflection.bind(2) : 0;
+                }
+                console.log(ent.flags & smf.T_DIFFUSE);
+                if(ent.flags & smf.T_DIFFUSE) {
+                    uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
+                }
+                uniforms.u_model            = ent.getModel();
+                uniforms.u_mvp              = camera.getMVP(ent.getModel());
 
-                cubemapshader.uniforms(uniforms).draw(ent.mesh, ent.primitive);
+                //cubemapshader.uniforms(uniforms).draw(ent.mesh, ent.primitive);
+                ShaderManager.load(ent.flags).uniforms(uniforms).draw(ent.mesh, ent.primitive);
             }
         };
 

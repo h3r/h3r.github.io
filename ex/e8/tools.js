@@ -54,7 +54,7 @@ var updateCameraCubemap = function(entity){
             gl.clearColor(0.1, 0.3, 0.4, 1);
             gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
             var uniforms = {
-                u_texture: (entities[i].tex) ? entities[i].tex.bind(1) : 0,
+                u_texture: (entities[i].albedo) ? entities[i].albedo.bind(1) : 0,
                 u_model: entities[i].getModel(),
                 u_mvp: entity.camera.getMVP(entities[i].getModel()),
                 u_rotationMatrix: rotMats[face]
