@@ -38,31 +38,60 @@ var rotMats = [
     mat3.getRotationMatrix(mat3.create(),0.0,2*angle,2*angle),//+Z back
     mat3.getRotationMatrix(mat3.create(),0.0,0.0,2*angle)     //-Z front
 ];
+var cubemapCam = new Camera();
+
+
 
 var updateCameraCubemap = function(entity){
 
-    //tex = new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, magFilter: gl.LINEAR });
-    tex.drawTo(function(tex,face)
+    var eye = entity.getPosition();
+    tex.drawTo(function(texture,face)
     {
+
+        var uniforms = {
+            u_ref_i:        i_refl || 0.5,
+            u_gamma:        1.0/gamma || 2.2,
+            u_color:        vec4.multiply(vec4.create(),getColorVec4(color),vec4.fromValues(r,r,r)),
+            u_light:        vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
+        };
+        var ent = null;
+
+        var dir = Texture.cubemap_camera_parameters[face].dir;
+        var center = vec3.add(vec3.create(),dir,eye);
+        var up =  Texture.cubemap_camera_parameters[face].up;
+        cubemapCam.lookAt(eye, center, up);//eye center up
+        cubemapCam.perspective(45 * DEG2RAD, 1.0 , 0.1, 1000);
+
+        gl.clearColor(0.0,0.0,0.0,1);
+        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
         for(var i in entities)
         {
+            ent = entities[i];
 
-            if (!entities[i].mesh || i == 'grid' || entities[i] == entity) {
-                continue;
+            if(i == 'grid' && !grid || ent == entity) continue;
+            ent = entities[i];
+            ent.checkAlbedoTextureFlag();
+            ent.checkReflectionTextureFlag();
+            if(ent.flags & smf.T_SPECULAR){
+                uniforms.u_eye          = cubemapCam.getEye();
+                uniforms.u_reflection   = (ent.reflection) ? ent.reflection.bind(2) : 0;
             }
-            //gl.texture.cubemap_camera_parameters
-            gl.clearColor(0.1, 0.3, 0.4, 1);
-            gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-            var uniforms = {
-                u_texture: (entities[i].albedo) ? entities[i].albedo.bind(1) : 0,
-                u_model: entities[i].getModel(),
-                u_mvp: entity.camera.getMVP(entities[i].getModel()),
-                u_rotationMatrix: rotMats[face]
-            };
-            shader.uniforms(uniforms).draw(entities[i].mesh, entities[i].primitive);
+            if( ent.flags & smf.SKY){
+                uniforms.u_eye          = mat4.getTranslation(vec3.create(), mat4.invert(cubemapCam.temp,cubemapCam.view));
+            }
+            if(ent.flags & smf.T_DIFFUSE) {
+                uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
+            }
+            uniforms.u_model            = ent.getModel();
+            uniforms.u_mvp              = cubemapCam.getMVP(ent.getModel());
+            ShaderManager.load(ent.flags).uniforms(uniforms).draw(ent.mesh, ent.primitive);
+
             return;
         }
+
     });
+    entity.checkReflectionTextureFlag();
     return tex;
 };
 

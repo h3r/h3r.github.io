@@ -4,7 +4,8 @@ var smf = { //Configuration Flags
     T_DIFFUSE    : 3, // 0000 0011   //
     T_SPECULAR_2D: 4, // 0000 0100  //
     T_SPECULAR_CM: 8, // 0000 1000  //
-    T_SPECULAR   : 12 // 0000 1000  //
+    T_SPECULAR   : 12, // 0000 1000  //
+    SKY          : 16
 };
 
 function hasRef(flags) {
@@ -12,7 +13,9 @@ function hasRef(flags) {
 }
 
 function uniformsVS(flags){
+    console.log(flags);
     var code = 'uniform mat4 u_mvp; uniform mat4 u_model; ';
+    if( flags & smf.SKY ) code += 'uniform vec3 u_eye;';
     return code;
 }
 function uniformsFS(flags){
@@ -21,13 +24,13 @@ function uniformsFS(flags){
     if( flags & smf.T_DIFFUSE_2D )  code+= 'uniform sampler2D u_albedo; ';
     if( flags & smf.T_DIFFUSE_CM )  code+= 'uniform samplerCube u_albedo; ';
     if( flags & smf.T_SPECULAR_2D)  code+= 'uniform sampler2D u_reflection; ';
-    if( flags & smf.T_SPECULAR_CM)  code+= 'uniform samplerCube u_reflection; ';
+    if( flags & smf.T_SPECULAR_CM)  code+= 'uniform samplerCube u_reflection;uniform vec3 u_eye;uniform float u_ref_i; ';
     return code;
 }
 function varyings(flags){
     var code = 'varying vec3 v_normal; ';
-    if( flags & smf.T_DIFFUSE_2D ) code+= 'varying vec2 v_coord; ';
-    if( flags & (smf.T_DIFFUSE | smf.T_SPECULAR_CM) ) code+= 'varying vec3 v_vertex; ';
+    if( flags & smf.T_DIFFUSE ) code+= 'varying vec2 v_coord; ';
+    if( flags & (smf.T_DIFFUSE | smf.T_SPECULAR) ) code+= 'varying vec3 v_vertex; ';
     return code;
 }
 
@@ -35,9 +38,10 @@ function diffuse(flags){
     var code = '\
             vec4 diffuse(){\
                 return ';
-    if( flags & smf.T_DIFFUSE_2D )      {code += 'texture2D( u_albedo, v_coord );\ ';}
-    else if( flags & smf.T_DIFFUSE_CM ) {code += 'textureCube( u_albedo, v_normal );\ ';}
-    else                                {code += 'vec4(1);\ ';}
+    if( flags & smf.T_DIFFUSE_2D )      { code += 'texture2D( u_albedo, v_coord );\ ';}
+    else if( flags & smf.T_DIFFUSE_CM ) { console.log('hey!');code += 'textureCube( u_albedo, v_normal );\ ';}
+    else if( flags & smf.SKY)           {code += 'textureCube( u_albedo, v_vertex );\ '      }
+    else                                {code += 'vec4(0)'+(hasRef()?' * u_ref_i':'')+';\ ';}
 
     code += ' }\ ';
 
@@ -46,20 +50,18 @@ function diffuse(flags){
 
 function specular(flags){
     var code = '\
-        vec4 specular(){\
-        return ';
-    if( flags & smf.T_SPECULAR_2D )
-    {   code += 'texture2D( u_reflection, v_coord );\ ';}
-    else if( flags & smf.T_SPECULAR_CM )
+        vec4 specular(){\ ';
+    if( flags & smf.T_SPECULAR_CM )
     {
         code +='vec3 E = v_vertex - u_eye;\
-                vec3 R = reflect(E,N);\
-                textureCube( u_reflection, R );\ ';
+                vec3 R = reflect(E,normalize(v_normal));\
+                vec4 color = textureCube( u_reflection, R )'+ (hasRef()?' * (1 - u_ref_i)':'') +';\ ';
     }
     else
-    {   code += 'vec4(0);\ ';}
+    {   code += 'vec4 color = vec4(0);\ ';}
 
-    code += ' }\ ';
+    code += ' return color;\
+    }\ ';
 
     return code;
 }
@@ -69,6 +71,7 @@ var ShaderManager = {
         if (gl.shaders[flags]) {
             return gl.shaders[flags];
         }
+        console.log(flags);
         return this.createShaderWith(flags);
     },
     createShaderWith: function (flags) {
@@ -91,9 +94,10 @@ var ShaderManager = {
             v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
             ';
             if( flags & smf.T_DIFFUSE ) vs += 'v_coord  = a_coord;\ ';
-            if( flags & smf.T_SPECULAR) vs += ' v_vertex = a_vertex;\ ';
-            vs += 'gl_Position = u_mvp * vec4(a_vertex,1.0);\
-        }';
+            if( flags & smf.T_SPECULAR || flags & smf.SKY) vs += ' v_vertex = a_vertex;\ ';
+            vs += ( flags & smf.SKY)?'gl_Position = u_mvp * vec4(vec3(a_vertex.x + u_eye.x,a_vertex.y + u_eye.y,  -(a_vertex.z - u_eye.z)),1.0);}'
+            : 'gl_Position = u_mvp * vec4(a_vertex,1.0);\ }';
+
         var fs = '\
         precision highp float;\ '
          + uniformsFS(flags)
@@ -102,10 +106,11 @@ var ShaderManager = {
          + specular(flags)
          +'void main(){\
             float LdotN = dot(normalize(u_light),normalize(v_normal));\
-           	vec4 color =  vec4(u_color.xyz * ( (diffuse().xyz * LdotN) + specular().xyz),1.0);\
+           	vec4 color =  vec4(u_color.xyz * ( (diffuse().xyz * max(0.0,LdotN)) + specular().xyz),1.0);\
             gl_FragColor = vec4(pow(color.xyz,vec3(u_gamma)),color.w);\
         }';
-        console.log(vs,fs);
+        console.log(vs);
+        console.log(fs);
         return {vs:vs,fs:fs};
     }
 };

@@ -49,5 +49,8 @@ Camera.prototype = {
     },
     update:function(dt){
         if(this.updated) return;
+    },
+    getEye: function(){
+        return mat4.getTranslation(vec3.create(),this.view);
     }
 }

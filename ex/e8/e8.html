@@ -15,12 +15,12 @@
     <script src="../../js/gl-matrix/gl-matrix-min.js" type="application/javascript"></script>
     <script src="../../js/datgui/dat.gui.js" type="application/javascript"></script>
     <script src="../../js/litegl/litegl.js" type="application/javascript"></script>
+    <script src="Camera.js" type="application/javascript"></script>
     <script src="tools.js"  type="application/javascript"></script>
     <script src="gui.js"    type="application/javascript"></script>
-    <script src="Entity.js" type="application/javascript"></script>
-    <script src="Camera.js" type="application/javascript"></script>
-    <script src="ResourceLoader.js"  type="application/javascript"></script>
     <script src="ShaderManager.js"  type="application/javascript"></script>
+    <script src="Entity.js" type="application/javascript"></script>
+    <script src="ResourceLoader.js"  type="application/javascript"></script>
 
     <script type="application/javascript">
         "use strict";
@@ -31,9 +31,10 @@
 
         var resources = new ResourceLoader([
             '../../textures/crate.jpg',
+            '../../textures/test.dds',
             ['../../shaders/s6-toTexture.vs','../../shaders/s6-toTexture.fs'],
             ['../../shaders/phong.vs','../../shaders/phong.fs'],
-            ['../../shaders/flat.vs','../../shaders/flat.fs'],
+            ['../../shaders/sky.vs','../../shaders/sky.fs'],
             ['../../shaders/new_cubemap.vs','../../shaders/new_cubemap.fs']
 
         ],function(){
@@ -52,7 +53,6 @@
         entities["obj"].camera = new Camera();
         entities["obj"].camera.perspective(90* DEG2RAD, 1.0, 0.1, 1000);
         entities["obj"].camera.lookAt([0,1,0],[0,1,1], [0,1,0]);
-
 
         entities["cube"] = new Entity(false,
                 GL.Mesh.cube({size:5}),
@@ -81,6 +81,12 @@
         mat4.translate(entities["cube3"].model,entities["cube3"].model,vec3.fromValues(0,-5,-57));
         //guardar referencia por nombre
 
+        entities["sky"] = new Entity(false,
+                GL.Mesh.cube({size:1000}),
+                loadTexture('../../textures/test.dds',{filter:gl.NEAREST},null, gl),
+                gl
+        );
+        entities['sky'].flags |= smf.SKY;
         var texture = new GL.Texture(512,512, { minFilter:gl.NEAREST, magFilter: gl.LINEAR });
         var tex =     new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
@@ -162,7 +168,7 @@
 
         gl.ondraw = function() {
 
-            //entities['obj'].ref = updateCameraCubemap(entities['obj']);
+            entities['obj'].reflection = updateCameraCubemap(entities['obj']);
 
             gl.clearColor(0.15,0.15,0.15,1);
             gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
@@ -176,14 +182,21 @@
                 u_light:        vec3.normalize(vec3.create(),vec4.fromValues(light.x,light.y, light.z))
             };
             var ent = null;
+
             for(var i in entities){
                 if(i == 'grid' && !grid) continue;
+
                 ent = entities[i];
+                ent.checkAlbedoTextureFlag();
+                ent.checkReflectionTextureFlag();
                 if(ent.flags & smf.T_SPECULAR){
                     uniforms.u_eye          = camera.getEye();
                     uniforms.u_reflection   = (ent.reflection) ? ent.reflection.bind(2) : 0;
                 }
-                console.log(ent.flags & smf.T_DIFFUSE);
+                if( ent.flags & smf.SKY){
+                    uniforms.u_eye          = mat4.getTranslation(vec3.create(), mat4.invert(camera.temp,camera.view));
+                    uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
+                }
                 if(ent.flags & smf.T_DIFFUSE) {
                     uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
                 }

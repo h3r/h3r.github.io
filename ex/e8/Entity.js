@@ -15,10 +15,9 @@ function Entity(id,mesh,tex,gl){
     this.primitive = gl.TRIANGLES;
     this.flags = 0;
 
-    if(this.albedo){
-        if(this.albedo.texture_type == gl.TEXTURE_2D) this.flags |= smf.T_DIFFUSE_2D;
-        if(this.albedo.texture_type == gl.TEXTURE_CUBE_MAP) this.flags |= smf.T_DIFFUSE_CM;
-    }
+    this.checkAlbedoTextureFlag();
+    this.checkReflectionTextureFlag();
+
 }
 Entity.prototype = {
     id:null,
@@ -28,5 +27,33 @@ Entity.prototype = {
     primitive:null,
     getModel:function(){
         return this.model;
+    },
+    checkAlbedoTextureFlag:function(){
+        if(this.albedo){
+            if(this.albedo.texture_type == gl.TEXTURE_2D){
+                this.flags |= smf.T_DIFFUSE_2D;
+                this.flags &= ~smf.T_DIFFUSE_CM;
+            }
+            else if(this.albedo.texture_type == gl.TEXTURE_CUBE_MAP){
+                this.flags |= smf.T_DIFFUSE_CM;
+                this.flags &= ~smf.T_DIFFUSE_2D;
+            }
+        }
+    },
+    checkReflectionTextureFlag:function(){
+        if(this.reflection){
+            if(this.reflection.texture_type == gl.TEXTURE_2D){
+                this.flags |= smf.T_SPECULAR_2D;
+                this.flags &= ~smf.T_SPECULAR_CM;
+
+            }
+            else if(this.reflection.texture_type == gl.TEXTURE_CUBE_MAP){
+                this.flags |= smf.T_SPECULAR_CM;
+                this.flags &= ~smf.T_SPECULAR_2D;
+            }
+        }
+    },
+    getPosition: function(){
+        return mat4.getTranslation(vec3.create(),this.model);
     }
-}
+};
