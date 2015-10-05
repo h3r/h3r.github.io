@@ -60,26 +60,28 @@ var updateCameraCubemap = function(entity){
         var center = vec3.add(vec3.create(),dir,eye);
         var up =  Texture.cubemap_camera_parameters[face].up;
         cubemapCam.lookAt(eye, center, up);//eye center up
-        cubemapCam.perspective(45 * DEG2RAD, 1.0 , 0.1, 1000);
+        cubemapCam.perspective(90 * DEG2RAD, 1.0 , 0.1, 1000);
 
-        gl.clearColor(0.0,0.0,0.0,1);
+        gl.clearColor(1.0,1.0,0.0,0.1);
         gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+        var ent = null;
+        var keys = Object.keys(entities);
+        var length = keys.length;
+        for( var i = 0 ; i < length; i++){
+            console.log(i);
+            if(keys[i] != 'grid' || grid){
+                ent = entities[keys[i]];
+                //if(!ent || i == 'grid' && !grid || ent == entity) continue;
 
-        for(var i in entities)
-        {
-            ent = entities[i];
-
-            if(i == 'grid' && !grid || ent == entity) continue;
-            ent = entities[i];
-            ent.checkAlbedoTextureFlag();
-            ent.checkReflectionTextureFlag();
+                ent.checkAlbedoTextureFlag();
+                ent.checkReflectionTextureFlag();
             if(ent.flags & smf.T_SPECULAR){
                 uniforms.u_eye          = cubemapCam.getEye();
                 uniforms.u_reflection   = (ent.reflection) ? ent.reflection.bind(2) : 0;
             }
             if( ent.flags & smf.SKY){
                 uniforms.u_eye          = mat4.getTranslation(vec3.create(), mat4.invert(cubemapCam.temp,cubemapCam.view));
-            }
+            }else
             if(ent.flags & smf.T_DIFFUSE) {
                 uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
             }
@@ -87,6 +89,8 @@ var updateCameraCubemap = function(entity){
             uniforms.u_mvp              = cubemapCam.getMVP(ent.getModel());
             ShaderManager.load(ent.flags).uniforms(uniforms).draw(ent.mesh, ent.primitive);
 
+            }            
+            
             return;
         }
 

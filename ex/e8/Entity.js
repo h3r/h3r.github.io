@@ -10,7 +10,7 @@ function Entity(id,mesh,tex,gl){
     this.id = idcount++;
     this.mesh = typeof mesh !== 'undefined' ? mesh  : null;
     this.albedo  = typeof tex  !== 'undefined' ? tex   : null;
-    this.reflection = typeof tex  !== 'undefined' ? tex   : null;
+    //this.reflection = typeof ref  !== 'undefined' ? tex   : null;
     this.model = mat4.create();
     this.primitive = gl.TRIANGLES;
     this.flags = 0;

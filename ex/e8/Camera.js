@@ -51,6 +51,7 @@ Camera.prototype = {
         if(this.updated) return;
     },
     getEye: function(){
-        return mat4.getTranslation(vec3.create(),this.view);
+        return mat4.getTranslation(vec3.create(), mat4.invert(this.temp,this.view));
+        
     }
 }

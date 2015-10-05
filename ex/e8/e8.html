@@ -32,6 +32,7 @@
         var resources = new ResourceLoader([
             '../../textures/crate.jpg',
             '../../textures/test.dds',
+            '../../textures/OutputCube.dds',
             ['../../shaders/s6-toTexture.vs','../../shaders/s6-toTexture.fs'],
             ['../../shaders/phong.vs','../../shaders/phong.fs'],
             ['../../shaders/sky.vs','../../shaders/sky.fs'],
@@ -165,7 +166,7 @@
         };
 
         gl.enable( gl.DEPTH_TEST );
-
+        //entities['obj'].reflection = loadTexture('../../textures/test.dds',{filter:gl.NEAREST},null, gl);
         gl.ondraw = function() {
 
             entities['obj'].reflection = updateCameraCubemap(entities['obj']);
@@ -185,7 +186,7 @@
 
             for(var i in entities){
                 if(i == 'grid' && !grid) continue;
-
+                
                 ent = entities[i];
                 ent.checkAlbedoTextureFlag();
                 ent.checkReflectionTextureFlag();
@@ -194,8 +195,7 @@
                     uniforms.u_reflection   = (ent.reflection) ? ent.reflection.bind(2) : 0;
                 }
                 if( ent.flags & smf.SKY){
-                    uniforms.u_eye          = mat4.getTranslation(vec3.create(), mat4.invert(camera.temp,camera.view));
-                    uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
+                    uniforms.u_eye          = camera.getEye();
                 }
                 if(ent.flags & smf.T_DIFFUSE) {
                     uniforms.u_albedo       = (ent.albedo) ? ent.albedo.bind(1) : 0;
