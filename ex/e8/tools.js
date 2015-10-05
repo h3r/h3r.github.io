@@ -65,13 +65,10 @@ var updateCameraCubemap = function(entity){
         gl.clearColor(1.0,1.0,0.0,0.1);
         gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
         var ent = null;
-        var keys = Object.keys(entities);
-        var length = keys.length;
-        for( var i = 0 ; i < length; i++){
-            console.log(i);
-            if(keys[i] != 'grid' || grid){
-                ent = entities[keys[i]];
-                //if(!ent || i == 'grid' && !grid || ent == entity) continue;
+        for( var i in entities ){
+            ent = entities[i];
+
+            if(!ent || !ent.mesh || (i == 'grid' && !grid) || ent == entity) continue;
 
                 ent.checkAlbedoTextureFlag();
                 ent.checkReflectionTextureFlag();
@@ -89,10 +86,8 @@ var updateCameraCubemap = function(entity){
             uniforms.u_mvp              = cubemapCam.getMVP(ent.getModel());
             ShaderManager.load(ent.flags).uniforms(uniforms).draw(ent.mesh, ent.primitive);
 
-            }            
-            
-            return;
         }
+        return;
 
     });
     entity.checkReflectionTextureFlag();
