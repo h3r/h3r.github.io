@@ -31,7 +31,7 @@
 
         var resources = new ResourceLoader([
             '../../textures/crate.jpg',
-            '../../textures/test.dds',
+            '../../textures/stormy.dds',
             '../../textures/OutputCube.dds',
             ['../../shaders/s6-toTexture.vs','../../shaders/s6-toTexture.fs'],
             ['../../shaders/phong.vs','../../shaders/phong.fs'],
@@ -84,12 +84,12 @@
 
         entities["sky"] = new Entity(false,
                 GL.Mesh.cube({size:1000}),
-                loadTexture('../../textures/test.dds',{filter:gl.NEAREST},null, gl),
+                loadTexture('../../textures/stormy.dds',{filter:gl.NEAREST},null, gl),
                 gl
         );
         entities['sky'].flags |= smf.SKY;
         var texture = new GL.Texture(512,512, { minFilter:gl.NEAREST, magFilter: gl.LINEAR });
-        var tex =     new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+        var tex =     new GL.Texture(2048,2048, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
         entities["grid"] = new Entity(false,
             GL.Mesh.grid({size:200, lines:41}),

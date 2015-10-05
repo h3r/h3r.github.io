@@ -9,7 +9,7 @@ var smf = { //Configuration Flags
 };
 
 function hasRef(flags) {
-    return (flags & smf.T_SPECULAR) != 0;
+    return (flags & smf.T_SPECULAR > 0);
 }
 
 function uniformsVS(flags){
@@ -37,10 +37,11 @@ function varyings(flags){
 function diffuse(flags){
     var code = '\
             vec4 diffuse(){\
+            float LdotN = dot(normalize(u_light),normalize(v_normal));\
                 return ';
-    if( flags & smf.T_DIFFUSE_2D )      { code += 'texture2D( u_albedo, v_coord );\ ';}
-    else if( flags & smf.SKY)           { code += 'textureCube( u_albedo, vec3(v_vertex.x,v_vertex.y,v_vertex.z) );\ '      }
-    else if( flags & smf.T_DIFFUSE_CM ) { code += 'textureCube( u_albedo, v_normal );\ ';}
+    if( flags & smf.T_DIFFUSE_2D )      { code += 'texture2D( u_albedo, v_coord ) * LdotN '+(hasRef()?' * u_ref_i':'')+';\ ';}
+    else if( flags & smf.SKY)           { code += 'textureCube( u_albedo, vec3(v_vertex.x,v_vertex.y,v_vertex.z) ) '+(hasRef()?' * u_ref_i':'')+';\ '      }
+    else if( flags & smf.T_DIFFUSE_CM ) { code += 'textureCube( u_albedo, v_normal ) * LdotN '+(hasRef()?' * u_ref_i':'')+';\ ';}
     else                                { code += 'vec4(0)'+(hasRef()?' * u_ref_i':'')+';\ ';}
 
     code += ' }\ ';
@@ -55,7 +56,10 @@ function specular(flags){
     {
         code +='vec3 E = v_vertex - u_eye;\
                 vec3 R = reflect(E,normalize(v_normal));\ ';
-        code +='vec4 color = textureCube( u_reflection, vec3(R.x,R.y,-R.z) )'+ (hasRef()?' * (1 - u_ref_i)':'') +';\ ';
+        if( flags & smf.SKY) {
+            code += 'vec4 color = textureCube( u_reflection, vec3(R.x,R.y,-R.z) )' + (hasRef() ? ' * (1 - u_ref_i)' : '') + ';\ ';
+        }else
+            code += 'vec4 color = textureCube( u_reflection, vec3(R.x,R.y,R.z) )' + (hasRef() ? ' * (1 - u_ref_i)' : '') + ';\ ';
     }
     else
     {   code += 'vec4 color = vec4(0);\ ';}
@@ -105,10 +109,8 @@ var ShaderManager = {
          + diffuse(flags)
          + specular(flags)
          +'void main(){\
-            float LdotN = dot(normalize(u_light),normalize(v_normal));\
            	vec4 color =  vec4(u_color.xyz * ( (diffuse().xyz) + specular().xyz),1.0);\
-            gl_FragColor = color;\
-        }';
+            gl_FragColor = vec4( pow(vec3(color.x,color.y,color .z),vec3(u_gamma)),color.w);}';
         console.log(vs);
         console.log(fs);
         return {vs:vs,fs:fs};
