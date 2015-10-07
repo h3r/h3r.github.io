@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>h3R | Framework Refactor</title>
+
+	<style type='text/css'>
+		html, body { width: 100%; height: 100%; margin: 0; padding: 0 }
+	</style>
+    <link rel="stylesheet" href="style.css"/>
+
+</head>
+<body>
+    <header><h2>Experimento 9 : Framework Refactor</h2></header>
+    <div id="canvas-container" class="full"></div>
+    <script type="text/javascript" src="js/extra/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/extra/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="js/extra/litegl.min.js"></script>
+    <script type="text/javascript" src="js/extra/rendeer.min.js"></script>
+    <script type="text/javascript" src="js/scene.js"></script>
+    <script type="text/javascript" src="js/code.js"></script>
+
+    <script type="text/javascript">
+        function init(){
+            //Create the scene
+            var scene = new RD.Scene();
+
+            //Create the renderer
+            var placer = document.getElementById('canvas-container');
+            var context= GL.create({width:placer.clientWidth, height:placer.clientHeight});
+            var renderer = new RD.Renderer(context);
+            placer.appendChild( gl.canvas );
+            gl.animate();
+            $('canvas').fadeIn("slow");
+
+            //Capture Input
+            gl.captureMouse();
+            renderer.context.onmousedown = function(){};
+            renderer.context.onmousemove = function(){};
+
+            //Parse scene from file
+            parseSceneGraphJson(renderer,scene,'scene.json', sceneLoaded);
+
+            //Render loaded scene
+            function sceneLoaded(cameras, nodes){
+                console.log(cameras, nodes)
+                renderer.render(scene, cameras[0], nodes);
+            }
+
+
+        }
+    </script>
+
+    <script defer type="text/javascript">init();</script>
+</body>
+</html>
+
+

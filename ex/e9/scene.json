@@ -1,0 +1,55 @@
+{
+  "name": "default scene",
+  "version": "0.0.1",
+  "nodes" : [
+    {
+      "type"    :"camera",
+      "name"    :"camera1",
+      "camera_type":"perspective",
+      "eye"     :[100,100,100],
+      "center"  :[0,0,0],
+      "up"      :[0,1,0],
+      "fov"     : 45,
+      "aspect"  : null,
+      "near"    : 0.1,
+      "far"     : 1000
+    },
+    {
+      "type":"skybox",
+      "name":"sky",
+      "texture":"test.dds"
+    },
+    {
+      "type":"sphere",
+      "name":null,
+      "size":"1",
+      "position":[0,0,0],
+      "rotation":[0,0,-1],
+      "material":"silver.mtl"
+    },
+    {
+      "type":"sphere",
+      "name":null,
+      "size":"5",
+      "position":[-20,0,0],
+      "rotation":[0,0,-1],
+      "material":"silver.mtl"
+    },
+    {
+      "type":"sphere",
+      "name":null,
+      "size":"10",
+      "position":[-40,0,0],
+      "rotation":[0,0,-1],
+      "material":"silver.mtl"
+    },
+    {
+      "type":"mesh",
+      "size":"20",
+      "position":[-80,0,0],
+      "rotation":[0,0,-1],
+      "source":"porgus.obj",
+      "material":"porgus.mtl"
+    }
+  ]
+}
