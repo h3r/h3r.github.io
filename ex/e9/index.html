@@ -17,41 +17,9 @@
     <script type="text/javascript" src="js/extra/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/extra/gl-matrix-min.js"></script>
     <script type="text/javascript" src="js/extra/litegl.min.js"></script>
-    <script type="text/javascript" src="js/extra/rendeer.min.js"></script>
+    <script type="text/javascript" src="js/extra/rendeer.js"></script>
     <script type="text/javascript" src="js/scene.js"></script>
     <script type="text/javascript" src="js/code.js"></script>
-
-    <script type="text/javascript">
-        function init(){
-            //Create the scene
-            var scene = new RD.Scene();
-
-            //Create the renderer
-            var placer = document.getElementById('canvas-container');
-            var context= GL.create({width:placer.clientWidth, height:placer.clientHeight});
-            var renderer = new RD.Renderer(context);
-            placer.appendChild( gl.canvas );
-            gl.animate();
-            $('canvas').fadeIn("slow");
-
-            //Capture Input
-            gl.captureMouse();
-            renderer.context.onmousedown = function(){};
-            renderer.context.onmousemove = function(){};
-
-            //Parse scene from file
-            parseSceneGraphJson(renderer,scene,'scene.json', sceneLoaded);
-
-            //Render loaded scene
-            function sceneLoaded(cameras, nodes){
-                console.log(cameras, nodes)
-                renderer.render(scene, cameras[0], nodes);
-            }
-
-
-        }
-    </script>
-
     <script defer type="text/javascript">init();</script>
 </body>
 </html>

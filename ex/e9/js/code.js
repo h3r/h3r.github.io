@@ -1,57 +1,37 @@
+var placer  = null;
+var ctx     = null;
+var renderer= null;
+var scene   = null;
+var camera  = null;
+
+
 function init()
 {
 	//create a scene
-	var scene = new RD.Scene();
+	scene = new RD.Scene();
 
 	//create the rendering context
-	var context = GL.create({width: window.innerWidth, height:window.innerHeight});
-	var renderer = new RD.Renderer(context);
-	document.body.appendChild(renderer.canvas); //attach
-	
-	renderer.meshes["sphere"] = GL.Mesh.sphere({subdivisions:64});
+    placer = document.getElementById('canvas-container');
+	ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
+	renderer = new RD.Renderer(ctx);
+    placer.appendChild( renderer.canvas ); //attach
 
-	//get shaders for text file	
-	renderer.loadShaders("shaders.txt");
+    //Parse scene from file
+    renderer.setDataFolder("data");
+    renderer.loadShaders("shaders.txt");
+    parseSceneGraphJson('sun.json', parseCallback);
+    var node = null;
+    function parseCallback(cameras, nodes){
+        console.log('parseCallback');
+        camera = cameras[0];
+        node = nodes[0];
+        renderer.render(scene, camera , nodes);
+        $('canvas').fadeIn("slow");
+        ctx.animate();
+    }
 
-	//folder where stuff will be loaded	
-	renderer.setDataFolder("data");
-	
-	//load texture
-	renderer.loadTexture("texture_sun.jpg", { wrap: gl.REPEAT, minFilter: gl.LINEAR_MIPMAP_LINEAR });
-
-	//create camera
-	var camera = new RD.Camera();
-	camera.perspective( 45, gl.canvas.width / gl.canvas.height, 1, 1000 );
-	camera.lookAt( [100,100,100],[0,0,0],[0,1,0] );
-	
-	//global settings
-	var bg_color = vec4.fromValues(0.1,0.1,0.1,1);
-
-	//create a mesh in the scene
-	var node = new RD.SceneNode();
-	node.position = [0,0,0];
-	node.color = [1,1,1,1];
-	node.mesh = "sphere";
-	node.shader = "sun";
-	node.texture = "texture_sun.jpg";
-	node.scale([50,50,50]);
-	node.uniforms["u_bgcolor"] = bg_color;
-	scene.root.addChild(node);
-	
-	context.ondraw = function(){
-		renderer.clear(bg_color);
-		renderer.render(scene, camera);
-	}
-	
-	context.onupdate = function(dt)
-	{
-		scene.update(dt);
-	}
-	
-	context.animate(); //launch loop
-	
 	//user input
-	context.onmousemove = function(e)
+	ctx.onmousemove = function(e)
 	{
 		if(e.dragging)
 		{
@@ -60,10 +40,23 @@ function init()
 		}
 	}
 	
-	context.onmousewheel = function(e)
+	ctx.onmousewheel = function(e)
 	{
 		camera.position = vec3.scale( camera.position, camera.position, e.wheel < 0 ? 1.1 : 0.9 );
 	}
 	
-	context.captureMouse(true);
+	ctx.captureMouse(true);
+
+    ctx.ondraw = function(){
+        renderer.clear([0.1,0.1,0.1,1]);
+        renderer.render(scene, camera);
+    }
+
+    ctx.onupdate = function(dt)
+    {
+        scene.update(dt);
+    }
+
+
+
 }

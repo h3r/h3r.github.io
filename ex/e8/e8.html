@@ -215,10 +215,10 @@
         /==============================================*/
         var resize = function() {
 
-            gl.canvas.width   = placer.clientWidth;
-            gl.canvas.height  = placer.clientHeight;
+            context.canvas.width   = placer.clientWidth;
+            context.canvas.height  = placer.clientHeight;
             camera.perspective(45 * DEG2RAD, placer.clientWidth / placer.clientHeight, 0.1, 1000);
-            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            context.viewport(0, 0, context.canvas.width, context.canvas.height);
 
         };
 

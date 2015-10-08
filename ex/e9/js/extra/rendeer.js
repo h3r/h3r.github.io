@@ -2976,7 +2976,7 @@ Renderer.prototype.createShaders = function()
 			uniform vec4 u_color;\
 			void main() {\
 			  vec3 N = normalize(v_normal);\
-			  gl_FragColor = u_color * max(0.0, dot(u_lightvector,N)) * vec4(u_lightcolor,1.0);\
+			  gl_FragColor = u_color /* max(0.0, dot(u_lightvector,N))*/ * vec4(u_lightcolor,1.0);\
 			}\
 		');
 	gl.shaders["phong"] = this._phong_shader;
