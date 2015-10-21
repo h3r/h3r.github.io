@@ -132,22 +132,25 @@ parseSceneGraphJson = function (ifile , callback){
                     case "plane":
                         node.mesh_options = node.mesh_options || {size:1};
                         renderer.meshes["plane"] = GL.Mesh.plane(node.mesh_options);
+
                         var n      = new RD.SceneNode();
                         n.color    = node.color ||[1,0,0,1];
                         n.mesh     = "plane";
-                        n.texture = node.texture || null; //todo mirar del mtl
+                        n.texture  = node.texture || null; //todo mirar del mtl
+
                         if(n.texture)
                             resources.textures.push(n.texture);
+
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+
                         n.position = node.position || [0,0,0];
                         n.scaling  = node.size? [node.size,node.size,node.size] : [1,1,1];
-                        n.rotation = node.rotation || [0,0,0];
 
-                        nodes.push(n);
                         scene.root.addChild(n);
                         break;
+
                     case "plane2D":
                         node.mesh_options = node.mesh_options || {size:1};
                         renderer.meshes["plane2D"] = GL.Mesh.plane2D(node.mesh_options);
