@@ -124,6 +124,7 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
                         nodes.push(n);
@@ -144,9 +145,12 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
-
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scaling  = node.size? [node.size,node.size,node.size] : [1,1,1];
+                        n.rotate( (node.rotation[1] || 0) * DEG2RAD, [0,1,0]);
+                        n.rotate( (node.rotation[0] || 0) * DEG2RAD, [1,0,0]);
+                        n.rotate( (node.rotation[2] || 0) * DEG2RAD, [0,0,1]);
 
                         scene.root.addChild(n);
                         break;
@@ -165,11 +169,7 @@ parseSceneGraphJson = function (ifile , callback){
                             resources.shaders.push(n.shader);
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        if(n.uniforms){
-                            for(var u in uniforms){
-                                node.uniforms[u] = uniforms[u];
-                            }
-                        }
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         nodes.push(n);
                         scene.root.addChild(n);
                         break;
@@ -185,6 +185,7 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
                         nodes.push(n);
@@ -202,6 +203,7 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
                         nodes.push(n);
@@ -219,9 +221,12 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
+                        n.rotate( (node.rotation[1] || 0) * DEG2RAD, [0,1,0]);
+                        n.rotate( (node.rotation[0] || 0) * DEG2RAD, [1,0,0]);
+                        n.rotate( (node.rotation[2] || 0) * DEG2RAD, [0,0,1]);
                         scene.root.addChild(n);
                         break;
                     case "circle":
@@ -237,6 +242,7 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
                         nodes.push(n);
@@ -254,6 +260,7 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node._uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
                         nodes.push(n);
@@ -271,9 +278,10 @@ parseSceneGraphJson = function (ifile , callback){
                         n.shader = node.shader || "phong";
                         if(n.shader)
                             resources.shaders.push(n.shader);
+                        n._uniforms = node.uniforms || n._uniforms || {};
                         n.position = node.position || [0,0,0];
                         n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
+                        //nodes.push(n);
                         scene.root.addChild(n);
                         break;
                     case "grid":

@@ -2962,21 +2962,25 @@ Renderer.prototype.createShaders = function()
 			attribute vec3 a_vertex;\
 			attribute vec3 a_normal;\
 			varying vec3 v_normal;\
+			varying vec3 v_vertex;\
 			uniform mat4 u_mvp;\
 			uniform mat4 u_model;\
 			void main() {\
+				v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\
 				v_normal = (u_model * vec4(a_normal,0.0)).xyz;\
 				gl_Position = u_mvp * vec4(a_vertex,1.0);\
 			}\
 			', '\
 			precision highp float;\
 			varying vec3 v_normal;\
+			varying vec3 v_vertex;\
 			uniform vec3 u_lightcolor;\
 			uniform vec3 u_lightvector;\
 			uniform vec4 u_color;\
 			void main() {\
 			  vec3 N = normalize(v_normal);\
-			  gl_FragColor = u_color /* max(0.0, dot(u_lightvector,N))*/ * vec4(u_lightcolor,1.0);\
+			  vec3 L = normalize(u_lightvector - v_vertex);\
+			  gl_FragColor = u_color * max(0.05, dot(L,N) )* vec4(u_lightcolor,1);\
 			}\
 		');
 	gl.shaders["phong"] = this._phong_shader;
@@ -2990,6 +2994,7 @@ Renderer.prototype.createShaders = function()
 			attribute vec2 a_coord;\
 			varying vec2 v_coord;\
 			varying vec3 v_normal;\
+			varying vec3 v_vertex;\
 			uniform mat4 u_mvp;\
 			uniform mat4 u_model;\
 			void main() {\n\
@@ -3000,6 +3005,7 @@ Renderer.prototype.createShaders = function()
 			', '\
 			precision highp float;\
 			varying vec3 v_normal;\
+			varying vec3 v_vertex;\
 			varying vec2 v_coord;\
 			uniform vec3 u_lightcolor;\
 			uniform vec3 u_lightvector;\
@@ -3007,7 +3013,8 @@ Renderer.prototype.createShaders = function()
 			uniform sampler2D u_color_texture;\
 			void main() {\
 			  vec3 N = normalize(v_normal);\
-			  gl_FragColor = u_color * texture2D(u_color_texture, v_coord) * max(0.0, dot(u_lightvector,N)) * vec4(u_lightcolor,1.0);\
+			  vec3 L = v_vertex - u_lightvector;\
+			  gl_FragColor = u_color * texture2D(u_color_texture, v_coord) * max(0.0, dot(L,N)) * vec4(u_lightcolor,1.0);\
 			}\
 		');
 	gl.shaders["textured_phong"] = this._textured_phong_shader;

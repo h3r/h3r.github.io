@@ -34,11 +34,22 @@ function init()
 	//user input
 	ctx.onmousemove = function(e)
 	{
-		if(e.dragging)
+		//if(e.dragging)
 		{
-			camera.position = vec3.scaleAndAdd( camera.position, camera.position, RD.UP, e.deltay );
+			//camera.position = vec3.scaleAndAdd( camera.position, camera.position, RD.UP, e.deltay );
 			//scene._root.children[0].rotate( e.deltax * -0.01, RD.UP );
 		}
+        if (e.dragging) {
+            if (e.leftButton)
+            {
+                camera.orbit(-e.deltax *  0.005, RD.UP, camera._target );
+                camera.orbit(-e.deltay *  0.005, camera._right, camera._target );
+            }
+            if (e.rightButton)
+            {
+                //camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
+            }
+        }
 	}
 	
 	ctx.onmousewheel = function(e)
@@ -50,7 +61,7 @@ function init()
 
     ctx.ondraw = function(){
 
-        renderer.clear([0.3,0.3,0.3,1]);
+        renderer.clear([0.05,0.05,0.05,1]);
         renderer.render(scene, camera);
     }
 
