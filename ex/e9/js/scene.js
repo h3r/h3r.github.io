@@ -43,11 +43,17 @@ function ResourceLoader(list,callback){
 }
 
 var loadMesh = function(item,callback){
-    var resource = gl.meshes[item];
-    if(!resource){
+    var aux = item.split('_');
+    var name        = aux[0].split('.')[0];
+    var extension   = aux[0].split('.')[1];
+    var md5token    = aux.length == 2 ? aux[1] : '';
 
-        GL.Mesh.fromURL(this.assets_folder +'meshes/'+ item,function(mesh){
-            gl.meshes[item] = mesh;
+    var meshID = md5token ? (name+'_'+md5token) : name;
+
+    if(!renderer.meshes[meshID]){
+        renderer.loadMesh('meshes/'+name+'.'+extension,
+        function(mesh){
+            renderer.meshes[meshID] = mesh;
             if(callback)
                 callback(mesh);
         },gl);
@@ -88,13 +94,12 @@ var loadShader = function(item,callback){
 
 parseSceneGraphJson = function (ifile , callback){
     var json = $.get(ifile,parseSceneGraph);
-
     function parseSceneGraph(sceneGraph){
         var cameras  = []
         var nodes    = [];
         var node     = null;
         resources = {meshes:[],textures:[],shaders:[]}
-        try {
+        //try {
             for (var i in sceneGraph.nodes) {
                 node = sceneGraph.nodes[i];
                 switch (node.type) {
@@ -109,126 +114,27 @@ parseSceneGraphJson = function (ifile , callback){
                         cameras.push(cam);
                         break;
                     case "mesh":
-                        //todo
+                        scene.root.addChild( new MeshNode(node) );//todo
                         break;
                     case "skybox":
-
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["sky"] = GL.Mesh.cube(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "sky";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new SkyboxNode(node) );
                         break;
                     case "plane":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["plane"] = GL.Mesh.plane(node.mesh_options);
-
-                        var n      = new RD.SceneNode();
-                        n.color    = node.color ||[1,0,0,1];
-                        n.mesh     = "plane";
-                        n.texture  = node.texture || null; //todo mirar del mtl
-
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scaling  = node.size? [node.size,node.size,node.size] : [1,1,1];
-                        n.rotate( (node.rotation[1] || 0) * DEG2RAD, [0,1,0]);
-                        n.rotate( (node.rotation[0] || 0) * DEG2RAD, [1,0,0]);
-                        n.rotate( (node.rotation[2] || 0) * DEG2RAD, [0,0,1]);
-
-                        scene.root.addChild(n);
+                        scene.root.addChild( new PlaneNode(node) );
                         break;
-
                     case "plane2D":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["plane2D"] = GL.Mesh.plane2D(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "plane2D";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        nodes.push(n);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new Plane2DNode(node) );
                         break;
                     case "point":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["point"] = GL.Mesh.point(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "point";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new PointNode(node) );
                         break;
                     case "cube":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["cube"] = GL.Mesh.cube(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "cube";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new CubeNode(node) );
                         break;
                     case "box":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["box"] = GL.Mesh.box(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "box";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        n.rotate( (node.rotation[1] || 0) * DEG2RAD, [0,1,0]);
-                        n.rotate( (node.rotation[0] || 0) * DEG2RAD, [1,0,0]);
-                        n.rotate( (node.rotation[2] || 0) * DEG2RAD, [0,0,1]);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new BoxNode(node) );
                         break;
+
                     case "circle":
 
                         node.mesh_options = node.mesh_options || {size:1};
@@ -248,6 +154,7 @@ parseSceneGraphJson = function (ifile , callback){
                         nodes.push(n);
                         scene.root.addChild(n);
                         break;
+
                     case "cilinder":
                         node.mesh_options = node.mesh_options || {size:1};
                         renderer.meshes["cilinder"] = GL.Mesh.cilinder(node.mesh_options);
@@ -266,6 +173,7 @@ parseSceneGraphJson = function (ifile , callback){
                         nodes.push(n);
                         scene.root.addChild(n);
                         break;
+
                     case "sphere":
                         node.mesh_options = node.mesh_options || {size:1};
                         renderer.meshes["sphere"] = GL.Mesh.sphere(node.mesh_options);
@@ -284,20 +192,23 @@ parseSceneGraphJson = function (ifile , callback){
                         //nodes.push(n);
                         scene.root.addChild(n);
                         break;
+
                     case "grid":
                         break;
+
                     case "icosahedron":
                         break;
+
                     default:
                         trow ("unknown node type: "+node.type);
                 }
             }
-        }catch(e){
-            console.error('@parseSceneGraph: '+e);
-        }
+        //}catch(e){
+          //  console.error('@parseSceneGraph: '+e);
+        //}
         function allLoaded(){
             if(callback)
-                callback(cameras,nodes);
+                callback(cameras);
         }
         ResourceLoader(resources,allLoaded);
     }

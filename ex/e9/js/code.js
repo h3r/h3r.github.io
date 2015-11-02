@@ -6,6 +6,9 @@ var scene   = null;
 var camera  = null;
 var node = null;
 
+var tempVec3 = vec3.create();
+
+
 function init()
 {
 	//create a scene
@@ -34,11 +37,6 @@ function init()
 	//user input
 	ctx.onmousemove = function(e)
 	{
-		//if(e.dragging)
-		{
-			//camera.position = vec3.scaleAndAdd( camera.position, camera.position, RD.UP, e.deltay );
-			//scene._root.children[0].rotate( e.deltax * -0.01, RD.UP );
-		}
         if (e.dragging) {
             if (e.leftButton)
             {
@@ -47,27 +45,29 @@ function init()
             }
             if (e.rightButton)
             {
-                //camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
+                camera.move( vec3.mul([0,0,0],camera._right,[-e.deltax,-e.deltax,-e.deltax]) );  //camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
+                camera.move( vec3.mul([0,0,0],camera._top,  [e.deltay,e.deltay,e.deltay]) );
             }
         }
 	}
 	
 	ctx.onmousewheel = function(e)
 	{
-		camera.position = vec3.scale( camera.position, camera.position, e.wheel < 0 ? 1.1 : 0.9 );
+		vec3.scale( tempVec3, vec3.sub([0,0,0],camera.position,camera._target), e.wheel < 0 ? 1.01 : 0.99 );
+        vec3.add(camera.position, camera._target, tempVec3 );
 	}
 	
 	ctx.captureMouse(true);
 
     ctx.ondraw = function(){
-
         renderer.clear([0.05,0.05,0.05,1]);
+
         renderer.render(scene, camera);
     }
 
     ctx.onupdate = function(dt)
     {
-
+        scene._root.getVisibleChildren().map(updateFlags);
         scene.update(dt);
     }
 

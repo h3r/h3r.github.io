@@ -6,7 +6,7 @@
       "type"    :"camera",
       "name"    :"camera1",
       "camera_type":"perspective",
-      "eye"     :[0,150,425],
+      "eye"     :[0,150,300],
       "center"  :[0,150,0],
       "up"      :[0,1,0],
       "fov"     : 90,
@@ -126,10 +126,11 @@
     },
     {
       "type":"mesh",
-      "size":"20",
-      "position":[0,0,0],
-      "rotation":[0,0,0],
-      "source":"porgus.obj",
+      "size":"30",
+      "position":[-50,150,-25],
+      "rotation":[0,45,0],
+      "mesh":"porgus/porgus.obj",
+      "texture":"meshes/porgus/porgusfaker.png",
       "material":"porgus.mtl"
     }
   ]
