@@ -1793,7 +1793,6 @@
         //get texture
         var slot = 0;
         var texture = null;
-        console.log(node.textures);
 
         for(var i in node.textures)
         {
