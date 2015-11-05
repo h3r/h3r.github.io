@@ -38,3 +38,30 @@ function flagOff    (flags, flag){ return flags &= ~flag; }
 function flagSwitch (flags, flag){ return flags ^= flag ; }
 function getFlag    (flags, flag){ return (flags & flag)>0}
 
+
+var tex = null;
+var cubemapCam = new RD.Camera();
+cubemapCam.perspective( 90 * DEG2RAD, 1, 0.1, 10000 );
+
+function getCubemapAt(position){
+
+    tex.drawTo(function(texture,face)
+    {
+        var eye = position;
+        var dir = Texture.cubemap_camera_parameters[face].dir;
+        var center = vec3.add(vec3.create(),dir,eye);
+        var up =  Texture.cubemap_camera_parameters[face].up;
+
+        cubemapCam.lookAt(eye, center, up);
+
+
+        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+        //renderizar todos los nodos visibles
+        renderer.render(scene, cubemapCam);
+
+        return;
+
+    });
+    return tex;
+};

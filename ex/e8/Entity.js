@@ -35,8 +35,8 @@ Entity.prototype = {
                 this.flags &= ~smf.T_DIFFUSE_CM;
             }
             else if(this.albedo.texture_type == gl.TEXTURE_CUBE_MAP){
-                this.flags |= smf.T_DIFFUSE_CM;
-                this.flags &= ~smf.T_DIFFUSE_2D;
+                this.flags |= smf.T_DIFFUSE_2D;
+                this.flags &= ~smf.T_DIFFUSE_CM;
             }
         }
     },

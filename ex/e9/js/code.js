@@ -19,7 +19,7 @@ function init()
 	ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
 	renderer = new RD.Renderer(ctx);
     placer.appendChild( renderer.canvas ); //attach
-
+    renderer._uniforms.u_lightvector = vec3.fromValues(0,250,0);
     //Parse scene from file
     renderer.setDataFolder("data");
     renderer.loadShaders("shaders.txt",function(){
@@ -32,6 +32,10 @@ function init()
         renderer.render(scene, camera , scene);
         $('canvas').fadeIn("slow");
         ctx.animate();
+        tex = new GL.Texture(256,256, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+
+
+
     }
 
 	//user input
@@ -68,6 +72,14 @@ function init()
     ctx.onupdate = function(dt)
     {
         scene._root.getVisibleChildren().map(updateFlags);
+        scene._root.getVisibleChildren().map(function(n){
+
+            if(n.flags.val & _f.ENV) {
+                gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position);
+                n.textures.reflection = 'reflection_'+ n._uid;
+                renderer._uniforms.u_eye = camera.position;
+            }
+        });
         scene.update(dt);
     }
 

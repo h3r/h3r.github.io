@@ -5,7 +5,7 @@ function AbstractNode(){
 
     var node = arguments[0];
     this.n.position = node.position || [0,0,0];
-    this.n.flags = 0;
+    this.n.flags.val = node.flags || 0;
     this.n.mustUpdateFlags = true;
 }
 
@@ -23,7 +23,7 @@ function DecoNode(){
 
     this.n.color    = node.color    || [1,1,1,1];
 
-    this.n.shader   = node.shader   || "phong";
+    this.n.shader   = node.shader   || null;
     this.n._uniforms= node._uniforms|| this.n._uniforms || {};
     if(node.shader)
         resources.shaders.push(node.shader);
@@ -68,7 +68,6 @@ function MeshNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var md5Token = object2md5(nodeConfig.mesh_options);
     md5Token = md5Token == ''? md5Token : '_'+md5Token;
     this.n.mesh = nodeConfig.mesh.split('.')[0]+md5Token;
@@ -86,7 +85,6 @@ function SkyboxNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "sky"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -105,7 +103,6 @@ function PlaneNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "plane"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -120,7 +117,6 @@ function Plane2DNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "plane2D"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -135,7 +131,6 @@ function PointNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "point"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -150,7 +145,6 @@ function CubeNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "cube"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -166,7 +160,6 @@ function BoxNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "box"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -182,7 +175,6 @@ function SphereNode(nodeConfig){
 
     DecoNode.apply(this,arguments);
 
-    //SkyboxNode initialization
     var meshID = "sphere"+object2md5(nodeConfig.mesh_options);
     this.n.mesh = meshID;
     if(!renderer.meshes[meshID])
@@ -191,4 +183,72 @@ function SphereNode(nodeConfig){
     return this.n;
 }
 
+function CircleNode(nodeConfig){
+    nodeConfig = nodeConfig || {};
+    nodeConfig.mesh_options = nodeConfig.mesh_options || {size:1};
 
+    DecoNode.apply(this,arguments);
+
+    var meshID = "circle"+object2md5(nodeConfig.mesh_options);
+    this.n.mesh = meshID;
+    if(!renderer.meshes[meshID])
+        renderer.meshes[meshID] = GL.Mesh.circle(nodeConfig.mesh_options);
+
+    return this.n;
+}
+
+function CylinderNode(nodeConfig){
+    nodeConfig = nodeConfig || {};
+    nodeConfig.mesh_options = nodeConfig.mesh_options || {size:1};
+
+    DecoNode.apply(this,arguments);
+
+    var meshID = "cylinder"+object2md5(nodeConfig.mesh_options);
+    this.n.mesh = meshID;
+    if(!renderer.meshes[meshID])
+        renderer.meshes[meshID] = GL.Mesh.cylinder(nodeConfig.mesh_options);
+
+    return this.n;
+}
+
+function SphereNode(nodeConfig){
+    nodeConfig = nodeConfig || {};
+    nodeConfig.mesh_options = nodeConfig.mesh_options || {size:1};
+
+    DecoNode.apply(this,arguments);
+
+    var meshID = "sphere"+object2md5(nodeConfig.mesh_options);
+    this.n.mesh = meshID;
+    if(!renderer.meshes[meshID])
+        renderer.meshes[meshID] = GL.Mesh.sphere(nodeConfig.mesh_options);
+
+    return this.n;
+}
+
+function GridNode(nodeConfig){
+    nodeConfig = nodeConfig || {};
+    nodeConfig.mesh_options = nodeConfig.mesh_options || {size:1};
+
+    DecoNode.apply(this,arguments);
+
+    var meshID = "grid"+object2md5(nodeConfig.mesh_options);
+    this.n.mesh = meshID;
+    if(!renderer.meshes[meshID])
+        renderer.meshes[meshID] = GL.Mesh.grid(nodeConfig.mesh_options);
+
+    return this.n;
+}
+
+function IcosahedronNode(nodeConfig){
+    nodeConfig = nodeConfig || {};
+    nodeConfig.mesh_options = nodeConfig.mesh_options || {size:1};
+
+    DecoNode.apply(this,arguments);
+
+    var meshID = "icosahedron"+object2md5(nodeConfig.mesh_options);
+    this.n.mesh = meshID;
+    if(!renderer.meshes[meshID])
+        renderer.meshes[meshID] = GL.Mesh.icosahedron(nodeConfig.mesh_options);
+
+    return this.n;
+}

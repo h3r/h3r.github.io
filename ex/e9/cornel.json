@@ -100,7 +100,8 @@
       },
       "uniforms":{
         "u_lightvector":[0,250,0]
-      }
+      },
+      "flags":32
     },
     {
       "type":"sphere",
@@ -112,7 +113,8 @@
       "mesh_options":{"subdivisions":64},
       "uniforms":{
         "u_lightvector":[0,250,0]
-      }
+      },
+      "flags":32
     },
     {
       "type":"sphere",

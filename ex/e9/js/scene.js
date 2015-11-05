@@ -49,8 +49,8 @@ var loadMesh = function(item,callback){
     var md5token    = aux.length == 2 ? aux[1] : '';
 
     var meshID = md5token ? (name+'_'+md5token) : name;
-
-    if(!renderer.meshes[meshID]){
+    var resource = renderer.meshes[meshID];
+    if(!resource){
         renderer.loadMesh('meshes/'+name+'.'+extension,
         function(mesh){
             renderer.meshes[meshID] = mesh;
@@ -61,6 +61,7 @@ var loadMesh = function(item,callback){
     else if(callback){
         callback(resource);
     }
+    return resource;
 };
 var loadTexture = function(item,callback){
     var resource = gl.textures[item];
@@ -75,21 +76,23 @@ var loadTexture = function(item,callback){
     else if(callback){
         callback(resource);
     }
+    return resource;
 };
 var loadShader = function(item,callback){
     var resource = gl.shaders[item];
     if(!resource){
-        console.log(this,renderer,ctx);
         renderer.loadShaders(item,
         function(shader){
             gl.shaders[item] = shader;
             if(callback)
                 callback(shader);
         });
+        return null;
     }
     else if(callback){
         callback(resource);
     }
+    return resource;
 };
 
 parseSceneGraphJson = function (ifile , callback){
@@ -134,73 +137,23 @@ parseSceneGraphJson = function (ifile , callback){
                     case "box":
                         scene.root.addChild( new BoxNode(node) );
                         break;
-
                     case "circle":
-
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["circle"] = GL.Mesh.circle(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "circle";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new CircleNode(node) );
                         break;
-
-                    case "cilinder":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["cilinder"] = GL.Mesh.cilinder(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "cilinder";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node._uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        nodes.push(n);
-                        scene.root.addChild(n);
+                    case "cylinder":
+                        scene.root.addChild( new CylinderNode(node) );
                         break;
-
                     case "sphere":
-                        node.mesh_options = node.mesh_options || {size:1};
-                        renderer.meshes["sphere"] = GL.Mesh.sphere(node.mesh_options);
-                        var n = new RD.SceneNode();
-                        n.color = node.color ||[1,0,0,1];
-                        n.mesh = "sphere";
-                        n.texture = node.texture || null; //todo mirar del mtl
-                        if(n.texture)
-                            resources.textures.push(n.texture);
-                        n.shader = node.shader || "phong";
-                        if(n.shader)
-                            resources.shaders.push(n.shader);
-                        n._uniforms = node.uniforms || n._uniforms || {};
-                        n.position = node.position || [0,0,0];
-                        n.scale(vec3.fromValues(node.size,node.size,node.size) || [1,1,1]);
-                        //nodes.push(n);
-                        scene.root.addChild(n);
+                        scene.root.addChild( new SphereNode(node) );
                         break;
-
                     case "grid":
+                        scene.root.addChild( new GridNode(node) );
                         break;
-
                     case "icosahedron":
+                        scene.root.addChild( new IcosahedronNode(node) );
                         break;
-
                     default:
-                        trow ("unknown node type: "+node.type);
+                        throw ("unknown node type: "+node.type);
                 }
             }
         //}catch(e){

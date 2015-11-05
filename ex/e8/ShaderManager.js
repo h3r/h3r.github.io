@@ -113,6 +113,6 @@ var ShaderManager = {
             gl_FragColor = vec4( pow(vec3(color.x,color.y,color .z),vec3(u_gamma)),color.w);}';
         console.log(vs);
         console.log(fs);
-        return {vs:vs,fs:fs};
+
     }
 };
