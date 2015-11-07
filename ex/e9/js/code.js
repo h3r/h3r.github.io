@@ -32,7 +32,7 @@ function init()
         renderer.render(scene, camera , scene);
         $('canvas').fadeIn("slow");
         ctx.animate();
-        tex = new GL.Texture(256,256, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+        tex = new GL.Texture(64,64, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
 
 

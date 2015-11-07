@@ -24,7 +24,12 @@ function DecoNode(){
     this.n.color    = node.color    || [1,1,1,1];
 
     this.n.shader   = node.shader   || null;
-    this.n._uniforms= node._uniforms|| this.n._uniforms || {};
+
+    this.n._uniforms.u_ref_i = 0.0;
+    for(var i in node.uniforms){
+        this.n._uniforms[i] = node.uniforms[i];
+    }
+
     if(node.shader)
         resources.shaders.push(node.shader);
 

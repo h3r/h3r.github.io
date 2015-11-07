@@ -93,6 +93,8 @@ var ShaderManager = {
         +mainVS(flags)  +'\n\
     }\n\ ';
         var fs = '\
+    #extension GL_EXT_shader_texture_lod : enable\n\
+    #extension GL_OES_standard_derivatives : enable\n\
     precision highp float;\n\ '
         + uniformsFS(flags)
         + varyings(flags)
@@ -100,14 +102,14 @@ var ShaderManager = {
     void main() {\n\ '
         +mainFS(flags)  +'\n\
     }\n\ ';
-        //console.log(vs);
-        //console.log(fs);
+        console.log(vs);
+        console.log(fs);
         return {vs:vs,fs:fs};
     }
 };
 
 function hasRef(flags) {
-    return (flags & _f.T_SPECULAR > 0);
+    return (flags & (_f.T_SPECULAR | _f.ENV) > 0);
 }
 function uniformsVS(flags){
     var code = '\n\
@@ -130,11 +132,13 @@ function uniformsFS(flags){
     uniform vec3  u_lightvector;\n\
     uniform vec3  u_lightcolor;\n\
     uniform vec4  u_color;\n\
+    uniform vec3  u_eye;\n\
+    uniform float u_ref_i;\n\
     ';
-    if( flags & _f.T_DIFFUSE_2D )  code+= 'uniform sampler2D u_color_texture;\n\ ';
-    if( flags & _f.T_DIFFUSE_CM )  code+= 'uniform samplerCube u_color_texture;\n\ ';
-    if( flags & _f.T_SPECULAR_2D)  code+= 'uniform sampler2D u_reflection;\n\ ';
-    if( flags & (_f.T_SPECULAR_CM | _f.ENV))  code+= 'uniform samplerCube u_reflection_texture;\n\ uniform vec3  u_eye;\n\ uniform float u_ref_i;\n\ ';
+    if( flags & _f.T_DIFFUSE_2D )  code+= 'uniform sampler2D    u_color_texture;\n\ ';
+    if( flags & _f.T_DIFFUSE_CM )  code+= 'uniform samplerCube  u_color_texture;\n\ ';
+    if( flags & _f.T_SPECULAR_2D)  code+= 'uniform sampler2D    u_reflection;\n\ ';
+    if( flags & (_f.T_SPECULAR_CM | _f.ENV))  code+= 'uniform samplerCube u_reflection_texture;\n\ ';
 
     return code;
 }
@@ -143,6 +147,7 @@ function varyings(flags){
     varying vec3 v_normal;\n\
     varying vec2 v_coord;\n\
     varying vec3 v_vertex;\n\
+    varying float depth;\n\
     ';
     return code;
 }
@@ -151,7 +156,15 @@ function functionsVS(flags){
     return code;
 }
 function functionsFS(flags){
+
     var code = diffuse(flags) + specular(flags);
+    code += '\n\
+        float fresnel(float cosTheta, float R0, float fresnelPow)\n\
+        {\n\
+            float facing = (1.0 - cosTheta);\n\
+            return max(0.0, R0 + (1.0 - R0) * pow(facing, fresnelPow));\n\
+        }\n\ ';
+
     return code;
 }
 function diffuse(flags){
@@ -159,37 +172,41 @@ function diffuse(flags){
         return '\n\
         vec4 diffuse(){\n\
             return texture2D( u_color_texture, v_coord );\n\
-        }';
+        }\n\ ';
+    }
+    else if( flags & _f.SKY){
+        return '\n\
+        vec4 diffuse(){\n\
+            return textureCube( u_color_texture, vec3(v_vertex.x,v_vertex.y,v_vertex.z) );\n\
+        }\n\ ';
+    }
+    else if( flags & _f.T_DIFFUSE_CM ) {
+        return '\n\
+        vec4 diffuse(){\n\
+            return textureCube( u_color_texture, v_normal );\n\
+        }\n\ ';
     }
     else
         return '\n\
         vec4 diffuse(){\n\
             return u_color;\n\
         }\n\ ';
-    /*var code = '\
-            vec4 diffuse(){\
-            float LdotN = dot(normalize(u_lightvector),normalize(v_normal));\
-            return ';
-    if( flags & _f.T_DIFFUSE_2D )      { code += 'texture2D( u_albedo, v_coord ) * LdotN ;\ ';}
-    else if( flags & _f.SKY)           { code += 'textureCube( u_albedo, vec3(v_vertex.x,v_vertex.y,v_vertex.z) ) ;\ '      }
-    else if( flags & _f.T_DIFFUSE_CM ) { code += 'textureCube( u_albedo, v_normal ) * LdotN ;\ ';}
-    else                               { code += 'u_color;\ ';}
-
-    code += ' }\ ';*/
 }
 
 function specular(flags){
     if(flags & _f.ENV ){
+        /*
+        Specular term as defined @ A.W 3D Computer Graphics :217 is
+            specular_term = micro-geometry_term (aka reflection index) * shadowing_term * fresnel_term / N*V(glare pow)(DGF/NV)
+        * */
         return '\n\
-        vec4 specular(){\n\
-            vec3 E = v_vertex - u_eye;\n\
-            vec3 R = reflect(E,normalize(v_normal));\n\
+        vec4 specular(vec3 R){\n\
             return textureCube( u_reflection_texture, vec3(R.x,R.y,R.z) ) ;\n\
         }';
     }
     else
         return '\n\
-        vec4 specular(){\n\
+        vec4 specular(vec3 R){\n\
             return vec4(0);\n\
         }\n\ ';
 }
@@ -198,18 +215,35 @@ function mainVS(flags){
         v_coord  = a_coord;\n\
         v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
         v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
-        gl_Position = u_mvp * vec4(a_vertex,1.0); ';
+        depth = (vec4(v_vertex,1.0) * u_view).z;\n\
+        depth *= depth;\n\
+        gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+    ';
 
     return code;
 }
 function mainFS(flags){
     var code = '\n\
+        vec3 L = normalize( u_lightvector - v_vertex);\n\
         vec3 N = normalize(v_normal);\n\
-		vec3 L = normalize(u_lightvector- v_vertex);\n\
-		float LdotN = dot(N,L);\n\
-		vec4 color = (diffuse() + specular()) * 0.5 * max(0.0,LdotN);\n\
-	    gl_FragColor = vec4(pow(color.xyz,vec3(1.0/2.2)),0.0);\n\ ';
+        vec3 V = normalize( u_eye - v_vertex);\n\
+		vec3 H = normalize( L + V ); \n\
+		vec3 R = reflect(-V,N);\n\
+		\n\
+		float LdotN = max(0.0, dot(L,N));\n\
+		float LdotH = max(0.0, dot(L,H));\n\
+		float HdotN = max(0.0, dot(H,N));\n\
+		float NdotV = max(0.0, dot(N,V));\n\
+		float ref_i = max(u_ref_i, 0.0);\n\
+		float gloss = 1.0/20.0;\n\
+		\n\
+		vec4 diffuseTerm  = (1.0 - ref_i) * diffuse() * (1.0 - fresnel(LdotN, ref_i, 1.0));\n\
+		vec4 specularTerm = ref_i * specular(R) * (fresnel(LdotH, ref_i, 5.0) / NdotV) ;\n\
+		\n\
+		vec4 color =  (diffuseTerm + specularTerm)*0.5;\n\
+	    gl_FragColor = vec4(pow(color.xyz,vec3(1.0/2.2)),1.0);\n\ ';
      return code;
 }
 ////vec4( pow(vec3(color.x,color.y,color.z),vec3(u_gamma)),color.w);
 //+ textureCube( u_reflection_texture, vec3(R.x,R.y,R.z) )
+//
