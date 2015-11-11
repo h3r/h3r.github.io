@@ -1,0 +1,139 @@
+{
+  "name": "default scene",
+  "version": "0.0.1",
+  "nodes" : [
+    {
+      "type"    :"camera",
+      "name"    :"camera1",
+      "camera_type":"perspective",
+      "eye"     :[0,150,300],
+      "center"  :[0,150,0],
+      "up"      :[0,1,0],
+      "fov"     : 90,
+      "aspect"  : null,
+      "near"    : 0.1,
+      "far"     : 100000
+    },
+    {
+      "type":"plane",
+      "name":"front",
+      "size":300,
+      "position":[0,150,-150],
+      "rotation":[0,0,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"left",
+      "size":"300",
+      "position":[-150,150,0],
+      "rotation":[0,90,0],
+      "color":[1,0,0],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"right",
+      "size":"300",
+      "position":[150,150,0],
+      "rotation":[0,-90,0],
+      "color":[0,1,0],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"top",
+      "size":"300",
+      "position":[0,300,0],
+      "rotation":[90,0,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"bottom",
+      "size":"300",
+      "position":[0,0,0],
+      "rotation":[-90,0,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"back",
+      "size":"300",
+      "position":[0,150,150],
+      "rotation":[0,180,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"box",
+      "name":"box",
+      "size":150,
+      "position":[-50,75,-50],
+      "rotation":[0,30,0],
+      "color":[0.95,0.95,0.95],
+      "mesh_options":{
+        "sizex" : 0.5,
+        "sizey" : 1,
+        "sizez" : 0.5
+      },
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      },
+      "flags":32
+    },
+    {
+      "type":"sphere",
+      "name":"sphere",
+      "position":[50,45,20],
+      "rotation":[0,30,0],
+      "color":[0.95,0.95,0.95],
+      "size":"45",
+      "mesh_options":{"subdivisions":64},
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      },
+      "flags":32
+    },
+    {
+      "type":"sphere",
+      "mesh_options":{"subdivisions":64},
+      "name":"sun",
+      "size":"20",
+      "position":[0,250,0],
+      "color":[1,1,1,1],
+      "shader":"sun",
+      "texture": "texture_sun.jpg"
+    },
+    {
+      "type":"mesh",
+      "size":"30",
+      "position":[-50,150,-25],
+      "rotation":[0,45,0],
+      "mesh":"porgus/porgus.obj",
+      "texture":"meshes/porgus/porgusfaker.png",
+      "material":"porgus.mtl"
+    }
+  ]
+}
