@@ -113,10 +113,10 @@ function hasRef(flags) {
 }
 function uniformsVS(flags){
     var code = '\n\
-    uniform mat4  u_view;\n\
-    uniform mat4  u_viewprojection;\n\
-    uniform mat4  u_model;\n\
-    uniform mat4  u_mvp;\n\
+    uniform mat4 u_view;\n\
+    uniform mat4 u_viewprojection;\n\
+    uniform mat4 u_model;\n\
+    uniform mat4 u_mvp;\n\
     ';
     if( flags & _f.SKY ) code += 'uniform vec3 u_eye;\n\ ';
 
@@ -226,22 +226,22 @@ function mainFS(flags){
     var code = '\n\
         vec3 L = normalize( u_lightvector - v_vertex);\n\
         vec3 N = normalize(v_normal);\n\
-        vec3 V = normalize( u_eye - v_vertex);\n\
+        vec3 V = normalize( v_vertex - u_eye);\n\
 		vec3 H = normalize( L + V ); \n\
-		vec3 R = reflect(-V,N);\n\
+		vec3 R = reflect(V,N);\n\
 		\n\
 		float LdotN = max(0.0, dot(L,N));\n\
 		float LdotH = max(0.0, dot(L,H));\n\
 		float HdotN = max(0.0, dot(H,N));\n\
-		float NdotV = max(0.0, dot(N,V));\n\
+		float NdotV = max(0.0, dot(N,-V));\n\
 		float ref_i = max(u_ref_i, 0.0);\n\
-		float gloss = 1.0/20.0;\n\
+		float gloss = 5.0;\n\
 		\n\
-		vec4 diffuseTerm  = (1.0 - ref_i) * diffuse() * (1.0 - fresnel(LdotN, ref_i, 1.0));\n\
-		vec4 specularTerm = ref_i * specular(R) * (fresnel(LdotH, ref_i, 5.0) / NdotV) ;\n\
+		vec4 diffuseTerm  = (1.0 - ref_i) * diffuse() * LdotN;\n\
+		vec4 specularTerm = ref_i  * specular(R) * (fresnel(LdotH, ref_i, 5.0) / NdotV) ;\n\
 		\n\
-		vec4 color =  (diffuseTerm + specularTerm)*0.5;\n\
-	    gl_FragColor = vec4(pow(color.xyz,vec3(1.0/2.2)),1.0);\n\ ';
+		vec4 color =  (diffuseTerm + specularTerm);\n\
+	    gl_FragColor = color;\n\ ';
      return code;
 }
 ////vec4( pow(vec3(color.x,color.y,color.z),vec3(u_gamma)),color.w);

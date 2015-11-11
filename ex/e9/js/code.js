@@ -11,31 +11,49 @@ var tempVec3 = vec3.create();
 
 function init()
 {
-	//create a scene
+
+    //create a scene
 	scene = new RD.Scene();
 
 	//create the rendering context
     placer = document.getElementById('canvas-container');
 	ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
+
+
+
+
 	renderer = new RD.Renderer(ctx);
     placer.appendChild( renderer.canvas ); //attach
-    renderer._uniforms.u_lightvector = vec3.fromValues(0,250,0);
+    renderer._uniforms.u_lightvector = vec3.fromValues(0,25,0);
     //Parse scene from file
     renderer.setDataFolder("data");
     renderer.loadShaders("shaders.txt",function(){
         parseSceneGraphJson((getUriParams().s || 'sun')+'.json', parseCallback);
     });
 
+    /*=============================================
+     / Window Resie Handling
+     /==============================================*/
+
+    var resize = function() {
+
+        ctx.canvas.width   = placer.clientWidth;
+        ctx.canvas.height  = placer.clientHeight;
+        if(camera)
+            camera.perspective(camera.fov, placer.clientWidth / placer.clientHeight, camera.near, camera.far);
+        ctx.viewport(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    };
+
+    window.onresize = resize;
+
+    resize();
     function parseCallback(cameras){
         console.log('parseCallback');
         camera = cameras[0];
         renderer.render(scene, camera , scene);
         $('canvas').fadeIn("slow");
         ctx.animate();
-        tex = new GL.Texture(64,64, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
-
-
-
     }
 
 	//user input
@@ -49,8 +67,10 @@ function init()
             }
             if (e.rightButton)
             {
-                camera.move( vec3.mul([0,0,0],camera._right,[-e.deltax,-e.deltax,-e.deltax]) );  //camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
-                camera.move( vec3.mul([0,0,0],camera._top,  [e.deltay,e.deltay,e.deltay]) );
+                var dx = e.deltax * 0.05;
+                var dy = e.deltay * 0.05;
+                camera.move( vec3.mul([0,0,0],camera._right,[-dx,-dx,-dx]) );  //camera.pan(vec3.fromValues(e.deltax * - 0.0325, e.deltay * - 0.0325, 0) );
+                camera.move( vec3.mul([0,0,0],camera._top,  [dy,dy,dy]) );
             }
         }
 	}
@@ -75,8 +95,13 @@ function init()
         scene._root.getVisibleChildren().map(function(n){
 
             if(n.flags.val & _f.ENV) {
-                gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position);
+                gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position,gl.textures['reflection_'+ n._uid]);
                 n.textures.reflection = 'reflection_'+ n._uid;
+
+                //gl.textures['center'] = getCubemapAt([0,150,0],gl.textures['center']);
+                //renderer._uniforms.u_cubemap_center = vec3.fromValues(0,150,0);
+                //n.textures.reflection = 'center';
+
                 renderer._uniforms.u_eye = camera.position;
             }
         });
@@ -84,5 +109,5 @@ function init()
     }
 
 
-
 }
+

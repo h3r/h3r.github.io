@@ -41,9 +41,11 @@ function getFlag    (flags, flag){ return (flags & flag)>0}
 
 var tex = null;
 var cubemapCam = new RD.Camera();
-cubemapCam.perspective( 90 * DEG2RAD, 1, 0.1, 10000 );
+cubemapCam.perspective( 90, 1, 0.1, 10000 );
 
-function getCubemapAt(position){
+function getCubemapAt(position,tex){
+    if(!tex)
+        tex = new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
     tex.drawTo(function(texture,face)
     {
@@ -52,16 +54,17 @@ function getCubemapAt(position){
         var center = vec3.add(vec3.create(),dir,eye);
         var up =  Texture.cubemap_camera_parameters[face].up;
 
+        renderer.clear([0.00,0.00,0.00,1]);
+        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
         cubemapCam.lookAt(eye, center, up);
-
-
-        gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-
-        //renderizar todos los nodos visibles
-        renderer.render(scene, cubemapCam);
+        //for(var i in scene._root.children){
+            renderer.render(scene, cubemapCam);
+        //}
 
         return;
 
     });
+    
     return tex;
 };

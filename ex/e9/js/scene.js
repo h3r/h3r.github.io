@@ -109,9 +109,9 @@ parseSceneGraphJson = function (ifile , callback){
                     case "camera":
                         var cam = new RD.Camera();
                         if(node.camera_type == 'perspective')
-                            cam.perspective( node.fov || 45, node.aspect || gl.canvas.width / gl.canvas.height, node.near || 0.1, node.far || 1000 );
+                            cam.perspective( node.fov || 45, node.aspect || gl.canvas.width / gl.canvas.height, node.near || 0.01, node.far || 10000 );
                         if(node.camera_type == 'orthographic')
-                            cam.orthographic(node.frustum || 100, node.near || 0.1, node.far || 1000, node.aspect || 1)
+                            cam.orthographic(node.frustum || 100, node.near || 0.01, node.far || 10000, node.aspect || 1)
 
                         cam.lookAt( node.eye, node.center, node.up );
                         cameras.push(cam);
