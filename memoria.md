@@ -1,5 +1,4 @@
 
-> **Nota:** No, no me he matado a hacer una web, es markdown plano auto-publicado, hecho con [**stackedit.io**](https://stackedit.io)
 
 #**TFG**: Physically based rendering over web technologies
 ######  {#autor}
@@ -119,6 +118,21 @@ Una vez que sabemos si podemos pintar o no un pixel, el fixed pipeline de la tar
 ##1.6 Fragment Shader
 
 #N Texturas
+
+#Técnicas de iluminación global
+En el mundo de las imágenes generadas por ordenador, existen diferentes algoritmos con los que podemos simular la interacción de la luz en la escena. Principalmente vamos a dividirlos en dos grandes bloques: Iluminación local e iluminación global.
+
+En este apartado vamos a enforcarnos en las diferentes técnicas de iluminación global que han ido surgiendo en los diferentes últimos años y como resuelven la integración de la luz. El término "iluminación global" es comúnmente utilizado para referirse a un cierto conjunto de técnicas o algoritmos que tienen como fin representar de forma aproximada la interacción de la luz en una superficie debido a la contribución de otras fuentes de luz a lo largo de la escena sobre un punto concreto.
+
+James Kajiya junto con David Immel teorizaron sobre una primera aproximación matemática que resolviese este problema siguiendo los principios de la conservación de la luz. 
+
+
+
+
+
+$$
+L_0(x, \omega_0, \lambda, t) = L_e(x, \omega_0, \lambda, t) + \int_\Omega f_r(x, \omega_i,  \omega_0,\lambda, t) L_i(x, \omega_i,\lambda, t) (\omega_i · n)  \delta\omega_i
+$$
 
 
 
