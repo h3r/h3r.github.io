@@ -1,0 +1,57 @@
+# Blender MTL File: 'DefenderLingerie00.blend'
+# Material Count: 5
+
+newmtl DE_Lingerie00_Body
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\Public\Documents\Unity Projects\CoolSpace\Assets\q2qzporc73ls-SB_DefenderLingerie00\textures\BODY_DE_BD_N_00.dds
+map_Bump C:\\Users\\Public\\Documents\\Unity Projects\\CoolSpace\\Assets\\q2qzporc73ls-SB_DefenderLingerie00\\textures\\BODY_DE_BD_N_00_NR.dds
+
+newmtl DE_Lingerie00_Feet
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\Public\Documents\Unity Projects\CoolSpace\Assets\q2qzporc73ls-SB_DefenderLingerie00\textures\FEET_DE_FT_N_00.dds
+map_Bump C:\\Users\\Public\\Documents\\Unity Projects\\CoolSpace\\Assets\\q2qzporc73ls-SB_DefenderLingerie00\\textures\\FEET_DE_FT_N_00_NR.dds
+
+newmtl DE_Lingerie00_Hair
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd C:\Users\Public\Documents\Unity Projects\CoolSpace\Assets\q2qzporc73ls-SB_DefenderLingerie00\textures\HAIR_CO_HR_N_24.tga
+map_Bump C:\\Users\\Public\\Documents\\Unity Projects\\CoolSpace\\Assets\\q2qzporc73ls-SB_DefenderLingerie00\\textures\\HAIR_CO_HR_N_24_NR.dds
+map_d C:\\Users\\Public\\Documents\\Unity Projects\\CoolSpace\\Assets\\q2qzporc73ls-SB_DefenderLingerie00\\textures\\HAIR_CO_HR_N_24.tga
+
+newmtl DE_Lingerie00_Hands
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd f:\BCKP_E\1 NTFS\LostFiles2\BlenderBackup\ScarletBlade\EXP\Defender Lingerie 00\HANDS_DE_GL_N_00.dds
+map_Ks f:\\BCKP_E\\1 NTFS\\LostFiles2\\BlenderBackup\\ScarletBlade\\EXP\\Defender Lingerie 00\\HANDS_DE_GL_N_00_NR.dds
+
+newmtl DE_Lingerie00_Head
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd C:\Users\Public\Documents\Unity Projects\CoolSpace\Assets\q2qzporc73ls-SB_DefenderLingerie00\textures\HEAD_DE_FC_N_05.dds

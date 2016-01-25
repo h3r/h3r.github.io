@@ -43,9 +43,9 @@ var tex = null;
 var cubemapCam = new RD.Camera();
 cubemapCam.perspective( 90, 1, 0.1, 10000 );
 
-function getCubemapAt(position,tex){
+function getCubemapAt(position,tex,selfnode){
     if(!tex)
-        tex = new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
     tex.drawTo(function(texture,face)
     {
@@ -58,13 +58,40 @@ function getCubemapAt(position,tex){
         ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
         cubemapCam.lookAt(eye, center, up);
-        //for(var i in scene._root.children){
+
+        if(selfnode){
+            renderer.render(scene, cubemapCam,scene._root.children.filter(function(node){return node != selfnode;}));
+            selfnode._uniforms.u_cm_center = position;
+        }
+        else
             renderer.render(scene, cubemapCam);
-        //}
 
         return;
 
     });
-    
+
     return tex;
 };
+
+function getDepthMap(camera,scene, tex, callback){
+    if(!tex)
+        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+
+    tex.drawTo();
+    return tex;
+
+}
+function getAlbedoMap(camera,scene, tex, callback){
+    if(!tex)
+        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+
+    tex.drawTo();
+    return tex;
+}
+function getNormalMap(camera,scene, tex, callback){
+    if(!tex)
+        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+
+    tex.drawTo();
+    return tex;
+}

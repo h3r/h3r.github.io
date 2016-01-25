@@ -83,24 +83,24 @@ var ShaderManager = {
     parse: function(flags){
         var vs = '\n\
     precision highp float;\n\ '
-        + uniformsVS(flags)
-        + varyings(flags)
-        + functionsVS(flags) + '\n\
+            + uniformsVS(flags)
+            + varyings(flags)
+            + functionsVS(flags) + '\n\
     attribute vec3 a_vertex;\n\
     attribute vec3 a_normal;\n\
     attribute vec2 a_coord;\n\
     void main() {\n\ '
-        +mainVS(flags)  +'\n\
+            +mainVS(flags)  +'\n\
     }\n\ ';
         var fs = '\
     #extension GL_EXT_shader_texture_lod : enable\n\
     #extension GL_OES_standard_derivatives : enable\n\
     precision highp float;\n\ '
-        + uniformsFS(flags)
-        + varyings(flags)
-        + functionsFS(flags) + '\n\n\
+            + uniformsFS(flags)
+            + varyings(flags)
+            + functionsFS(flags) + '\n\n\
     void main() {\n\ '
-        +mainFS(flags)  +'\n\
+            +mainFS(flags)  +'\n\
     }\n\ ';
         console.log(vs);
         console.log(fs);
@@ -147,6 +147,7 @@ function varyings(flags){
     varying vec3 v_normal;\n\
     varying vec2 v_coord;\n\
     varying vec3 v_vertex;\n\
+    varying vec3 v_vertex2;\n\
     varying float depth;\n\
     ';
     return code;
@@ -196,9 +197,9 @@ function diffuse(flags){
 function specular(flags){
     if(flags & _f.ENV ){
         /*
-        Specular term as defined @ A.W 3D Computer Graphics :217 is
-            specular_term = micro-geometry_term (aka reflection index) * shadowing_term * fresnel_term / N*V(glare pow)(DGF/NV)
-        * */
+         Specular term as defined @ A.W 3D Computer Graphics :217 is
+         specular_term = micro-geometry_term (aka reflection index) * shadowing_term * fresnel_term / N*V(glare pow)(DGF/NV)
+         * */
         return '\n\
         vec4 specular(vec3 R){\n\
             return textureCube( u_reflection_texture, vec3(R.x,R.y,R.z) ) ;\n\
@@ -215,6 +216,7 @@ function mainVS(flags){
         v_coord  = a_coord;\n\
         v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
         v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
+        v_vertex2 = (u_model * u_view * vec4(a_vertex,1.0)).xyz;\n\
         depth = (vec4(v_vertex,1.0) * u_view).z;\n\
         depth *= depth;\n\
         gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
@@ -237,13 +239,75 @@ function mainFS(flags){
 		float ref_i = max(u_ref_i, 0.0);\n\
 		float gloss = 5.0;\n\
 		\n\
-		vec4 diffuseTerm  = (1.0 - ref_i) * diffuse() * LdotN;\n\
+		vec4 diffuseTerm  = vec4(0.15)+(1.0 - ref_i) * diffuse() * LdotN;\n\
 		vec4 specularTerm = ref_i  * specular(R) * (fresnel(LdotH, ref_i, 5.0) / NdotV) ;\n\
 		\n\
 		vec4 color =  (diffuseTerm + specularTerm);\n\
 	    gl_FragColor = color;\n\ ';
-     return code;
+    return code;
 }
 ////vec4( pow(vec3(color.x,color.y,color.z),vec3(u_gamma)),color.w);
 //+ textureCube( u_reflection_texture, vec3(R.x,R.y,R.z) )
 //
+
+//-------------------------------------------------------------------------------------------------------
+function loadCustomShaders(){
+    gl.shaders["_normals"] = new GL.Shader('\
+        precision highp float;\
+        attribute vec3 a_vertex;\
+        attribute vec3 a_normal;\
+        varying vec3 v_normal;\
+        uniform mat4 u_mvp;\
+        uniform mat4 u_model;\
+        void main() {\n\
+            v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
+            gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+        }\
+        ', '\
+        precision highp float;\
+        varying vec3 v_normal;\
+        void main() {\
+          vec3 N = normalize(v_normal);\
+          gl_FragColor = vec4(((N+vec3(1.0))/vec3(2.0)),1.0);\
+        }\
+    ');
+
+    gl.shaders["_position"] = new GL.Shader('\
+        precision highp float;\
+        attribute vec3 a_vertex;\
+        varying vec3 v_vertex;\
+        uniform mat4 u_mvp;\
+        uniform mat4 u_model;\
+        void main() {\n\
+            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
+            gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+        }\
+        ', '\
+        precision highp float;\
+        varying vec3 v_vertex;\
+        void main() {\
+          vec3 V = v_vertex;\
+          gl_FragColor = vec4(((normalize(v_vertex)+vec3(1.0))/vec3(2.0)),1.0);//color;\n\
+        }\
+    ');
+
+    gl.shaders["_depth"] = new GL.Shader('\
+        precision highp float;\
+        attribute vec3 a_vertex;\
+        varying vec3 v_vertex;\
+        uniform mat4 u_mvp;\
+        uniform mat4 u_model;\
+        void main() {\n\
+            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
+            gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+        }\
+        ', '\
+        precision highp float;\
+        varying vec3 v_vertex;\
+        void main() {\
+          vec3 V = v_vertex;\
+          gl_FragColor = vec4(((vec3(normalize(v_vertex).z)+vec3(1.0))/vec3(2.0)),1.0);//color;\n\
+        }\
+    ');
+
+}

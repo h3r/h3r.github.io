@@ -274,10 +274,12 @@
         gl.onmousewheel = function(e){
             camera.zoom(e.deltaY * 0.01);
         };
-
+        var time = 0;
         gl.onupdate = function(dt) {
+
             camera.update();
-            mat4.rotateY(entities['obj'].model, entities['obj'].model,dt * speed);
+            mat4.rotateX(entities['obj'].model, entities['obj'].model,dt * speed);
+
         };
 
 

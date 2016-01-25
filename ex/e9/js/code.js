@@ -27,6 +27,7 @@ function init()
     renderer._uniforms.u_lightvector = vec3.fromValues(0,25,0);
     //Parse scene from file
     renderer.setDataFolder("data");
+    loadCustomShaders();
     renderer.loadShaders("shaders.txt",function(){
         parseSceneGraphJson((getUriParams().s || 'sun')+'.json', parseCallback);
     });
@@ -85,7 +86,6 @@ function init()
 
     ctx.ondraw = function(){
         renderer.clear([0.05,0.05,0.05,1]);
-
         renderer.render(scene, camera);
     }
 
@@ -95,13 +95,8 @@ function init()
         scene._root.getVisibleChildren().map(function(n){
 
             if(n.flags.val & _f.ENV) {
-                gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position,gl.textures['reflection_'+ n._uid]);
+                gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position,gl.textures['reflection_'+ n._uid],n);
                 n.textures.reflection = 'reflection_'+ n._uid;
-
-                //gl.textures['center'] = getCubemapAt([0,150,0],gl.textures['center']);
-                //renderer._uniforms.u_cubemap_center = vec3.fromValues(0,150,0);
-                //n.textures.reflection = 'center';
-
                 renderer._uniforms.u_eye = camera.position;
             }
         });

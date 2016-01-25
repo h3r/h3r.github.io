@@ -1,0 +1,111 @@
+{
+  "name": "default scene",
+  "version": "0.0.1",
+  "nodes" : [
+    {
+      "type"    :"camera",
+      "name"    :"camera1",
+      "camera_type":"perspective",
+      "eye"     :[0,150,300],
+      "center"  :[0,150,0],
+      "up"      :[0,1,0],
+      "fov"     : 90,
+      "aspect"  : null,
+      "near"    : 0.1,
+      "far"     : 100000
+    },
+    {
+      "type":"plane",
+      "name":"front",
+      "size":300,
+      "position":[0,150,-150],
+      "rotation":[0,0,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"left",
+      "size":"300",
+      "position":[-150,150,0],
+      "rotation":[0,90,0],
+      "color":[1,0,0],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"right",
+      "size":"300",
+      "position":[150,150,0],
+      "rotation":[0,-90,0],
+      "color":[0,1,0],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"top",
+      "size":"300",
+      "position":[0,300,0],
+      "rotation":[90,0,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"bottom",
+      "size":"300",
+      "position":[0,0,0],
+      "rotation":[-90,0,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"plane",
+      "name":"back",
+      "size":"300",
+      "position":[0,150,150],
+      "rotation":[0,180,0],
+      "color":[1,1,1],
+      "material":"silver.mtl",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"skybox",
+      "size":"5000",
+      "texture":"texture_sun.jpg",
+      "uniforms":{
+        "u_lightvector":[0,250,0]
+      }
+    },
+    {
+      "type":"mesh",
+      "size":"50",
+      "shader":"_position",
+      "position":[0,0,0],
+      "rotation":[0,45,0],
+      "mesh":"predator/predator2.obj",
+      "uniforms":{
+        "u_lightvector":[250,250,250],
+        "u_ref_i":0.15
+      },
+      "flags":32
+    }
+  ]
+}
