@@ -73,11 +73,24 @@ function getCubemapAt(position,tex,selfnode){
     return tex;
 };
 
-function getDepthMap(camera,scene, tex, callback){
+function getPositionDepthMap(camera,scene, tex, callback){
     if(!tex)
         tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
-    tex.drawTo();
+    tex.drawTo(
+        function(texture){
+            renderer.clear([0.00,0.00,0.00,1]);
+            ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+            renderer.shader_overwrite = '_position';
+            scene.root.postRender = function(renderer){renderer.shader_overwrite = null;};
+            renderer.render(scene,camera);
+
+            if(callback)
+                callback();
+        }
+
+    );
     return tex;
 
 }

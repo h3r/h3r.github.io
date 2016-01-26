@@ -256,57 +256,57 @@ function loadCustomShaders(){
         precision highp float;\
         attribute vec3 a_vertex;\
         attribute vec3 a_normal;\
-        varying vec3 v_normal;\
+        varying vec4 v_normal;\
         uniform mat4 u_mvp;\
         uniform mat4 u_model;\
         void main() {\n\
-            v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
+            v_normal = u_model * vec4(a_normal,0.0);\n\
             gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
         }\
         ', '\
         precision highp float;\
-        varying vec3 v_normal;\
+        varying vec4 v_normal;\
         void main() {\
-          vec3 N = normalize(v_normal);\
-          gl_FragColor = vec4(((N+vec3(1.0))/vec3(2.0)),1.0);\
+          gl_FragColor = normalize(v_normal);\
         }\
     ');
 
     gl.shaders["_position"] = new GL.Shader('\
         precision highp float;\
         attribute vec3 a_vertex;\
-        varying vec3 v_vertex;\
+        varying vec4 v_vertex;\
         uniform mat4 u_mvp;\
         uniform mat4 u_model;\
         void main() {\n\
-            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
-            gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+            vec4 position = u_mvp * vec4(a_vertex,1.0);\
+            v_vertex = position;\n\
+            gl_Position = position;\n\
         }\
         ', '\
         precision highp float;\
-        varying vec3 v_vertex;\
+        varying vec4 v_vertex;\
         void main() {\
-          vec3 V = v_vertex;\
-          gl_FragColor = vec4(((normalize(v_vertex)+vec3(1.0))/vec3(2.0)),1.0);//color;\n\
+          //gl_FragColor = vec4(((normalize(v_vertex)+vec3(1.0))/vec3(2.0)),1.0);//color;\n\
+          gl_FragColor = vec4(v_vertex.xyz,1.0-v_vertex.z/100.0);\n\
         }\
     ');
 
     gl.shaders["_depth"] = new GL.Shader('\
         precision highp float;\
         attribute vec3 a_vertex;\
-        varying vec3 v_vertex;\
+        varying vec4 v_vertex;\
         uniform mat4 u_mvp;\
         uniform mat4 u_model;\
+        uniform vec3 u_eye;\
         void main() {\n\
-            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
-            gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+            v_vertex = u_mvp * vec4(a_vertex,1.0);\n\
+            gl_Position = v_vertex;\n\
         }\
         ', '\
         precision highp float;\
-        varying vec3 v_vertex;\
-        void main() {\
-          vec3 V = v_vertex;\
-          gl_FragColor = vec4(((vec3(normalize(v_vertex).z)+vec3(1.0))/vec3(2.0)),1.0);//color;\n\
+        varying vec4 v_vertex;\
+        void main() {\n\
+          gl_FragColor = vec4(1.0-v_vertex.z/100.0,0,0,0);\n\
         }\
     ');
 

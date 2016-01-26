@@ -84,14 +84,21 @@ function init()
 	
 	ctx.captureMouse(true);
 
-    ctx.ondraw = function(){
+    ctx.ondraw = function()
+    {
         renderer.clear([0.05,0.05,0.05,1]);
+
+        if(window.layers != ''){
+            renderer.shader_overwrite = window.layers;
+            scene.root.postRender = function(renderer){renderer.shader_overwrite = null;};
+        }
         renderer.render(scene, camera);
-    }
+    };
 
     ctx.onupdate = function(dt)
     {
         scene._root.getVisibleChildren().map(updateFlags);
+
         scene._root.getVisibleChildren().map(function(n){
 
             if(n.flags.val & _f.ENV) {
@@ -100,6 +107,7 @@ function init()
                 renderer._uniforms.u_eye = camera.position;
             }
         });
+
         scene.update(dt);
     }
 
