@@ -1,10 +1,12 @@
-//Globals
+/*=============================================
+/ Global Usage Variables
+/============================================*/
 var placer  = null;
 var ctx     = null;
 var renderer= null;
 var scene   = null;
 var camera  = null;
-var node = null;
+var node    = null;
 
 var tempVec3 = vec3.create();
 
@@ -12,30 +14,37 @@ var tempVec3 = vec3.create();
 function init()
 {
 
-    //create a scene
+    /*=============================================
+    / Initial Setup : Scene & Rendering Context
+    /============================================*/
 	scene = new RD.Scene();
-
-	//create the rendering context
     placer = document.getElementById('canvas-container');
-	ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
+    ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
 
-
-
-
-	renderer = new RD.Renderer(ctx);
-    placer.appendChild( renderer.canvas ); //attach
+    renderer = new RD.Renderer(ctx);
     renderer._uniforms.u_lightvector = vec3.fromValues(0,25,0);
-    //Parse scene from file
     renderer.setDataFolder("data");
+
+    placer.appendChild( renderer.canvas ); //attach
+
+
+    //Parse scene from file
     loadCustomShaders();
-    renderer.loadShaders("shaders.txt",function(){
+    renderer.loadShaders("shaders.txt",
+    function(){
         parseSceneGraphJson((getUriParams().s || 'sun')+'.json', parseCallback);
     });
-
+    function parseCallback(cameras){
+        console.log('parseCallback');
+        camera = cameras[0];
+        renderer.render(scene, camera , scene);
+        $('canvas').fadeIn("slow");
+        ctx.animate();
+    }
+    
     /*=============================================
-     / Window Resie Handling
-     /==============================================*/
-
+    / Window Resie Handler
+    /============================================*/
     var resize = function() {
 
         ctx.canvas.width   = placer.clientWidth;
@@ -45,19 +54,16 @@ function init()
         ctx.viewport(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     };
-
     window.onresize = resize;
-
     resize();
-    function parseCallback(cameras){
-        console.log('parseCallback');
-        camera = cameras[0];
-        renderer.render(scene, camera , scene);
-        $('canvas').fadeIn("slow");
-        ctx.animate();
-    }
 
-	//user input
+
+
+
+    /*=============================================
+    / User Input Handling
+    /============================================*/
+    ctx.captureMouse(true);
 	ctx.onmousemove = function(e)
 	{
         if (e.dragging) {
@@ -75,19 +81,18 @@ function init()
             }
         }
 	}
-	
 	ctx.onmousewheel = function(e)
 	{
 		vec3.scale( tempVec3, vec3.sub([0,0,0],camera.position,camera._target), e.wheel < 0 ? 1.01 : 0.99 );
         vec3.add(camera.position, camera._target, tempVec3 );
 	}
-	
-	ctx.captureMouse(true);
 
+    /*=============================================
+    / Render Event Callback Functon
+    /============================================*/
     ctx.ondraw = function()
     {
         renderer.clear([0.05,0.05,0.05,1]);
-
         if(window.layers != ''){
             renderer.shader_overwrite = window.layers;
             scene.root.postRender = function(renderer){renderer.shader_overwrite = null;};
@@ -95,19 +100,20 @@ function init()
         renderer.render(scene, camera);
     };
 
+    /*=============================================
+    / Update Event Callback Functon
+    /============================================*/
     ctx.onupdate = function(dt)
     {
-        scene._root.getVisibleChildren().map(updateFlags);
 
         scene._root.getVisibleChildren().map(function(n){
-
+            updateFlags(n);
             if(n.flags.val & _f.ENV) {
                 gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position,gl.textures['reflection_'+ n._uid],n);
                 n.textures.reflection = 'reflection_'+ n._uid;
                 renderer._uniforms.u_eye = camera.position;
             }
         });
-
         scene.update(dt);
     }
 
