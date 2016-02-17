@@ -10,15 +10,18 @@ var _f = {
     ENV          :32
 }
 
-function updateFlags(n){
-    if(!n.mustUpdateFlags)
+function updateFlags(n, callback){
+    if(!n.mustUpdateFlags){
+        if(callback)
+            return callback(n);
         return;
+    }
+
 
     if(n.flags.val == 'undefined' || n.flags.val == null)
         n.flags.val = 0;
     var aux = null;
-    if(n.texture){
-
+    if(n.texture && gl.textures[ n.texture ]){
         aux = gl.textures[ n.texture ];
         if(!aux){
             return;
@@ -27,7 +30,7 @@ function updateFlags(n){
             n.flags.val |= _f.T_DIFFUSE_2D;
             n.flags.val &= ~_f.T_DIFFUSE_CM;
         }
-        else if(aux && this.albedo.texture_type == gl.TEXTURE_CUBE_MAP){
+        else if(aux && this.albedo && this.albedo.texture_type == gl.TEXTURE_CUBE_MAP){
             n.flags.val |= _f.T_DIFFUSE_CM;
             n.flags.val &= ~_f.T_DIFFUSE_2D;
         }
@@ -246,68 +249,29 @@ function mainFS(flags){
 	    gl_FragColor = color;\n\ ';
     return code;
 }
-////vec4( pow(vec3(color.x,color.y,color.z),vec3(u_gamma)),color.w);
-//+ textureCube( u_reflection_texture, vec3(R.x,R.y,R.z) )
-//
 
 //-------------------------------------------------------------------------------------------------------
 function loadCustomShaders(){
-    gl.shaders["_normals"] = new GL.Shader('\
+    gl.shaders["_blur"] = new GL.Shader('\
         precision highp float;\
         attribute vec3 a_vertex;\
         attribute vec3 a_normal;\
-        varying vec4 v_normal;\
+        attribute vec2 a_coord;\
+        varying vec3 v_vertex;\
+        varying vec3 v_normal;\
         uniform mat4 u_mvp;\
         uniform mat4 u_model;\
         void main() {\n\
-            v_normal = u_model * vec4(a_normal,0.0);\n\
+            v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
+            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
+            v_vertex =  a_vertex.xyz;\n\
             gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
-        }\
-        ', '\
-        precision highp float;\
-        varying vec4 v_normal;\
-        void main() {\
-          gl_FragColor = normalize(v_normal);\
+        }','precision highp float;\n\
+        varying vec3 v_vertex;\n\
+        varying vec3 v_normal;\n\
+        uniform samplerCube u_reflection_texture;\n\
+        void main() {\n\
+          gl_FragColor = textureCube( u_reflection_texture, v_vertex ) ;\n\
         }\
     ');
-
-    gl.shaders["_position"] = new GL.Shader('\
-        precision highp float;\
-        attribute vec3 a_vertex;\
-        varying vec4 v_vertex;\
-        uniform mat4 u_mvp;\
-        uniform mat4 u_model;\
-        void main() {\n\
-            vec4 position = u_mvp * vec4(a_vertex,1.0);\
-            v_vertex = position;\n\
-            gl_Position = position;\n\
-        }\
-        ', '\
-        precision highp float;\
-        varying vec4 v_vertex;\
-        void main() {\
-          //gl_FragColor = vec4(((normalize(v_vertex)+vec3(1.0))/vec3(2.0)),1.0);//color;\n\
-          gl_FragColor = vec4(v_vertex.xyz,1.0-v_vertex.z/100.0);\n\
-        }\
-    ');
-
-    gl.shaders["_depth"] = new GL.Shader('\
-        precision highp float;\
-        attribute vec3 a_vertex;\
-        varying vec4 v_vertex;\
-        uniform mat4 u_mvp;\
-        uniform mat4 u_model;\
-        uniform vec3 u_eye;\
-        void main() {\n\
-            v_vertex = u_mvp * vec4(a_vertex,1.0);\n\
-            gl_Position = v_vertex;\n\
-        }\
-        ', '\
-        precision highp float;\
-        varying vec4 v_vertex;\
-        void main() {\n\
-          gl_FragColor = vec4(1.0-v_vertex.z/100.0,0,0,0);\n\
-        }\
-    ');
-
 }

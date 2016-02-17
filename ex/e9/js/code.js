@@ -7,41 +7,53 @@ var renderer= null;
 var scene   = null;
 var camera  = null;
 var node    = null;
+var scene2 = null;
+var cnode = null;
+
 
 var tempVec3 = vec3.create();
 
 
 function init()
 {
-
     /*=============================================
     / Initial Setup : Scene & Rendering Context
     /============================================*/
 	scene = new RD.Scene();
     placer = document.getElementById('canvas-container');
     ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
-
+    GL.Mesh.getScreenQuad(gl);
     renderer = new RD.Renderer(ctx);
     renderer._uniforms.u_lightvector = vec3.fromValues(0,25,0);
     renderer.setDataFolder("data");
 
     placer.appendChild( renderer.canvas ); //attach
 
-
     //Parse scene from file
     loadCustomShaders();
-    renderer.loadShaders("shaders.txt",
-    function(){
+    renderer.loadShaders("shaders.txt",function(){
         parseSceneGraphJson((getUriParams().s || 'sun')+'.json', parseCallback);
     });
     function parseCallback(cameras){
         console.log('parseCallback');
         camera = cameras[0];
         renderer.render(scene, camera , scene);
+
+        scene2 = new RD.Scene();
+        cnode = new CubeNode({})
+
+        cnode.textures.reflection = 'creflection';
+        cnode.flags.flip_normals = true;
+        cnode.flags.two_sided = true;
+        cnode.color = [0,0,1,1];
+        ShaderManager.getShader(cnode);
+        scene2.root.addChild( cnode );
+
         $('canvas').fadeIn("slow");
         ctx.animate();
     }
-    
+
+
     /*=============================================
     / Window Resie Handler
     /============================================*/
@@ -56,8 +68,6 @@ function init()
     };
     window.onresize = resize;
     resize();
-
-
 
 
     /*=============================================
@@ -92,7 +102,9 @@ function init()
     /============================================*/
     ctx.ondraw = function()
     {
-        renderer.clear([0.05,0.05,0.05,1]);
+        renderer.clear([0.00,0.00,0.00,1]);
+        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
         if(window.layers != ''){
             renderer.shader_overwrite = window.layers;
             scene.root.postRender = function(renderer){renderer.shader_overwrite = null;};
@@ -107,13 +119,31 @@ function init()
     {
 
         scene._root.getVisibleChildren().map(function(n){
-            updateFlags(n);
-            if(n.flags.val & _f.ENV) {
-                gl.textures['reflection_'+ n._uid] = getCubemapAt(n.position,gl.textures['reflection_'+ n._uid],n);
-                n.textures.reflection = 'reflection_'+ n._uid;
+
+            updateFlags(n,function(n){
+                if(n.flags.val & _f.ENV) {
+                    getCubemapAt(n.position,gl.textures['reflection_'+ n._uid],n,function(tex){
+                        n.textures.reflection = 'reflection_'+ n._uid;
+                        blurTexture(tex,3,function(blur_tex){
+                            gl.textures[n.textures.reflection] = blur_tex;
+                        });
+                    });
+
+                    renderer._uniforms.u_eye = camera.position;
+                }
+            });
+
+        });
+        scene._root.getVisibleChildren().map(function(n){
+
+            if(n.flags.val & _f.ENV && n.textures.reflection) {
+
+                //xgl.textures[n.textures.reflection] = blurTexture(n.textures.reflection,3);
                 renderer._uniforms.u_eye = camera.position;
+
             }
         });
+
         scene.update(dt);
     }
 

@@ -43,9 +43,9 @@ var tex = null;
 var cubemapCam = new RD.Camera();
 cubemapCam.perspective( 90, 1, 0.1, 10000 );
 
-function getCubemapAt(position,tex,selfnode){
+function getCubemapAt(position,tex,selfnode,callback){
     if(!tex)
-        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+        tex = new GL.Texture(256,256, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
     tex.drawTo(function(texture,face)
     {
@@ -61,50 +61,93 @@ function getCubemapAt(position,tex,selfnode){
 
         if(selfnode){
             renderer.render(scene, cubemapCam,scene._root.children.filter(function(node){return node != selfnode;}));
-            selfnode._uniforms.u_cm_center = position;
         }
         else
             renderer.render(scene, cubemapCam);
+        selfnode._uniforms.u_cm_center = position;
+
 
         return;
 
     });
-
+    if(callback)
+        callback(tex);
     return tex;
 };
 
-function getPositionDepthMap(camera,scene, tex, callback){
-    if(!tex)
-        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+function blur(tex_in,level,tex_levels){
+    console.log(level)
+    if(level <= 0)
+        return tex_levels;
+    //0tempTex = GL.Texture.fromTexture(tex_in);
+    tex_in.drawTo(function(texture,face){
+        var eye = [1,0,1];
 
-    tex.drawTo(
-        function(texture){
-            renderer.clear([0.00,0.00,0.00,1]);
-            ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+        var dir = Texture.cubemap_camera_parameters[face].dir;
+        var center = vec3.add(vec3.create(),dir,eye);
+        var up =  Texture.cubemap_camera_parameters[face].up;
+        cubemapCam.lookAt(eye, center, up);
 
-            renderer.shader_overwrite = '_position';
-            scene.root.postRender = function(renderer){renderer.shader_overwrite = null;};
-            renderer.render(scene,camera);
+        renderer.clear([0.00,0.00,0.00,1]);
+        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
-            if(callback)
-                callback();
-        }
+        renderer.render(scene2, cubemapCam);
 
-    );
-    return tex;
+        //return;
+    });
+    var out_tex = tex_in;
+    tex_levels.push(out_tex);
 
+    blur(out_tex, --level, tex_levels);
 }
-function getAlbedoMap(camera,scene, tex, callback){
-    if(!tex)
-        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+var tempTex = null;
+function blurTexture(tex_in,levels,callback){
 
-    tex.drawTo();
-    return tex;
+    if(!tex_in)
+        return undefined;
+    //gl.textures[n.textures.reflection] = tex_in;
+    tex_in.drawTo(function(texture,face){
+        var eye = [1,1,-1];
+        var dir = Texture.cubemap_camera_parameters[face].dir;
+        var center = vec3.add(vec3.create(),dir,eye);
+        var up =  Texture.cubemap_camera_parameters[face].up;
+        cubemapCam.lookAt(eye, center, up);
+
+        renderer.clear([0.00,0.00,0.00,1]);
+        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+        renderer.render(scene2, cubemapCam);
+
+        return;
+    });
+
+    if(callback)
+        callback(tex_in);
+    return tex_in;
 }
-function getNormalMap(camera,scene, tex, callback){
-    if(!tex)
-        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_2D, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
-    tex.drawTo();
-    return tex;
+function blurasas(tex,levels,callback){
+    if(!gl.textures['cnode_'+ levels])
+        gl.textures['cnode_'+ levels] = new GL.Texture(128,128, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+
+    gl.textures['creflection'] = tex;
+    updateFlags(cnode);
+    gl.textures['cnode_'+ levels].drawTo(function(texture_rendered,face)
+    {
+        var eye = [0,0,-10];
+        var dir = Texture.cubemap_camera_parameters[face].dir;
+        var center = vec3.add(vec3.create(),dir,eye);
+        var up =  Texture.cubemap_camera_parameters[face].up;
+        cubemapCam.lookAt(eye, center, up);
+
+        renderer.clear([0.00,0.00,0.00,1]);
+        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+        renderer.render(scene2, cubemapCam);
+
+        return;
+    });
+
+    tex_levels.push(gl.textures['cnode_'+ levels]);
+
 }
