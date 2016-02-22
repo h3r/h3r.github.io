@@ -88,7 +88,7 @@ El prefijo ***uniform*** hace referencia a unos datos cargados en memoria que so
 Un uso muy común de las varyings suele ser para definir el color que recibirá un pixel.
 
 >![Interpolacion lineal de color](http://3.bp.blogspot.com/-kgKg2kiBvD0/TarT8eoeV9I/AAAAAAAAAaI/-P36pCTG56s/s1600/BilinearGradient.png)
-><small>Interpolacion lineal del color definido en cada vértice del cuad.
+><small>Interpolacion lineal del color definido en cada vértice del quad.
 
 ---
 
@@ -117,30 +117,29 @@ Una vez que sabemos si podemos pintar o no un pixel, el fixed pipeline de la tar
 
 ##1.6 Fragment Shader
 
-#N Texturas
+#Z Fresnel Term
 
-#Técnicas de iluminación global
-En el mundo de las imágenes generadas por ordenador, existen diferentes algoritmos con los que podemos simular la interacción de la luz en la escena. Principalmente vamos a dividirlos en dos grandes bloques: Iluminación local e iluminación global.
+#A Texturas
 
-En este apartado vamos a enforcarnos en las diferentes técnicas de iluminación global que han ido surgiendo en los diferentes últimos años y como resuelven la integración de la luz. El término "iluminación global" es comúnmente utilizado para referirse a un cierto conjunto de técnicas o algoritmos que tienen como fin representar de forma aproximada la interacción de la luz en una superficie debido a la contribución de otras fuentes de luz a lo largo de la escena sobre un punto concreto.
+#AA CubeMaps
 
-James Kajiya junto con David Immel teorizaron sobre una primera aproximación matemática que resolviese este problema siguiendo los principios de la conservación de la luz. 
+#AAA Blur
+##AAA.1 Descripción básica de la técnica
+El término inglés ***'blur'***, en español 'difuminado', hace referencia a la técnica de filtro pictográfica que tiene como fin desdibujar los colores y contornos de una imagen. Este tipo de filtro tiene aplicaciones como la simulacion de movimiento en imagenes estàticas, mejorar la detección de contornos de una imagen
 
+>![](https://udn.epicgames.com/Three/rsrc/Three/MotionBlurSoftEdge/SoftEdgeFan.jpg)
+><small>El desenfoque de las aspas sugiere el movimiento circular de este.
 
+<!---->
 
+>![](https://upload.wikimedia.org/wikipedia/commons/7/73/Edge_Image.gif)
+><small>Al desenfocar la imagen original, desaparecen los detalles y prevalecen los contornos más relevantes.
 
+Para este proyecto, queremos localizar e implementar alguna técnica de desenfoque por tal de simular la granulosidad del material.
 
-$$
-L_0(x, \omega_0, \lambda, t) = L_e(x, \omega_0, \lambda, t) + \int_\Omega f_r(x, \omega_i,  \omega_0,\lambda, t) L_i(x, \omega_i,\lambda, t) (\omega_i · n)  \delta\omega_i
-$$
-
-
-
-
-
-
-
-
+>![](https://upload.wikimedia.org/wikipedia/commons/6/62/Cappadocia_Gaussian_Blur.svg)
+><small>El desenfoque gausiano utiliza una convolución de los píxeles colindantes dado un peso concreto, de este modo el píxel central es el que más peso tiene y se va difuminando a medida que nos alejamos de forma simétrica.
+<!---->
 
 
 
