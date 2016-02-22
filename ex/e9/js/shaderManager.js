@@ -252,7 +252,7 @@ function mainFS(flags){
 
 //-------------------------------------------------------------------------------------------------------
 function loadCustomShaders(){
-    gl.shaders["_blur"] = new GL.Shader('\
+    gl.shaders["_Hblur"] = new GL.Shader('\
         precision highp float;\
         attribute vec3 a_vertex;\
         attribute vec3 a_normal;\
@@ -270,8 +270,40 @@ function loadCustomShaders(){
         varying vec3 v_vertex;\n\
         varying vec3 v_normal;\n\
         uniform samplerCube u_reflection_texture;\n\
+        float gBlur(float x, float y){\n\
+            return 0.0;\n\
+        }\n\
         void main() {\n\
-          gl_FragColor = textureCube( u_reflection_texture, v_vertex ) ;\n\
+            vec4 color = vec4(0.0);\n\
+            color = vec4(0.5,0.0,0.0,1.0) +  textureCube( u_reflection_texture, v_vertex );\n\
+          gl_FragColor = color;\n\
+        }\
+    ');
+    gl.shaders["_Vblur"] = new GL.Shader('\
+        precision highp float;\
+        attribute vec3 a_vertex;\
+        attribute vec3 a_normal;\
+        attribute vec2 a_coord;\
+        varying vec3 v_vertex;\
+        varying vec3 v_normal;\
+        uniform mat4 u_mvp;\
+        uniform mat4 u_model;\
+        void main() {\n\
+            v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
+            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
+            v_vertex =  a_vertex.xyz;\n\
+            gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
+        }','precision highp float;\n\
+        varying vec3 v_vertex;\n\
+        varying vec3 v_normal;\n\
+        uniform samplerCube u_reflection_texture;\n\
+        float gBlur(float x, float y){\n\
+            return 0.0;\n\
+        }\n\
+        void main() {\n\
+            vec4 color = vec4(0.0);\n\
+            color =  vec4(0.0,0.0,0.5,1.0) + textureCube( u_reflection_texture, v_vertex );\n\
+          gl_FragColor = color;\n\
         }\
     ');
 }

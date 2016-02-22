@@ -40,12 +40,14 @@ function init()
         renderer.render(scene, camera , scene);
 
         scene2 = new RD.Scene();
-        cnode = new CubeNode({})
+        gl.textures['test'] = GL.Texture.fromURL('data/test.dds',null,null,gl);
 
-        cnode.textures.reflection = 'creflection';
+        cnode = new SphereNode({});
+        cnode.textures.reflection = 'test';
         cnode.flags.flip_normals = true;
         cnode.flags.two_sided = true;
-        cnode.color = [0,0,1,1];
+
+        cnode.shader = '_Hblur';
         ShaderManager.getShader(cnode);
         scene2.root.addChild( cnode );
 
@@ -124,6 +126,7 @@ function init()
                 if(n.flags.val & _f.ENV) {
                     getCubemapAt(n.position,gl.textures['reflection_'+ n._uid],n,function(tex){
                         n.textures.reflection = 'reflection_'+ n._uid;
+                        gl.textures[n.textures.reflection] = tex;
                         blurTexture(tex,3,function(blur_tex){
                             gl.textures[n.textures.reflection] = blur_tex;
                         });

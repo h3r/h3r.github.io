@@ -66,7 +66,7 @@ var loadMesh = function(item,callback){
 var loadTexture = function(item,callback){
     var resource = gl.textures[item];
     if(!resource){
-        renderer.loadTexture(item, { wrap: gl.REPEAT, minFilter: gl.LINEAR_MIPMAP_LINEAR },
+        renderer.loadTexture(item, null/*{ wrap: gl.REPEAT, minFilter: gl.LINEAR_MIPMAP_LINEAR }*/,
         function(tex){
             gl.textures[item] = tex;
             if(callback)

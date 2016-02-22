@@ -45,7 +45,7 @@ cubemapCam.perspective( 90, 1, 0.1, 10000 );
 
 function getCubemapAt(position,tex,selfnode,callback){
     if(!tex)
-        tex = new GL.Texture(256,256, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
     tex.drawTo(function(texture,face)
     {
@@ -75,46 +75,31 @@ function getCubemapAt(position,tex,selfnode,callback){
     return tex;
 };
 
-function blur(tex_in,level,tex_levels){
-    console.log(level)
-    if(level <= 0)
-        return tex_levels;
-    //0tempTex = GL.Texture.fromTexture(tex_in);
-    tex_in.drawTo(function(texture,face){
-        var eye = [1,0,1];
 
-        var dir = Texture.cubemap_camera_parameters[face].dir;
-        var center = vec3.add(vec3.create(),dir,eye);
-        var up =  Texture.cubemap_camera_parameters[face].up;
-        cubemapCam.lookAt(eye, center, up);
-
-        renderer.clear([0.00,0.00,0.00,1]);
-        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-
-        renderer.render(scene2, cubemapCam);
-
-        //return;
-    });
-    var out_tex = tex_in;
-    tex_levels.push(out_tex);
-
-    blur(out_tex, --level, tex_levels);
-}
-var tempTex = null;
 function blurTexture(tex_in,levels,callback){
 
     if(!tex_in)
         return undefined;
-    //gl.textures[n.textures.reflection] = tex_in;
+
+
+    //var b = tex_in;
+    //gl.textures['test'] = b;
+
+
     tex_in.drawTo(function(texture,face){
-        var eye = [1,1,-1];
+        var eye = [0,0,0];
         var dir = Texture.cubemap_camera_parameters[face].dir;
         var center = vec3.add(vec3.create(),dir,eye);
         var up =  Texture.cubemap_camera_parameters[face].up;
         cubemapCam.lookAt(eye, center, up);
 
-        renderer.clear([0.00,0.00,0.00,1]);
+        renderer.clear([0.50,0.00,0.00,1]);
         ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+        cnode.postRender = function(node,camera){
+            //console.log(face);
+            node.postRender = undefined;
+        };
 
         renderer.render(scene2, cubemapCam);
 
@@ -122,32 +107,6 @@ function blurTexture(tex_in,levels,callback){
     });
 
     if(callback)
-        callback(tex_in);
+        return callback(tex_in);
     return tex_in;
-}
-
-function blurasas(tex,levels,callback){
-    if(!gl.textures['cnode_'+ levels])
-        gl.textures['cnode_'+ levels] = new GL.Texture(128,128, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
-
-    gl.textures['creflection'] = tex;
-    updateFlags(cnode);
-    gl.textures['cnode_'+ levels].drawTo(function(texture_rendered,face)
-    {
-        var eye = [0,0,-10];
-        var dir = Texture.cubemap_camera_parameters[face].dir;
-        var center = vec3.add(vec3.create(),dir,eye);
-        var up =  Texture.cubemap_camera_parameters[face].up;
-        cubemapCam.lookAt(eye, center, up);
-
-        renderer.clear([0.00,0.00,0.00,1]);
-        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-
-        renderer.render(scene2, cubemapCam);
-
-        return;
-    });
-
-    tex_levels.push(gl.textures['cnode_'+ levels]);
-
 }
