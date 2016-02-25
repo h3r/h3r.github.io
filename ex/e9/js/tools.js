@@ -75,38 +75,52 @@ function getCubemapAt(position,tex,selfnode,callback){
     return tex;
 };
 
-
 function blurTexture(tex_in,levels,callback){
-
     if(!tex_in)
-        return undefined;
+        throw 'No texure to blur';
 
+        var hpass = tex_in;
+        cnode.shader = '_Hblur';
+        //gl.textures['test'] = tex_in;
+        hpass.drawTo(function(texture,face){
+            var eye = [0,0,0];
+            var dir = Texture.cubemap_camera_parameters[face].dir;
+            var center = vec3.add(vec3.create(),dir,eye);
+            var up =  Texture.cubemap_camera_parameters[face].up;
+            cubemapCam.lookAt(eye, center, up);
 
-    //var b = tex_in;
-    //gl.textures['test'] = b;
+            cnode._uniforms['u_eye_top'] = cubemapCam._top;
 
+            renderer2.clear([0.00,0.00,0.00,0.5]);
+            ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
 
-    tex_in.drawTo(function(texture,face){
-        var eye = [0,0,0];
-        var dir = Texture.cubemap_camera_parameters[face].dir;
-        var center = vec3.add(vec3.create(),dir,eye);
-        var up =  Texture.cubemap_camera_parameters[face].up;
-        cubemapCam.lookAt(eye, center, up);
+            renderer2.render(scene2, cubemapCam);
 
-        renderer.clear([0.50,0.00,0.00,1]);
-        ctx.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+            return;
+        });
 
-        cnode.postRender = function(node,camera){
-            //console.log(face);
-            node.postRender = undefined;
-        };
+        var vpass = hpass;
+        cnode.shader = '_Vblur';
+        //gl.textures['test'] = hpass;
+        vpass.drawTo(function(texture,face){
+            var eye = [0,0,0];
+            var dir = Texture.cubemap_camera_parameters[face].dir;
+            var center = vec3.add(vec3.create(),dir,eye);
+            var up =  Texture.cubemap_camera_parameters[face].up;
+            cubemapCam.lookAt(eye, center, up);
 
-        renderer.render(scene2, cubemapCam);
+            cnode._uniforms['u_eye_right'] = cubemapCam._right;
 
-        return;
-    });
+            renderer2.render(scene2, cubemapCam);
 
+            return;
+        });
+
+        levels--;
+
+    if(levels < 0)
+        return blurTexture(vpass,levels,callback);
     if(callback)
-        return callback(tex_in);
-    return tex_in;
+        return callback(vpass);
+    return vpass;
 }

@@ -9,9 +9,11 @@ var camera  = null;
 var node    = null;
 var scene2 = null;
 var cnode = null;
+var renderer2 = null;
 
 
 var tempVec3 = vec3.create();
+var tempMat4 = mat4.create();
 
 
 function init()
@@ -39,13 +41,18 @@ function init()
         camera = cameras[0];
         renderer.render(scene, camera , scene);
 
-        scene2 = new RD.Scene();
-        gl.textures['test'] = GL.Texture.fromURL('data/test.dds',null,null,gl);
 
-        cnode = new SphereNode({});
+        renderer2 = renderer;
+        scene2 = new RD.Scene();
+        gl.textures['test'] = GL.Texture.fromURL('data/interstellar2.dds',null,null,gl);
+
+        cnode = new CubeNode({});
         cnode.textures.reflection = 'test';
         cnode.flags.flip_normals = true;
         cnode.flags.two_sided = true;
+        cnode.flags.blend = true;
+        cnode.flags.depth_test = false;
+        cnode.blendMode = "additive";
 
         cnode.shader = '_Hblur';
         ShaderManager.getShader(cnode);
@@ -117,34 +124,29 @@ function init()
     /*=============================================
     / Update Event Callback Functon
     /============================================*/
+
     ctx.onupdate = function(dt)
     {
-
         scene._root.getVisibleChildren().map(function(n){
 
             updateFlags(n,function(n){
                 if(n.flags.val & _f.ENV) {
+
                     getCubemapAt(n.position,gl.textures['reflection_'+ n._uid],n,function(tex){
                         n.textures.reflection = 'reflection_'+ n._uid;
                         gl.textures[n.textures.reflection] = tex;
-                        blurTexture(tex,3,function(blur_tex){
-                            gl.textures[n.textures.reflection] = blur_tex;
+
+                        blurTexture(gl.textures[n.textures.reflection] ,3,function(blur_tex){
+                            if(blur_tex)
+                                gl.textures[n.textures.reflection] = blur_tex;
                         });
+
                     });
 
                     renderer._uniforms.u_eye = camera.position;
                 }
             });
 
-        });
-        scene._root.getVisibleChildren().map(function(n){
-
-            if(n.flags.val & _f.ENV && n.textures.reflection) {
-
-                //xgl.textures[n.textures.reflection] = blurTexture(n.textures.reflection,3);
-                renderer._uniforms.u_eye = camera.position;
-
-            }
         });
 
         scene.update(dt);

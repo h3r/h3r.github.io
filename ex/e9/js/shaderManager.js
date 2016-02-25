@@ -252,58 +252,66 @@ function mainFS(flags){
 
 //-------------------------------------------------------------------------------------------------------
 function loadCustomShaders(){
-    gl.shaders["_Hblur"] = new GL.Shader('\
-        precision highp float;\
-        attribute vec3 a_vertex;\
-        attribute vec3 a_normal;\
-        attribute vec2 a_coord;\
-        varying vec3 v_vertex;\
-        varying vec3 v_normal;\
-        uniform mat4 u_mvp;\
-        uniform mat4 u_model;\
+    gl.shaders["_Vblur"] = new GL.Shader('\
+        precision highp float;\n\
+        attribute vec3 a_vertex;\n\
+        varying vec3 blurCoordinates[5];\n\
+        uniform mat4 u_mvp;\n\
+        uniform vec3 u_eye_right;\n\
         void main() {\n\
-            v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
-            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
-            v_vertex =  a_vertex.xyz;\n\
+            vec3 v_d_top = normalize(cross(u_eye_right,a_vertex.xyz));\n\
+            \n\
+            vec3 offset = v_d_top/1024.0;\n\
+            blurCoordinates[0] = a_vertex.xyz - offset * 3.0;\n\
+            blurCoordinates[1] = a_vertex.xyz - offset * 2.0;\n\
+            blurCoordinates[2] = a_vertex.xyz;\n\
+            blurCoordinates[3] = a_vertex.xyz + offset * 2.0;\n\
+            blurCoordinates[4] = a_vertex.xyz + offset * 3.0;\n\
+            \n\
             gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
-        }','precision highp float;\n\
-        varying vec3 v_vertex;\n\
-        varying vec3 v_normal;\n\
+        }',
+        'precision highp float;\n\
+        varying vec3 blurCoordinates[5];\n\
         uniform samplerCube u_reflection_texture;\n\
-        float gBlur(float x, float y){\n\
-            return 0.0;\n\
-        }\n\
         void main() {\n\
             vec4 color = vec4(0.0);\n\
-            color = vec4(0.5,0.0,0.0,1.0) +  textureCube( u_reflection_texture, v_vertex );\n\
-          gl_FragColor = color;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[0]) * 0.198005;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[1]) * 0.200995;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[2]) * 0.202001;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[3]) * 0.200995;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[4]) * 0.198005;\n\
+            gl_FragColor = vec4(color.xyz,0.5);\n\
         }\
     ');
-    gl.shaders["_Vblur"] = new GL.Shader('\
-        precision highp float;\
-        attribute vec3 a_vertex;\
-        attribute vec3 a_normal;\
-        attribute vec2 a_coord;\
-        varying vec3 v_vertex;\
-        varying vec3 v_normal;\
-        uniform mat4 u_mvp;\
-        uniform mat4 u_model;\
+    gl.shaders["_Hblur"] = new GL.Shader('\
+        precision highp float;\n\
+        attribute vec3 a_vertex;\n\
+        varying vec3 blurCoordinates[5];\n\
+        uniform mat4 u_mvp;\n\
+        uniform vec3 u_eye_top;\n\
         void main() {\n\
-            v_normal = (u_model * vec4(a_normal,0.0)).xyz;\n\
-            v_vertex = (u_model * vec4(a_vertex,1.0)).xyz;\n\
-            v_vertex =  a_vertex.xyz;\n\
+            vec3 v_d_right = normalize(cross(u_eye_top,a_vertex.xyz));\n\
+            \
+            vec3 offset = v_d_right/1024.0;\n\
+            blurCoordinates[0] = a_vertex.xyz - offset * 3.0;\n\
+            blurCoordinates[1] = a_vertex.xyz - offset * 2.0;\n\
+            blurCoordinates[2] = a_vertex.xyz;\n\
+            blurCoordinates[3] = a_vertex.xyz + offset * 2.0;\n\
+            blurCoordinates[4] = a_vertex.xyz + offset * 3.0;\n\
+            \
             gl_Position = u_mvp * vec4(a_vertex,1.0);\n\
-        }','precision highp float;\n\
-        varying vec3 v_vertex;\n\
-        varying vec3 v_normal;\n\
+        }',
+        'precision highp float;\n\
+        varying vec3 blurCoordinates[5];\n\
         uniform samplerCube u_reflection_texture;\n\
-        float gBlur(float x, float y){\n\
-            return 0.0;\n\
-        }\n\
         void main() {\n\
             vec4 color = vec4(0.0);\n\
-            color =  vec4(0.0,0.0,0.5,1.0) + textureCube( u_reflection_texture, v_vertex );\n\
-          gl_FragColor = color;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[0]) * 0.198005;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[1]) * 0.200995;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[2]) * 0.202001;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[3]) * 0.200995;\n\
+            color += textureCube( u_reflection_texture, blurCoordinates[4]) * 0.198005;\n\
+            gl_FragColor = vec4(color.xyz,0.5);\n\
         }\
     ');
 }
