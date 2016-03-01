@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>h3R | PBR</title>
+    <link rel="stylesheet" href="style.css"/>
+
+</head>
+<body>
+<header><h2>h3R | PBR</h2></header>
+<div id="canvas-container" class="full"></div>
+
+<script id="main" type="text/javascript">
+    function generateCubemap(scene, position){
+
+    }
+
+    function init(scene){
+        /*=============================================
+        / Initial Setup : Scene & Rendering Context
+        /============================================*/
+        $scope.placer = document.getElementById('canvas-container');
+
+        $scope.scene = new RD.Scene();
+
+    }
+</script>
+
+<script type="text/javascript" src="js/extra/litegl.js"></script>
+<script type="text/javascript" src="js/extra/rendeer.js"></script>
+
+<script defer type="text/javascript">
+    window.onload = function(){
+        var $scope = {placer:null,context:null,renderer:null,camera:null,scene:null};
+        var $temp = {vec3:vec3.create(),mat4:mat4.create()}
+        init(parseScene() || parseScene('cornel'));
+    }
+
+</script>
+
+</body>
+</html>doctype

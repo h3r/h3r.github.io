@@ -1,9 +1,3 @@
-/**
- * Created by bleiz on 28/07/2015.
- */
-
-
-
 
 var idcount = 0;
 function Entity(id,mesh,tex,gl){
