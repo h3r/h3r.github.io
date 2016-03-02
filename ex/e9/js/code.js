@@ -43,7 +43,7 @@ function init()
 
         renderer2 = renderer;
         scene2 = new RD.Scene();
-        gl.textures['test'] = GL.Texture.fromURL('data/interstellar2.dds',null,null,gl);
+        gl.textures['test'] = GL.Texture.fromURL('data/test.dds',null,null,gl);
 
         cnode = new CubeNode({});
         cnode.textures.reflection = 'test';

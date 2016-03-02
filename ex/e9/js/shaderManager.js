@@ -261,7 +261,7 @@ function loadCustomShaders(){
         void main() {\n\
             vec3 v_d_top = normalize(cross(u_eye_right,a_vertex.xyz));\n\
             \n\
-            vec3 offset = v_d_top/1024.0;\n\
+            vec3 offset = v_d_top/512.0;\n\
             blurCoordinates[0] = a_vertex.xyz - offset * 3.0;\n\
             blurCoordinates[1] = a_vertex.xyz - offset * 2.0;\n\
             blurCoordinates[2] = a_vertex.xyz;\n\
@@ -292,7 +292,7 @@ function loadCustomShaders(){
         void main() {\n\
             vec3 v_d_right = normalize(cross(u_eye_top,a_vertex.xyz));\n\
             \
-            vec3 offset = v_d_right/1024.0;\n\
+            vec3 offset = v_d_right/512.0;\n\
             blurCoordinates[0] = a_vertex.xyz - offset * 3.0;\n\
             blurCoordinates[1] = a_vertex.xyz - offset * 2.0;\n\
             blurCoordinates[2] = a_vertex.xyz;\n\

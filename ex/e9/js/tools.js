@@ -45,7 +45,7 @@ cubemapCam.perspective( 90, 1, 0.1, 10000 );
 
 function getCubemapAt(position,tex,selfnode,callback){
     if(!tex)
-        tex = new GL.Texture(1024,1024, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+        tex = new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
 
     tex.drawTo(function(texture,face)
     {
