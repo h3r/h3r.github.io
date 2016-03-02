@@ -96,10 +96,10 @@
     },
     {
       "type":"mesh",
-      "size":"25",
+      "size":"50",
       "position":[0,0,0],
       "rotation":[0,45,0],
-      "mesh":"arale/arale.obj",
+      "mesh":"predator/predator2.obj",
       "uniforms":{
         "u_lightvector":[250,250,250],
         "u_ref_i":0.15

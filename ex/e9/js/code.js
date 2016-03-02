@@ -23,7 +23,6 @@ function init()
     /============================================*/
 	scene = new RD.Scene();
     placer = document.getElementById('canvas-container');
-    ctx = GL.create({width:placer.clientWidth, height:placer.clientHeight});
     GL.Mesh.getScreenQuad(gl);
     renderer = new RD.Renderer(ctx);
     renderer._uniforms.u_lightvector = vec3.fromValues(0,25,0);
@@ -124,7 +123,6 @@ function init()
     /*=============================================
     / Update Event Callback Functon
     /============================================*/
-
     ctx.onupdate = function(dt)
     {
         scene._root.getVisibleChildren().map(function(n){

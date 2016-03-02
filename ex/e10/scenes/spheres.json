@@ -1,15 +1,56 @@
 {
   "name": "spheres",
   "version": "1.0",
+  "materials":[
+    {
+      "name":"silver",
+      "ka": [0.0,0.0,0.0],
+      "kd": [0.960, 0.960, 0.915],
+      "ks": [0.5,0.5,0.5],
+      "ns": 10
+    }
+  ],
   "nodes" : [
     {
       "type"    :"camera",
       "name"    :"cam1",
       "camera_type":"perspective",
-      "eye"     :[0,15,30],"center"  :[0,15,0],"up"      :[0,1,0],
-      "fov"     : 75,"aspect"  : null,"near"    : 0.1,"far"     : 10000
+      "eye"     :[0,0,-9],"center"  :[0,0,0],"up"      :[0,1,0],
+      "fov"     : 90,"aspect"  : null,"near"    : 0.1,"far"     : 10000.0
     },{
-
+      "type":"sphere",
+      "name":"sphere1",
+      "position":[0,0,0],
+      "rotation":[0,0,0],
+      "color":[1,0,1,1],
+      "size":"1",
+      "material":"silver",
+      "mesh_options":{"subdivisions":128}
+    },{
+      "type":"cube",
+      "name":"sphere1",
+      "position":[3,10,0],
+      "rotation":[0,0,0],
+      "color":[1,0,0,1],
+      "size":"1"
+    },{
+      "type":"cube",
+      "name":"sphere1",
+      "position":[10,0,3],
+      "rotation":[0,0,0],
+      "color":[0,0,1,1],
+      "size":"1"
+    },
+    {
+      "type":"cube",
+      "name":"sphere1",
+      "position":[10,0,-3],
+      "rotation":[0,0,0],
+      "color":[0,1,0,1],
+      "size":"1"
+    },{
+      "type":"skybox",
+      "texture":"OutputCube.dds"
     }
   ]
 }

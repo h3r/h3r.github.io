@@ -10,32 +10,136 @@
 <header><h2>h3R | PBR</h2></header>
 <div id="canvas-container" class="full"></div>
 
+
+
+<!--Javascript dependencies-->
+<script type="text/javascript" src="js/lib/datgui/dat.gui.js" ></script>
+<script type="text/javascript" src="js/lib/gl-matrix.js"></script>
+<script type="text/javascript" src="js/lib/litegl.js"></script>
+<script type="text/javascript" src="js/lib/rendeer.js"></script>
+<script type="text/javascript" src="js/lib/md5.js"></script>
+
+
+
+<!-- parse function override -->
+<script type="text/javascript" src="js/lib/rendeer_complex_mesh_parser.js"></script>
+
+<script type="text/javascript" src="js/shaderManager.js"></script>
+<script type="text/javascript" src="js/tools.js"></script>
+<script type="text/javascript" src="js/scene.js"></script>
+<script type="text/javascript" src="js/gui.js"></script>
 <script id="main" type="text/javascript">
-    function generateCubemap(scene, position){
+    //Globals
+    var $scope  = {placer:null,context:null,renderer:null,camera:null,scene:null};
+    var $temp   = {vec3:vec3.create(),mat4:mat4.create(),uniforms:{}};
+    var $custom = {blur:1,light:{pos:vec3.fromValues(762.28125, 363.6046142578125, 689.8486328125),color:vec3.fromValues(1.0,1.0,1.0,1.0)}};
 
-    }
-
-    function init(scene){
-        /*=============================================
-        / Initial Setup : Scene & Rendering Context
-        /============================================*/
-        $scope.placer = document.getElementById('canvas-container');
-
-        $scope.scene = new RD.Scene();
-
-    }
-</script>
-
-<script type="text/javascript" src="js/extra/litegl.js"></script>
-<script type="text/javascript" src="js/extra/rendeer.js"></script>
-
-<script defer type="text/javascript">
     window.onload = function(){
-        var $scope = {placer:null,context:null,renderer:null,camera:null,scene:null};
-        var $temp = {vec3:vec3.create(),mat4:mat4.create()}
-        init(parseScene() || parseScene('cornel'));
+
+        this.gui = new dat.GUI();
+        this.gui.add($custom, 'blur', 0, 10);
+        /*=============================================
+         / Initial Setup
+         /============================================*/
+        $scope.placer   = document.getElementById('canvas-container');
+        $scope.context  = GL.create({width:$scope.placer.clientWidth, height:$scope.placer.clientHeight});
+        $scope.renderer = new RD.Renderer($scope.context);
+        $scope.scene    = new RD.Scene();
+
+        $scope.renderer.setDataFolder("assets");
+        $scope.placer.appendChild( $scope.renderer.canvas );
+
+        $scope.renderer.loadShaders("shaders.txt",function(){
+            parseScene($scope.scene,null,init) || parseScene($scope.scene,'spheres',init);
+        });
+
     }
 
+    function init(){
+        fadeIn('canvas',999);
+        $scope.context.animate();
+
+        /*=============================================
+         / User Input Handling
+         /============================================*/
+        $scope.context.captureMouse(true);
+        $scope.context.onmousemove = function(e) {
+            if (e.dragging && e.leftButton) {
+                    $scope.camera.orbit(-e.deltax *  0.005, RD.UP, $scope.camera._target );
+                    $scope.camera.orbit(-e.deltay *  0.005, $scope.camera._right, $scope.camera._target );
+            }
+            if (e.dragging && e.rightButton){
+                    var dx = e.deltax * 0.05,
+                        dy = e.deltay * 0.05;
+                $scope.camera.move( vec3.mul([0,0,0],$scope.camera._right,[-dx,-dx,-dx]) );
+                $scope.camera.move( vec3.mul([0,0,0],$scope.camera._top,  [dy,dy,dy]) );
+            }
+        }
+        $scope.context.onmousewheel = function(e) {
+            vec3.scale( $temp.vec3, vec3.sub([0,0,0],$scope.camera.position,$scope.camera._target), e.wheel < 0 ? 1.01 : 0.99 );
+            vec3.add($scope.camera.position, $scope.camera._target, $temp.vec3 );
+        }
+
+        /*=============================================
+         / Render Event Callback Functon
+         /============================================*/
+        $scope.context.ondraw = function(){
+
+            $scope.renderer.render( $scope.scene,  $scope.camera);
+        };
+
+        $scope.scene.root.preRender = function(renderer,camera){
+            $scope.renderer.clear([0.1,0.1,0.1,1]);
+            $scope.context.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+            if($scope.scene.envmap){
+                loadTexture($scope.scene.envmap.texture,function(tex){
+                    tex.bind(0);gl.disable(gl.DEPTH_TEST);
+                    $temp.uniforms = {u_env_texture : 0, u_inv_viewprojection: mat4.invert($temp.mat4,$scope.camera._viewprojection_matrix)};
+                    gl.shaders['_env'].uniforms($temp.uniforms).draw(Mesh.getScreenQuad(), gl.TRIANGLES);
+                    gl.enable(gl.DEPTH_TEST);tex.unbind(0);
+                });
+            }
+            $scope.scene._root.getAllChildren().map(shaderManager.setUniforms);
+            $scope.renderer._uniforms['u_eye'] = $scope.camera._position;
+            $scope.renderer._uniforms['u_light_pos'] = $custom.light.pos;
+            $scope.renderer._uniforms['u_light_color'] = $custom.light.color;
+        }
+
+        /*=============================================
+         / Update Event Callback Functon
+         /============================================*/
+        $scope.context.onupdate = function(dt){
+
+            $scope.scene._root.getAllChildren().map(function(node){
+                node.textures.reflection = 'reflection_'+ node._uid;
+                node.flags.value = flagOn(node.flags.value,_f.MAP_R);
+                shaderManager.getShader(node);
+
+                genEnvMap(node,node._position,gl.textures[node.textures.reflection] || null,function(env_map){
+                    gl.textures[node.textures.reflection] = env_map;
+                    node.flags.value = flagOn(node.flags.value,_f.MAP_R);
+                    blurCubemap( env_map.clone() , env_map);
+                    shaderManager.getShader(node);
+                });
+            });
+
+            $scope.scene.update(dt);
+        }
+
+        /*=============================================
+         / Window Resie Handler
+         /============================================*/
+        var resize = function() {
+            $scope.context.canvas.width   = $scope.placer.clientWidth;
+            $scope.context.canvas.height  = $scope.placer.clientHeight;
+
+            if($scope.camera)
+                $scope.camera.perspective($scope.camera.fov, $scope.placer.clientWidth / $scope.placer.clientHeight, $scope.camera.near, $scope.camera.far);
+            $scope.context.viewport(0, 0, $scope.context.canvas.width, $scope.context.canvas.height);
+        };
+        window.onresize = resize;
+        resize();
+    }
 </script>
 
 </body>

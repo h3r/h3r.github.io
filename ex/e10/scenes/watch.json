@@ -1,0 +1,19 @@
+{
+  "name": "spheres",
+  "version": "1.0",
+  "nodes":[{
+    "type"    :"camera",
+    "name"    :"cam1",
+    "camera_type":"perspective",
+    "eye"     :[0,5,15],"center"  :[0,0,0],"up"      :[0,1,0],
+    "fov"     : 55,"aspect"  : null,"near"    : 0.1,"far"     : 10000.0
+  },{
+    "type":"mesh",
+    "name":"watch",
+    "rotation" : [0,-60,0],
+    "mesh":"apple-watch-pbribl-obj/apple-watch-pbribl2.obj"
+  },{
+    "type":"skybox",
+    "texture":"stormy.dds"
+  }]
+}

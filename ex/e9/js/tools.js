@@ -66,7 +66,6 @@ function getCubemapAt(position,tex,selfnode,callback){
             renderer.render(scene, cubemapCam);
         selfnode._uniforms.u_cm_center = position;
 
-
         return;
 
     });
