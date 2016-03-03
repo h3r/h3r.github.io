@@ -23,12 +23,12 @@
                     material = tokens[1];
                     gl.materials[material] = {};
                     break;
-                case 'mape_ke':
-                    //tokens[0] = 'map_'+tokens[0];
                 case "bump":
                 case "map_ka":
                 case "map_kd":
                 case "map_ks":
+                case 'map_ke':
+                case 'map_r':
                 case "map_d":
                 case "map_bump":
                 case "disp":
@@ -42,7 +42,7 @@
                 case "ns":
                 case "ni":
                 case "d" :
-                case "tr" :
+                case "r" :
                 case "illum":
                     if(!material || !gl.materials[material] || !(tokens.length > 1)) continue;
                     gl.materials[material][tokens[0]] = tokens[1];
@@ -50,6 +50,8 @@
                 case "ka":
                 case "kd":
                 case "ks":
+                case "ke":
+                case "tr":
                     if(!material || !gl.materials[material] || !(tokens.length >= 4)) continue;
                     gl.materials[material][tokens[0]] = vec3.fromValues(tokens[1],tokens[2],tokens[3]);
                     break;

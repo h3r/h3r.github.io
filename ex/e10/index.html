@@ -31,7 +31,7 @@
 <script id="main" type="text/javascript">
     //Globals
     var $scope  = {placer:null,context:null,renderer:null,camera:null,scene:null};
-    var $temp   = {vec3:vec3.create(),mat4:mat4.create(),uniforms:{}};
+    var $temp   = {vec3:vec3.create(),mat4:mat4.create(),uniforms:{},tex:null};
     var $custom = {blur:1,light:{pos:vec3.fromValues(762.28125, 363.6046142578125, 689.8486328125),color:vec3.fromValues(1.0,1.0,1.0,1.0)}};
 
     window.onload = function(){
@@ -85,12 +85,15 @@
          /============================================*/
         $scope.context.ondraw = function(){
 
+            $scope.renderer.clear([0.1,0.1,0.1,1]);
+            $scope.context.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
             $scope.renderer.render( $scope.scene,  $scope.camera);
+
         };
 
         $scope.scene.root.preRender = function(renderer,camera){
-            $scope.renderer.clear([0.1,0.1,0.1,1]);
-            $scope.context.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
             if($scope.scene.envmap){
                 loadTexture($scope.scene.envmap.texture,function(tex){
                     tex.bind(0);gl.disable(gl.DEPTH_TEST);
@@ -105,22 +108,42 @@
             $scope.renderer._uniforms['u_light_color'] = $custom.light.color;
         }
 
+        var depth = $scope.scene._root.getAllChildren().length;// * $scope.scene._root.children.length;
+            depth *= depth;
         /*=============================================
          / Update Event Callback Functon
          /============================================*/
         $scope.context.onupdate = function(dt){
-
             $scope.scene._root.getAllChildren().map(function(node){
                 node.textures.reflection = 'reflection_'+ node._uid;
                 node.flags.value = flagOn(node.flags.value,_f.MAP_R);
                 shaderManager.getShader(node);
+                if(depth > 0){
+                    genEnvMap(node,node._position,gl.textures[node.textures.reflection+'_original'] || null,function(env_map){
+                        if(env_map){
+                            gl.textures[node.textures.reflection+'_original'] = env_map.clone();
+                            gl.textures[node.textures.reflection] = env_map;
+                            node.flags.value = flagOn(node.flags.value,_f.MAP_R);
 
-                genEnvMap(node,node._position,gl.textures[node.textures.reflection] || null,function(env_map){
-                    gl.textures[node.textures.reflection] = env_map;
-                    node.flags.value = flagOn(node.flags.value,_f.MAP_R);
-                    blurCubemap( env_map.clone() , env_map);
-                    shaderManager.getShader(node);
-                });
+                            blurTexture(gl.textures[node.textures.reflection+'_original'],gl.textures[node.textures.reflection], gl.materials[node.material].r*50 );
+
+                            shaderManager.getShader(node);
+                            depth--;
+                        }
+
+                    });
+                }
+                /*if(!gl.textures[node.textures.reflection] || jumps > 0){
+                    genEnvMap(node,node._position,gl.textures[node.textures.reflection] || null,function(env_map){
+                        gl.textures[node.textures.reflection+'_original'] = env_map.clone();
+                        gl.textures[node.textures.reflection] = env_map;
+                        node.flags.value = flagOn(node.flags.value,_f.MAP_R);
+                        blurCubemap( env_map.clone() , env_map);
+                        shaderManager.getShader(node);
+                        jumps--;
+                    });
+                }else blurCubemap( gl.textures[node.textures.reflection] , gl.textures[node.textures.reflection+'_original']);
+                */
             });
 
             $scope.scene.update(dt);

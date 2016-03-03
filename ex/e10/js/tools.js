@@ -58,30 +58,28 @@ function fadeIn(selector,val){
         setTimeout('fadeIn("'+selector+'",'+val+')',90);
     }else{return;}
 }
-function blurCubemap( texture , blur_texture )
+function blurTexture( texture , blur_texture, weight )
 {
     var num = $custom.blur || 1;
 
     if(!blur_texture)
         blur_texture = texture.clone();
-    for(var i = 0; i < num; i++)
+    for(var i = 0; i < weight; i++)
     {
         var old = texture; //swap
         texture = texture.applyBlur(i,i, 1, null, blur_texture);
         blur_texture = old;
     }
+    return blur_texture;
 }
 
 var cubemapCam = new RD.Camera();
 cubemapCam.perspective( 90, 1, 0.1, 10000 );
 function genEnvMap(selfnode,position,tex,callback){
-    //function getCubemapAt(position,tex,selfnode,callback){
         if(!tex)
-            tex = new GL.Texture(128,128, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
+            tex = new GL.Texture(512,512, { texture_type: gl.TEXTURE_CUBE_MAP, minFilter: gl.NEAREST, magFilter: gl.NEAREST });
         var cam = $scope.camera;
-        tex.drawTo(function(texture,face)
-        {
-
+        tex.drawTo(function(texture,face) {
             var eye = position;
             var dir = Texture.cubemap_camera_parameters[face].dir;
             var center = vec3.add(vec3.create(),dir,eye);
@@ -94,7 +92,13 @@ function genEnvMap(selfnode,position,tex,callback){
             cubemapCam.lookAt(eye,center, up);
 
             $scope.camera = cubemapCam;
-            $scope.context.ondraw();
+            $scope.renderer.clear([0.1,0.1,0.1,1]);
+            $scope.context.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+
+            if(selfnode)
+                $scope.renderer.render($scope.scene,  $scope.camera,$scope.scene._root.children.filter(function(node){return node != selfnode;}));
+            else
+                $scope.renderer.render($scope.scene,  $scope.camera);
 
             return;
 

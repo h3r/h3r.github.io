@@ -154,6 +154,8 @@ function parseScene(scene,sceneFile,callback){
             material = null;
         resources = {meshes:[],textures:[],shaders:[]};
         gl.materials = gl.materials || {};
+        if(sceneGraph.light)
+            $custom.light.pos = sceneGraph.light;
         if(sceneGraph.materials){
             for(var i in sceneGraph.materials) {
                 material = sceneGraph.materials[i];
@@ -161,6 +163,8 @@ function parseScene(scene,sceneFile,callback){
                 material.ka = material.ka || [0.0,0.0,0.0];
                 material.kd = material.kd || [1.0,1.0,1.0];
                 material.ks = material.ks || [0.0,0.0,0.0];
+                material.ke = material.ke || [0.0,0.0,0.0];
+                material.r  = material.r  || 0.0;
 
                 gl.materials[material.name || 'unknown-mat_'+matID++] = sceneGraph.materials[i];
 
@@ -168,10 +172,10 @@ function parseScene(scene,sceneFile,callback){
                 if(material.map_ka)  resources.textures.push(material.map_ka);
                 if(material.map_kd)  resources.textures.push(material.map_kd);
                 if(material.map_ks)  resources.textures.push(material.map_ks);
+                if(material.map_r)   resources.textures.push(material.map_r);
                 if(material.map_d)   resources.textures.push(material.map_d);
                 if(material.bump)    resources.textures.push(material.bump);
                 if(material.disp)    resources.textures.push(material.disp);
-
             }
         }
         if(sceneGraph.nodes) {

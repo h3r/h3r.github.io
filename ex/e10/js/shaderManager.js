@@ -3,6 +3,7 @@ var shaderManager = {
     setUniforms : function(node){
         if(node.ambient)        node._uniforms.u_ka = node.ambient;
         if(node.specularity)    node._uniforms.u_ks = node.specularity;
+        if(node.emisive)        node._uniforms.u_ke = node.emisive;
 
         if(node.glossiness)     node._uniforms.u_glossiness = node.glossiness;
         if(node.alpha)          node._uniforms.u_opacity = node.alpha;
@@ -21,6 +22,7 @@ var shaderManager = {
                 if(material.ka) node.ambient     = material.ka;
                 if(material.kd) node.color       = material.kd;
                 if(material.ks) node.specularity = material.ks;
+                if(material.ke) node.emisive     = material.ke;
                 if(material.ns){
                     node.glossiness  = material.ns;
                     node.flags.value = flagOn(node.flags.value,_f.NS);
@@ -33,21 +35,21 @@ var shaderManager = {
                 if(material.tr){
                     ode.filter      = material.tr;
                     node.flags.value = flagOn(node.flags.value,_f.TR);
-
                 }
 
                 if(material.map_ka) node.textures.map_ka = material.map_ka;
                 if(material.map_kd) node.textures.color  = material.map_kd;
                 if(material.map_ks) node.textures.map_ks = material.map_ks;
+                if(material.map_ke) node.textures.map_ke = material.map_ke;
 
             }
 
 
-            if(node.flags.value == undefined)
-                node.flags.value = 0;
+            if(node.flags.value == undefined) node.flags.value = 0;
             if(node.textures.map_ka) node.flags.value = flagOn(node.flags.value,_f.MAP_KA);
             if(node.textures.color)  node.flags.value = flagOn(node.flags.value,_f.MAP_KD);
             if(node.textures.map_ks) node.flags.value = flagOn(node.flags.value,_f.MAP_KS);
+            if(node.textures.map_ke) node.flags.value = flagOn(node.flags.value,_f.MAP_KE);
 
 
 
@@ -67,11 +69,12 @@ var _f = {
     MAP_KA  :  1, // 0000 0001  //
     MAP_KD  :  2, // 0000 0010  //
     MAP_KS  :  4, // 0000 0100  //
-    MAP_R   :  8, // 0000 1000  //
-    NS      : 16, // 0001 0000  //
-    IOR     : 32, // 0010 0000  //
-    D       : 64, // 0100 0000  //
-    TR      :128, // 1000 0000  //
+    MAP_KE  :  8, // 0000 0100  //
+    MAP_R   : 16, // 0000 1000  //
+    NS      : 32, // 0001 0000  //
+    IOR     : 64, // 0010 0000  //
+    D       :128, // 0100 0000  //
+    TR      :256, // 1000 0000  //
 
 }
 /*------------------------------------------------------------------------------------------*/
@@ -99,11 +102,11 @@ createShaderWith = function(flags) {
 
 
     var uniforms = [['mat4 u_mvp','mat4 u_model'],
-                    ['vec3 u_eye','vec3 u_light_pos', 'vec4 u_light_color', 'vec3 u_ka', 'vec4 u_color', 'vec3 u_ks']];
+                    ['vec3 u_eye','vec3 u_light_pos', 'vec3 u_light_color','float u_glossiness', 'vec3 u_ka', 'vec4 u_color', 'vec3 u_ks', 'vec3 u_ke']];
     var varyings = ['vec3 v_vertex','vec3 v_normal','vec2 v_coord'];
     var functions = {};
 
-    if(getFlag(flags,_f.IOR)){
+    if(getFlag(flags,_f.IOR) || true){
         var f = 'float fresnel(float cosTheta, float R0, float fresnelPow){';
         f+= 'float facing = (1.0 - cosTheta); ';
         f+= 'return max(0.0, R0 + (1.0 - R0) * pow(facing, fresnelPow));}';
@@ -144,12 +147,17 @@ createShaderWith = function(flags) {
 
         m += 'void main(){\n';
 
-        m += 'vec3 N = normalize(v_normal);\n';
-        m += 'vec3 L = normalize(u_light_pos);\n';
-        m += 'vec3 E = normalize(v_vertex - u_eye);\n'
-        m += 'vec3 R = reflect(E, N);\n';
+        m += 'vec3 N  = normalize(v_normal);\n';
+        m += 'vec3 L  = normalize(u_light_pos);\n';
+        m += 'vec4 cL = vec4(u_light_color.xyz,1.0);\n';
+        m += 'vec3 E  = normalize(v_vertex - u_eye);\n'
+        m += 'vec3 R  = reflect(E, N);\n';
+        m += 'vec3 H  = normalize( L + E );\n';
         m += 'vec3 LR = reflect(L, N);\n';
         m += 'float NdotL = max(0.0,dot(L,N));\n';
+        m += 'float NdotE = max(0.0,dot(N,E));\n';
+        m += 'float NdotH = max(0.0,dot(N,H));\n';
+        m += 'float LdotH = max(0.0,dot(L,H));\n';
         m += 'float LRdotE = max(0.0,dot(LR,E));\n';
 
         //KA
@@ -170,23 +178,37 @@ createShaderWith = function(flags) {
               m += 'vec4 ks = texture2D(u_map_ks_texture,v_coord);\n';
         }else m += 'vec4 ks = vec4(u_ks.xyz,1.0);\n';
 
+        //KE
+        if(getFlag(flags,_f.MAP_KE)){
+              uniforms[1].push('sampler2D u_map_ke_texture');
+              m += 'vec4 ke = texture2D(u_map_ke_texture,v_coord);\n';
+        }else m += 'vec4 ke = vec4(u_ke.xyz,1.0);\n';
+
         //REFLECTION
         if(getFlag(flags,_f.MAP_R)){
             uniforms[1].push('samplerCube u_reflection_texture');
-            m += 'vec4 reflection_color = textureCube(u_reflection_texture,vec3(R.x,R.y,R.z));\n';
-        }else m += 'vec4 reflection_color = vec4(1.0,0.0,1.0,1.0);\n';
+            m += 'vec4 reflection_color = textureCube(u_reflection_texture,R);\n';
+        }else m += 'vec4 reflection_color = vec4(0.0,0.0,0.0,1.0);\n';
 
         if(getFlag(flags,_f.NS)){
-            uniforms[1].push('float u_glossiness');
-            m += 'vec4 reflection_pow =   pow( vec4(vec3(reflection_color.x+reflection_color.y+reflection_color.z*'+1/3+'),reflection_color.w), vec4(u_glossiness));\n';
+            //uniforms[1].push('float u_glossiness');
+            //m += 'reflection_color =  reflection_color * pow( LRdotE, u_glossiness);\n';
         }
+
+
 
         m += '\n';
         m += 'float reflectivity = (ks.x+ks.y+ks.z)*'+(1/3)+';\n';
+        m += 'vec4 emisive = ke;\n';
         m += 'vec4 ambient = ka;\n';
-        m += 'vec4 diffuse = kd * vec4(1.0-reflectivity);\n';
-        m += 'vec4 specular = reflection_color * reflectivity;\n';
-        m += 'vec4 color = ambient +( diffuse + specular) ;// * NdotL;\n';
+        m += 'vec4 diffuse = (kd+ke) * (vec4( 1.0 - fresnel(NdotL, reflectivity, 1.0)) + ambient);\n';
+        m += 'vec4 reflection   = reflection_color * fresnel(NdotE, reflectivity, 5.0);\n';
+        m += 'vec4 specular     = ((u_glossiness+2.0)/8.0) * vec4(u_light_color,1.0) * fresnel(LdotH, reflectivity, 5.0) * pow(NdotH, u_glossiness) ;\n';
+
+
+
+        //L_o = L_e + sum(f * LidotN)
+        m += 'vec4 color =  (diffuse) + ambient + (specular*0.1) + (reflection*0.9); \n';
 
         if(getFlag(flags,_f.D)){
             uniforms[1].push('float u_opacity');
@@ -198,7 +220,7 @@ createShaderWith = function(flags) {
         }
 
         m += '\n';
-        m += 'gl_FragColor = color;}\n';
+        m += 'gl_FragColor = color * cL;}\n';
 
 
         var keys = Object.keys(functions);
