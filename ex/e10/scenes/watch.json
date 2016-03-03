@@ -1,196 +1,21 @@
+
 {
   "name": "spheres",
   "version": "1.0",
-  "light":[107.67809295654297, 1648.43359375, 2567.567626953125],
-  "materials":[
-    {
-      "name":"silver0",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.0
-    },{
-      "name":"silver1",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.1
-    },{
-      "name":"silver2",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.2
-    },{
-      "name":"silver3",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.3
-    },{
-      "name":"silver4",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.4
-    },{
-      "name":"silver5",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.5
-    },{
-      "name":"silver6",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.6
-    },{
-      "name":"silver7",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.7
-    },{
-      "name":"silver8",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.8
-    },{
-      "name":"silver9",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 0.9
-    },{
-      "name":"silver10",
-      "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
-      "ns": 100,
-      "r": 1.0
-    }
-  ],
-  "nodes" : [
-    {
-      "type"    :"camera",
-      "name"    :"cam1",
-      "camera_type":"perspective",
-      "eye"     :[10,0,14],"center"  :[10,0,0],"up"      :[0,1,0],
-      "fov"     : 60,"aspect"  : null,"near"    : 0.1,"far"     : 10000.0
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[0,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver0",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[2,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver1",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[4,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver2",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[6,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver3",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[8,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver4",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[10,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver5",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[12,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver6",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[14,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver7",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[16,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver8",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[18,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver9",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"sphere",
-      "name":"sphere1",
-      "position":[20,0,0],
-      "rotation":[0,0,0],
-      "color":[1,0,1,1],
-      "size":"1",
-      "material":"silver10",
-      "mesh_options":{"subdivisions":128}
-    },{
-      "type":"skybox",
-      "texture":"OutputCube.dds"
-    }
-  ]
+  "light":[-1232.57568359375, 841.9476318359375, 1305.3978271484375],
+  "nodes":[{
+    "type"    :"camera",
+    "name"    :"cam1",
+    "camera_type":"perspective",
+    "eye"     :[0,5,15],"center"  :[0,0,0],"up"      :[0,1,0],
+    "fov"     : 55,"aspect"  : null,"near"    : 0.1,"far"     : 10000.0
+  },{
+    "type":"mesh",
+    "name":"watch",
+    "rotation" : [0,-60,0],
+    "mesh":"apple-watch-pbribl-obj/apple-watch-pbribl2.obj"
+  },{
+    "type":"skybox",
+    "texture":"stormy.dds"
+  }]
 }
