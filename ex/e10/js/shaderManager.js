@@ -5,7 +5,7 @@ var shaderManager = {
         if(node.specularity)    node._uniforms.u_ks = node.specularity;
         if(node.emisive)        node._uniforms.u_ke = node.emisive;
 
-        if(node.glossiness)     node._uniforms.u_glossiness = node.glossiness;
+        if(node.glossiness)     node._uniforms.u_glossiness = $custom.gloss;// node.glossiness;
         if(node.alpha)          node._uniforms.u_opacity = node.alpha;
         if(node.color_filter)   node._uniforms.u_filter = node.color_filter;
     },
@@ -111,8 +111,79 @@ createShaderWith = function(flags) {
         f+= 'float facing = (1.0 - cosTheta); ';
         f+= 'return max(0.0, R0 + (1.0 - R0) * pow(facing, fresnelPow));}';
 
+        f+= "float fresnel_dielectrics(float cos_i, float cos_t, float n_i, float n_t){";
+        f+= "float r_parl =  ((n_t * cos_i) - (n_i * cos_t)) / ((n_t * cos_i) + (n_i * cos_t));";
+        f+= "float r_perp =  ((n_i * cos_i) - (n_t * cos_t)) / ((n_i * cos_i) + (n_t * cos_t));";
+
+        f+="    return ((r_parl * r_parl) + (r_perp * r_perp)) * 0.5;}";
+
         functions['fresnel'] = f;
     }
+    /**
+     * Refraction indices for the medium (PBR P.H p.434)
+     * Vacuum               -   1.0
+     * Air at sea level     -   1.00029
+     * Ice                  -   1.31
+     * Water (20ºC)         -   1.333
+     * Fused quartz         -   1.46
+     * Glass                -   1.5 to 1.6
+     * Sapphire             -   1.77
+     * Diamond              -   2.42
+     * */
+    /*
+
+
+    //cos_i : NdotE
+    //cos_t : NdotR (R should be computed using snells law)
+    //k : absortion coeficient
+    //n_i : index of refraction for the incident media
+    //n_t : index of refraction for de transmited media
+
+    float fresnel_dielectrics(float cos_i, float cos_t, float n_i, float n_t){
+        float r_parl =  ((n_t * cos_i) - (n_i * cos_t)) /
+                        ((n_t * cos_i) + (n_i * cos_t));
+        float r_perp =  ((n_i * cos_i) - (n_t * cos_t)) /
+                        ((n_i * cos_i) + (n_t * cos_t));
+
+        return ((r_parl * r_parl) + (r_perp * r_perp)) * 0.5;
+    }//"Due to conservation of energy, energy transmitted by a dielectric is 1 - Fr." (PBR P.H. p.435)
+
+    float fresnel_conductors(|float cos_i|, float n_i, float k){
+        float tmp_f     = ((n_i*n_i) + (k*k));
+        float cos_i2    = cos_i * cos_i;
+        float tmp       = tmp_f * cos_i2;
+        float 2n_icos_i = 2 * n_i * cos_i;
+
+
+        float r_parl =  (tmp - (2n_icos_i) + 1) /
+                        (tmp + (2n_icos_i) + 1);
+        float r_perp =  (tmp_f - (2n_icos_i) + cos_i2) /
+                        (tmp_f + (2n_icos_i) + cos_i2);
+
+        return  (r_parl + r_perp) * 0.5;
+    }//"Conductors don't transmit light, but some of the incident light is abvsorbed by the material and turnet into heat."(PBR P.H. p.435)
+
+    float fresnel_reflectance for dielectrics(float cos_i, n_i, n_t){
+        cos_i = clamp(cos_i,-1.0,1.0);
+        //Compute indices of refraction for dielectric
+        bool entering = cosi > 0.0;
+        if (! entering){
+            float aux = n_t;
+            n_t = n_i;
+            n_i = aux;
+        }
+
+        //Compute sint using Snell's law
+        float sint = n_i/n_t * sqrt(max(0.0, 1.0 - cos_i * cos_i));
+
+        if(sint >= 1.0){
+            return 1.0;
+        }else{
+            float cos_t = sqrt(max(0.0, 1.0 - sint * sint));
+            return fresnel_dielectrics(abs(cos_i), cos_t, n_i,n_t);
+        }
+    }
+    */
 
     var getVS = function(flags){
         var u = '',
@@ -148,17 +219,25 @@ createShaderWith = function(flags) {
         m += 'void main(){\n';
 
         m += 'vec3 N  = normalize(v_normal);\n';
-        m += 'vec3 L  = normalize(u_light_pos);\n';
-        m += 'vec4 cL = vec4(u_light_color.xyz,1.0);\n';
-        m += 'vec3 E  = normalize(v_vertex - u_eye);\n'
-        m += 'vec3 R  = reflect(E, N);\n';
-        m += 'vec3 H  = normalize( L + E );\n';
-        m += 'vec3 LR = reflect(L, N);\n';
-        m += 'float NdotL = max(0.0,dot(L,N));\n';
-        m += 'float NdotE = max(0.0,dot(N,E));\n';
-        m += 'float NdotH = max(0.0,dot(N,H));\n';
-        m += 'float LdotH = max(0.0,dot(L,H));\n';
-        m += 'float LRdotE = max(0.0,dot(LR,E));\n';
+        m += 'vec3 E  = normalize(u_eye - v_vertex );\n'
+        m += 'vec3 R  = reflect(-E, N);\n'; //Perfect reflections on vacuum
+        m += 'vec3 H  = normalize( R + E );\n';
+
+
+        /*m += 'vec3  L     = normalize( u_light_pos);\n';
+        m += '      H     = normalize( R + L );\n';
+        m += 'float NdotL = dot(N,L);\n';
+        m += 'float LdotH = dot(L,H);\n';*/
+
+        m += 'float NdotE = dot(N,E);\n';
+        m += 'float NdotH = dot(N,H);\n';
+        m += 'float RdotE = dot(R,E);\n';
+        m += 'float NdotR = dot(N,R);\n';
+
+        m += 'float cos_i  = dot(E, N);\n'; //Perfect reflections on vacuum
+        m += 'float cos_t  = dot(R, N);\n'; //Perfect reflections on vacuum
+
+
 
         //KA
         if(getFlag(flags,_f.MAP_KA)){
@@ -196,31 +275,46 @@ createShaderWith = function(flags) {
         }
 
 
-
+        //L_o = L_e(p,w_o) + sum( f(p,w_o,w_i) * L_i(p,w_i) * |cos theta_i| )
+/*
         m += '\n';
         m += 'float reflectivity = (ks.x+ks.y+ks.z)*'+(1/3)+';\n';
         m += 'vec4 emisive = ke;\n';
         m += 'vec4 ambient = ka;\n';
-        m += 'vec4 diffuse = (kd+ke) * (vec4( 1.0 - fresnel(NdotL, reflectivity, 1.0)) + ambient);\n';
+        m += 'vec4 diffuse = (kd) * (vec4( 1.0 - fresnel(NdotL, reflectivity, 1.0)) + ambient);\n';
         m += 'vec4 reflection   = reflection_color * fresnel(NdotE, reflectivity, 5.0);\n';
         m += 'vec4 specular     = ((u_glossiness+2.0)/8.0) * vec4(u_light_color,1.0) * fresnel(LdotH, reflectivity, 5.0) * pow(NdotH, u_glossiness) ;\n';
 
 
 
-        //L_o = L_e + sum(f * LidotN)
-        m += 'vec4 color =  (diffuse) + ambient + (specular*0.1) + (reflection*0.9); \n';
+
+        m += 'vec4 L_out =  emisive + (diffuse + ambient + (specular*0.1) + (reflection*0.9)); \n';*/
+        m += '\n';
+        m += 'float reflectivity = (ks.x+ks.y+ks.z)*'+(1/3)+';\n';
+
+        m += 'vec4 emisive      = ke;\n';
+        m += 'vec4 diffuse      = (kd) * (vec4( 1.0 - fresnel(cos_i, reflectivity, 1.0)));\n';
+        m += 'vec4 reflection   = reflection_color * fresnel(cos_t, reflectivity, 5.0) ;\n';
+        m += 'vec4 refraction   = vec4(0.0);\n';
+        m += 'vec4 incident     = reflection + refraction;\n';
+
+        m += 'vec4 L_out =   emisive + diffuse + incident ; \n';
+
+
+
+
 
         if(getFlag(flags,_f.D)){
             uniforms[1].push('float u_opacity');
-            m += 'color = vec4(color.xyz, u_opacity);\n';
+            m += ' L_out = vec4( L_out.xyz, u_opacity);\n';
         }
         if(getFlag(flags,_f.TR)){
             uniforms[1].push('vec3 u_filter');
-            m += 'color = color * vec4(u_filter, 1.0));\n';
+            m += ' L_out =  L_out * vec4(u_filter, 1.0));\n';
         }
 
         m += '\n';
-        m += 'gl_FragColor = color * cL;}\n';
+        m += 'gl_FragColor =  L_out;}\n';
 
 
         var keys = Object.keys(functions);

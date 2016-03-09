@@ -32,12 +32,12 @@
     //Globals
     var $scope  = {placer:null,context:null,renderer:null,camera:null,scene:null};
     var $temp   = {vec3:vec3.create(),mat4:mat4.create(),uniforms:{},tex:null};
-    var $custom = {blur:1,light:{pos:vec3.fromValues(762.28125, 363.6046142578125, 689.8486328125),color:vec3.fromValues(1.0,1.0,1.0,1.0)}};
+    var $custom = {gloss:1.0,light:{pos:vec3.fromValues(762.28125, 363.6046142578125, 689.8486328125),color:vec3.fromValues(1.0,1.0,1.0,1.0)}};
 
     window.onload = function(){
 
         this.gui = new dat.GUI();
-        this.gui.add($custom, 'blur', 0, 10);
+        this.gui.add($custom, 'gloss', 0, 100);
         /*=============================================
          / Initial Setup
          /============================================*/

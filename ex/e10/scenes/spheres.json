@@ -6,8 +6,8 @@
     {
       "name":"silver0",
       "ka": [0.0,0.0,0.0],
-      "kd": [0.960, 0.960, 0.915],
-      "ks": [0.35,0.35,0.35],
+      "kd": [0.660, 0.960, 0.615],
+      "ks": [0.15,0.15,0.15],
       "ns": 100,
       "r": 0.0
     },{
@@ -190,7 +190,7 @@
       "mesh_options":{"subdivisions":128}
     },{
       "type":"skybox",
-      "texture":"OutputCube.dds"
+      "texture":"stormy.dds"
     }
   ]
 }
