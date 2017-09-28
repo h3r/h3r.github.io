@@ -7,3 +7,6 @@
 [submodule "apps/viewer"]
 	path = apps/viewer
 	url = git@github.com:h3r/viewer
+[submodule "lib/animator"]
+	path = lib/animator
+	url = git@github.com:h3r/animator
