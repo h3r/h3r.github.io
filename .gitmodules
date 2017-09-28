@@ -1,9 +1,0 @@
-[submodule "lib/webgl2js"]
-	path = lib/webgl2js
-	url = git@github.com:h3r/webgl2js
-[submodule "lib/webgl2wasm"]
-	path = lib/webgl2wasm
-	url = git@github.com:h3r/webgl2js
-[submodule "lib/animator"]
-	path = lib/animator
-	url = git@github.com:h3r/animator
