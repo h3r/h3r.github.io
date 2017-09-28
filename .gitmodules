@@ -6,7 +6,7 @@
 	url = git@github.com:h3r/webgl2js
 [submodule "apps/viewer"]
 	path = apps/viewer
-	url = git@github.com:h3r/viewer
+	url = https://github.com/h3r/viewer.git
 [submodule "lib/animator"]
 	path = lib/animator
 	url = git@github.com:h3r/animator
