@@ -1,0 +1,9 @@
+[submodule "lib/webgl2wasm"]
+	path = lib/webgl2wasm
+	url = https://github.com/h3r/webgl2wasm.git
+[submodule "lib/webgl2js"]
+	path = lib/webgl2js
+	url = https://github.com/h3r/webgl2js.git
+[submodule "lib/animator"]
+	path = lib/animator
+	url = https://github.com/h3r/animator.git
