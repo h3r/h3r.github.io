@@ -1,0 +1,90 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello WebGL!</title>
+    
+    <style>
+        html, body{
+            height: 100%;
+            width:  100%;
+            overflow:hidden;
+        }
+    </style>
+
+    <!-- This is a comment in HTML, you can place it anywhere in the html file (well not inside a script) to add your thoughts -->
+</head>
+<body>
+
+    <!-- we need to place a canvas somewhere inside the body to let WebGL draw inside it-->
+    <canvas id="my-canvas-ID">If you are seeing this message, then your browser seems to not support the HTML5 <code>&lt;canvas&gt;</code> element.</canvas>
+
+    <!-- Place scripts at the bottom of the body tag to priorize the page loading -->
+    <script src="js/gl-matrix.js"></script>
+    <script src="js/functionsyoushouldignore.js"></script>
+    <script>
+        //Now, inside of a "script" tag the browsers will assume its coded in JavaScript language. 
+
+        //JavaScript is quite fast to develop, all variables are called objects and those are 
+        //instanced using "var" (there is no need to say this is an integuer, this is a float, etc...)
+
+        /*You may use inline comments like the previous one, or multi-line comments like this one. 
+        The same you may have seen before in C/C++
+        For more info about HTML and JavaScript i suggest you to visit my teaching webpage with some
+        resources collected about the topic: https://h3r.github.io/teaching */
+
+        //Some globals
+        var viewportWidth   = canvas.width;
+        var viewportHeight  = canvas.height;
+        var backgroundColor = vec3
+
+        //Webgl setup
+        var canvas = document.getElementById("my-canvas-ID");
+        var gl = canvas.getContext("webgl");
+
+        if (!gl) {
+            alert("Oops!We got some troubles trying to initialize WebGL.");
+        }
+        
+        gl.viewport(0, 0, viewportWidth, viewportHeight);
+
+        //Define a simple object, a square using two triangles
+        var vertex = [0.0, 0.0, 0.0,
+                      0.0, 0.0, 0.0,
+                      0.0, 0.0, 0.0,
+                      0.0, 0.0, 0.0];
+        var index = [2, 1, 0, 1, 2, 3];
+
+        //Create our shader program
+        //Load shader files from disk
+        var   vertex_shader_file = loadFile("shader.vs");
+        var fragment_shader_file = loadFile("shader.fs");
+
+        //Create shader
+        var   vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertex_shader_file);
+        var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragment_shader_file);
+
+        //Create program
+        var shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+            alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+            return null;
+        }
+
+        
+
+        function onRender() {
+
+        }
+
+        function onResize() {
+
+        }
+        
+    </script>
+</body>
+</html>
