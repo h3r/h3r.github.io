@@ -9,17 +9,19 @@
     <style>
         * {
             -webkit-touch-callout: none; /* iOS Safari */
-              -webkit-user-select: none; /* Safari */
-               -khtml-user-select: none; /* Konqueror HTML */
-                 -moz-user-select: none; /* Firefox */
-                  -ms-user-select: none; /* Internet Explorer/Edge */
-                      user-select: none; /* Non-prefixed version, currently
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
                                             supported by Chrome and Opera */
         }
+
         html, body {
             height: 100%;
-            overflow:hidden;
+            overflow: hidden;
         }
+
         body {
             background-image: url(http://vincentgarreau.com/assets/img/darkbg.jpg);
             background-position: 50% 50%;
@@ -28,6 +30,7 @@
             margin: 0;
             padding-top: 90px;
         }
+
         #particles-js canvas {
             position: absolute;
             height: 100vh;
@@ -36,11 +39,13 @@
             pointer-events: visiblePainted;
             z-index: -3;
         }
+
         .skillbar, .skillbar-title, .skillbar-bar, .skill-bar-percent {
             margin: 0;
             height: 20px !important;
             line-height: 22px;
         }
+
         .fa-li.fa.fa-2x.fa-check {
             opacity: 0.75; /* Opacity (Transparency) */
             color: rgba(0, 0, 0, 0.75); /* RGBA Color (Alternative Transparency) */
@@ -52,115 +57,117 @@
     </style>
 </head>
 <body>
-    <div id="particles-js"><div class="container">
-    <div class="row">
-        <h1 class="title">
-            
-            <br>
-            <small><i id="diamond" toogled="false" class="fa fa-diamond fa-fw fa-2x fa-check" onclick="toggleDiamond()"></i></small>
-        </h1>
-        <div class="col-sm-12">
-            <div class="col-sm-offset-4 col-sm-4">
-                <!--    Here comes your card          -->
-                <div class="card-container  z-depth-5">
-                    <div class="card">
-                        <div class="front">
-                            <div class="cover">
-                                <img src="/assets/images/bg.png">
-                            </div>
-                            <div class="user">
-                                <img class="img-circle" src="https://avatars.githubusercontent.com/h3r">
-                            </div>
-                            <div class="content">
-                                <div class="main">
-                                    <h3 class="name">Hermann Plass</h3>
-                                    <p class="profession">GFX Engineer @ UPF - GTI</p>
-                                    <h4 class="text-center">Skill Overview</h4>
+    <div id="particles-js">
+        <div class="container">
+            <div class="row">
+                <h1 class="title">
 
-                                    <div class="skillbar" data-percent="98">
-                                        <span class="skillbar-title" style="background: #d35400;">JavaScript</span>
-                                        <p class="skillbar-bar" style="background: #e67e22;"></p>
-                                        <span class="skill-bar-percent"></span>
+                    <br>
+                    <small><i id="diamond" toogled="false" class="fa fa-diamond fa-fw fa-2x fa-check" onclick="toggleDiamond()"></i></small>
+                </h1>
+                <div class="col-sm-12">
+                    <div class="col-sm-offset-4 col-sm-4">
+                        <!--    Here comes your card          -->
+                        <div class="card-container  z-depth-5">
+                            <div class="card">
+                                <div class="front">
+                                    <div class="cover">
+                                        <img src="/assets/images/bg.png">
                                     </div>
-                                    <!-- End Skill Bar -->
+                                    <div class="user">
+                                        <img class="img-circle" src="https://avatars.githubusercontent.com/h3r">
+                                    </div>
+                                    <div class="content">
+                                        <div class="main">
+                                            <h3 class="name">Hermann Plass</h3>
+                                            <p class="profession">GFX Engineer @ UPF - GTI</p>
+                                            <h4 class="text-center">Skill Overview</h4>
 
-                                    <div class="skillbar" data-percent="99">
-                                        <span class="skillbar-title" style="background: #2980b9;">C++</span>
-                                        <p class="skillbar-bar" style="background: #3498db;"></p>
-                                        <span class="skill-bar-percent"></span>
-                                    </div>
-                                    <!-- End Skill Bar -->
+                                            <div class="skillbar" data-percent="98">
+                                                <span class="skillbar-title" style="background: #d35400;">JavaScript</span>
+                                                <p class="skillbar-bar" style="background: #e67e22;"></p>
+                                                <span class="skill-bar-percent"></span>
+                                            </div>
+                                            <!-- End Skill Bar -->
 
-                                    <div class="skillbar" data-percent="95">
-                                        <span class="skillbar-title" style="background: #2c3e50;">GLSL</span>
-                                        <p class="skillbar-bar" style="background: #2c3e50;"></p>
-                                        <span class="skill-bar-percent"></span>
-                                    </div>
-                                    <!-- End Skill Bar -->
+                                            <div class="skillbar" data-percent="99">
+                                                <span class="skillbar-title" style="background: #2980b9;">C++</span>
+                                                <p class="skillbar-bar" style="background: #3498db;"></p>
+                                                <span class="skill-bar-percent"></span>
+                                            </div>
+                                            <!-- End Skill Bar -->
 
-                                    <div class="skillbar" data-percent="70">
-                                        <span class="skillbar-title" style="background: #46465e;">PHP</span>
-                                        <p class="skillbar-bar" style="background: #5a68a5;"></p>
-                                        <span class="skill-bar-percent"></span>
+                                            <div class="skillbar" data-percent="95">
+                                                <span class="skillbar-title" style="background: #2c3e50;">GLSL</span>
+                                                <p class="skillbar-bar" style="background: #2c3e50;"></p>
+                                                <span class="skill-bar-percent"></span>
+                                            </div>
+                                            <!-- End Skill Bar -->
+
+                                            <div class="skillbar" data-percent="70">
+                                                <span class="skillbar-title" style="background: #46465e;">PHP</span>
+                                                <p class="skillbar-bar" style="background: #5a68a5;"></p>
+                                                <span class="skill-bar-percent"></span>
+                                            </div>
+                                            <!-- End Skill Bar -->
+                                        </div>
+                                        <div class="footer">
+                                            <i class="fa fa-mail-forward"></i> sweesh
+                                        </div>
                                     </div>
-                                    <!-- End Skill Bar -->
-                                </div>
-                                <div class="footer">
-                                    <i class="fa fa-mail-forward"></i> sweesh
-                                </div>
-                            </div>
-                        </div> <!-- end front panel -->
-                        <div class="back">
-                            <div class="header">
-                                <h5 class="motto">"Experience is the consequence of many errors."</h5>
-                            </div>
-                            <div class="content">
-                                <div class="main">
-                                    
-                                    <ul class="list-group">
-                                        <a href="teaching/">
-                                            <li class="list-group-item justify-content-between">
-                                                Teaching
-                                                <span id="teaching-count" class="badge badge-default badge-pill">0</span>
-                                            </li>
-                                        </a>
-                                        <a href="assets/">
-                                            <li class="list-group-item justify-content-between">
-                                                Assets
-                                                <span id="assets-count" class="badge badge-default badge-pill">0</span>
-                                            </li>
-                                        </a>
-                                        <a href="apps/">
-                                            <li class="list-group-item justify-content-between">
-                                                Apps
-                                                <span id="apps-count" class="badge badge-default badge-pill">0</span>
-                                            </li>
-                                        </a>
-                                        <a href="lib/">
-                                            <li class="list-group-item justify-content-between">
-                                                Libraries
-                                                <span id="libraries-count" class="badge badge-default badge-pill">0</span>
-                                            </li>
-                                        </a>
-                                        
-</ul>
-                                </div>
-                            </div>
-                            <div class="footer">
-                                <div class="social-links text-center">
-                                    <a data-toggle="tooltip" title="h3R @ Facebook!" class="facebook" href="https://www.facebook.com/bleiz.zero" ><i class="fa fa-facebook fa-fw"></i></a>
-                                    <a data-toggle="tooltip" title="h3R @ Github!" class="github"   href="http://github.com/h3r" ><i class="fa fa-github fa-fw"></i></a>
-                                </div>
-                            </div>
-                        </div> <!-- end back panel -->
-                    </div> <!-- end card -->
+                                </div> <!-- end front panel -->
+                                <div class="back">
+                                    <div class="header">
+                                        <h5 class="motto">"Experience is the consequence of many errors."</h5>
+                                    </div>
+                                    <div class="content">
+                                        <div class="main">
+
+                                            <ul class="list-group">
+                                                <a href="teaching/">
+                                                    <li class="list-group-item justify-content-between">
+                                                        Teaching
+                                                        <span id="teaching-count" class="badge badge-default badge-pill">0</span>
+                                                    </li>
+                                                </a>
+                                                <a href="assets/">
+                                                    <li class="list-group-item justify-content-between">
+                                                        Assets
+                                                        <span id="assets-count" class="badge badge-default badge-pill">0</span>
+                                                    </li>
+                                                </a>
+                                                <a href="apps/">
+                                                    <li class="list-group-item justify-content-between">
+                                                        Apps
+                                                        <span id="apps-count" class="badge badge-default badge-pill">0</span>
+                                                    </li>
+                                                </a>
+                                                <a href="lib/">
+                                                    <li class="list-group-item justify-content-between">
+                                                        Libraries
+                                                        <span id="libraries-count" class="badge badge-default badge-pill">0</span>
+                                                    </li>
+                                                </a>
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="footer">
+                                        <div class="social-links text-center">
+                                            <a data-toggle="tooltip" title="h3R @ Facebook!" class="facebook" href="https://www.facebook.com/bleiz.zero"><i class="fa fa-facebook fa-fw"></i></a>
+                                            <a data-toggle="tooltip" title="h3R @ Github!" class="github" href="http://github.com/h3r"><i class="fa fa-github fa-fw"></i></a>
+                                        </div>
+                                    </div>
+                                </div> <!-- end back panel -->
+                            </div> <!-- end card -->
+                        </div>
+                        <!-- card end-->
+                    </div>
                 </div>
-                <!-- card end-->
             </div>
         </div>
     </div>
-</div></div>
-    
+
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="/lib/ext/bars/js/skill.bars.jquery.js"></script>
     <script src="/lib/ext/bootstrap.min.js"></script>
@@ -181,24 +188,24 @@
             let diamond = document.getElementById('diamond');
             let isToogled = diamond.getAttribute("toogled");
             console.log(isToogled);
-            
-            
+
+
             if (isToogled == "false") {
                 document.getElementById("diamond").setAttribute("toogled", "true")
-                diamond.style.color = getRandomColor();             
+                diamond.style.color = getRandomColor();
                 playon.play();
                 return
             }
-            document.getElementById("diamond").setAttribute("toogled","false")
+            document.getElementById("diamond").setAttribute("toogled", "false")
             diamond.style.color = "#58595B";
-            playoff.play();  
+            playoff.play();
         }
-        function countLinks(url,callback) {
+        function countLinks(url, callback) {
             function success(data) {
                 data = /<body.*?>([\s\S]*)<\/body>/.exec(data)[1];
                 if (!data)
                     return;
-                    
+
                 const regex = /href=['|"][a-zA-Z0-9\/_\-.:#?~=]*['|"]*/g;
                 const str = data;
                 let m;
@@ -219,7 +226,7 @@
                 if (callback)
                     callback(count)
                 return count;
-                
+
             }
 
             $.ajax({
@@ -227,7 +234,7 @@
                 success: success
             });
         }
-        
+
         countLinks("teaching/", data => { $("#teaching-count").html(data); });
         countLinks("assets/", data => { $("#assets-count").html(data); });
         countLinks("apps/", data => { $("#apps-count").html(data); });
@@ -238,7 +245,7 @@
         });
 
         $(document).ready(function () {
-            
+
 
             $('.skillbar').skillBars({
                 from: 0,
@@ -247,10 +254,10 @@
                 decimals: 0,
             });
 
-            $('[data-toggle="tooltip"]').tooltip(); 
+            $('[data-toggle="tooltip"]').tooltip();
 
         });
     </script>
-    
+
 </body>
 </html>
