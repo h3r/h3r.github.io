@@ -1,14 +1,10 @@
 # Teaching
 
-
-
-
-
 ## Infografia
 
-[Practica 1: El Framebuffer](https://docs.google.com/presentation/d/1s6GYGHKgZ91hn6a8XPkv3iORX9BL23NzpeVXANsZWNA/edit?usp=sharing)
+[Framebuffer](https://docs.google.com/presentation/d/1s6GYGHKgZ91hn6a8XPkv3iORX9BL23NzpeVXANsZWNA/edit?usp=sharing)
 
-[Practica 2: Rasterizado](https://docs.google.com/presentation/d/1iTzp5FtVgJXNATyi_K-NM6mcfcv9XBq8VkUF6lTisgQ/edit?usp=sharing)
+[Rasterizado](https://docs.google.com/presentation/d/1iTzp5FtVgJXNATyi_K-NM6mcfcv9XBq8VkUF6lTisgQ/edit?usp=sharing)
 
 
 
@@ -32,7 +28,7 @@
 
 [Iluminación Global](https://docs.google.com/presentation/d/12XIsopmiDgQf8w1sVFoLI_tKCL4TO0_N754oWSL_yTI/present?slide=id.i0)
 
-
+[Demo Webgl](/projects/hellowebgl) + [download](/projects/hellowebgl)
 
 
 
@@ -60,7 +56,7 @@
 
 [Curvas de Bezier](https://docs.google.com/presentation/d/1Ysw8TvHoFmIKTXKNpXyFjTG1thtJ1ZBK0jKAZVgzP14/edit#slide=id.i0)
 
-[Tutorial Wasm](webgl2wasm) + little example [[demo](/apps/hellowasm)
+[Tutorial Wasm](webgl2wasm) + little example: [[demo](/projects/hellowasm) | [download](/projects/hellowasm/example.zip)]
 
 
 
