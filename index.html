@@ -41,14 +41,14 @@
             height: 20px !important;
             line-height: 22px;
         }
-    position: relative;
-    display: inline-block;
-    /* margin: 15px 0; */
-    width: 100%;
-    background: #eee;
-    max-height: 20px;
-    border-radius: 3px;
-    width: 100%;
+        .fa-li.fa.fa-2x.fa-check {
+            opacity: 0.75; /* Opacity (Transparency) */
+            color: rgba(0, 0, 0, 0.75); /* RGBA Color (Alternative Transparency) */
+            -webkit-filter: blur(2px); /* Blur */
+            -moz-filter: blur(2px);
+            filter: blur(2px);
+            cursor: crosshair;
+        }
     </style>
 </head>
 <body>
@@ -57,7 +57,7 @@
         <h1 class="title">
             
             <br>
-            <small><i id="diamond" toogled="false" class="fa fa-diamond fa-fw" onclick="toggleDiamond()"></i></small>
+            <small><i id="diamond" toogled="false" class="fa fa-diamond fa-fw fa-2x fa-check" onclick="toggleDiamond()"></i></small>
         </h1>
         <div class="col-sm-12">
             <div class="col-sm-offset-4 col-sm-4">
@@ -175,6 +175,8 @@
             }
             return color;
         }
+        var playon = new Audio('/assets/sounds/click-on.mp3');
+        var playoff = new Audio('/assets/sounds/click-off.mp3');
         function toggleDiamond() {
             let diamond = document.getElementById('diamond');
             let isToogled = diamond.getAttribute("toogled");
@@ -183,17 +185,13 @@
             
             if (isToogled == "false") {
                 document.getElementById("diamond").setAttribute("toogled", "true")
-                diamond.style.color = getRandomColor();
-                var audio = new Audio('/assets/sounds/click-on.mp3');
-                audio.play();
+                diamond.style.color = getRandomColor();             
+                playon.play();
                 return
             }
             document.getElementById("diamond").setAttribute("toogled","false")
             diamond.style.color = "#58595B";
-            var audio = new Audio('/assets/sounds/click-off.mp3');
-            audio.play();
-
-            
+            playoff.play();  
         }
         function countLinks(url,callback) {
             function success(data) {
