@@ -1,7 +1,16 @@
-attribute vec3 v_position;
-attribute vec3 v_normal;
-attribute vec2 v_coord;
+precision highp float;
+ 
+attribute vec3 a_vertex;
+attribute vec3 a_color;
 
-void main(){
-    gl_Position = vec4(v_position,1.0);
+varying   vec3 v_color;
+
+void main()
+{
+	// position of the vertex
+	gl_Position = vec4( a_vertex , 1.0 );
+
+	// pass the colour to the fragment shader
+	v_color = a_color;
 }
+

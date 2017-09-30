@@ -3,88 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello WebGL!</title>
-    
     <style>
-        html, body{
+        html, body {
             height: 100%;
-            width:  100%;
-            overflow:hidden;
+            width: 100%;
+            overflow: hidden;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            line-height: 1.1;
+            color: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            background-color: darkslategray;
+        }
+
+        #my-hover-title {
+            position: absolute;
+            color: gray;
+            font-size: 22px;
+            line-height: 28px;
+            margin: 10px 0;
+            padding: 0 20px;
+            text-align: center;
+            text-transform: capitalize;
         }
     </style>
-
     <!-- This is a comment in HTML, you can place it anywhere in the html file (well not inside a script) to add your thoughts -->
 </head>
 <body>
-
+    <h1 id="my-hover-title">Simple WebGL</h1>
     <!-- we need to place a canvas somewhere inside the body to let WebGL draw inside it-->
-    <canvas id="my-canvas-ID">If you are seeing this message, then your browser seems to not support the HTML5 <code>&lt;canvas&gt;</code> element.</canvas>
-
+    <canvas id="my-canvas-ID">
+        If you are seeing this message, then your browser seems to not support the HTML5 <code>&lt;canvas &gt;</code>
+        element.
+    </canvas>
     <!-- Place scripts at the bottom of the body tag to priorize the page loading -->
     <script src="js/gl-matrix.js"></script>
     <script src="js/functionsyoushouldignore.js"></script>
     <script>
-        //Now, inside of a "script" tag the browsers will assume its coded in JavaScript language. 
+            //Now, inside of a "script" tag the browsers will assume its coded in JavaScript language.
 
-        //JavaScript is quite fast to develop, all variables are called objects and those are 
-        //instanced using "var" (there is no need to say this is an integuer, this is a float, etc...)
+            //JavaScript is quite fast to develop, all variables are called objects and those are
+            //instanced using "var" (there is no need to say this is an integuer, this is a float, etc...)
 
-        /*You may use inline comments like the previous one, or multi-line comments like this one. 
+            /*You may use inline comments like the previous one, or multi-line comments like this one.
         The same you may have seen before in C/C++
         For more info about HTML and JavaScript i suggest you to visit my teaching webpage with some
         resources collected about the topic: https://h3r.github.io/teaching */
 
-        //Some globals
-        var viewportWidth   = canvas.width;
-        var viewportHeight  = canvas.height;
-        var backgroundColor = vec3
+            //Some globals
+            var canvas, gl, shader;
+            var bg = vec4.create(0.0, 0.0, 0.0, 1.0);
 
-        //Webgl setup
-        var canvas = document.getElementById("my-canvas-ID");
-        var gl = canvas.getContext("webgl");
+            function initializeGL() {
+                canvas = document.getElementById("my-canvas-ID");
+                gl = canvas.getContext("webgl");
 
-        if (!gl) {
-            alert("Oops!We got some troubles trying to initialize WebGL.");
-        }
+                if (!gl)
+                    throw ("Oops!We got some troubles trying to initialize WebGL.");
+
+                gl.viewport(0, 0, canvas.width, canvas.height);
+            }
+
+            function loadShader(gl, type, source) {
+                var shader = gl.createShader(type);
+
+                gl.shaderSource(shader, source);
+
+                gl.compileShader(shader);
+
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    //The shader could not be compiled
+                    var error = gl.getShaderInfoLog(shader);
+                    if (error.length > 0) {
+                        gl.deleteShader(shader);
+                        throw error;
+                    }
+                       
+                    
+                }
+                return shader;
+            }
+
+            function createShaderProgram(gl, vs, fs) {
+                //Create shader
+                var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vs);
+                var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fs);
+
+                //Create program
+                var shaderProgram = gl.createProgram();
+                gl.attachShader(shaderProgram, vertexShader);
+                gl.attachShader(shaderProgram, fragmentShader);
+                gl.linkProgram(shaderProgram);
+
+                if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                    alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+                    return null;
+                }
+                return shaderProgram;
+            }
+
+            initializeGL();
+
+            //Create some geometry description
+            var vertex_positions =
+                [ 1.0,-1.0, 0.0,
+                  1.0, 1.0, 0.0,
+                 -1.0, 1.0, 0.0,
+                 -1.0,-1.0, 0.0,
+                 -1.0,-1.0, 0.0,
+                  1.0,-1.0, 0.0,
+                  0.0, 1.0, 0.0 ];
+
+            var per_vertex_color =
+                [ 1.0, 0.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  1.0, 0.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  0.0, 1.0, 0.0,
+                  0.0, 1.0, 0.0 ];
+
+            var index = [0, 1, 2, 0, 2, 3, 4, 5, 6];
+
+
+
+            //We have to initialize this data in the way the GPU expects it.
+            var positionBuffer = gl.createBuffer();                                             //a buffer is like an unformatted multi purpouse array.
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);                                     //now we say, we are going to store data in this "positionBuffer" and its contents wil be arranged as an "array_buffer"
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex_positions), gl.STATIC_DRAW); //the data we are goind to store is a series of of Float32 values, and this specific array is not going to change too much
+            
+            var colorBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(per_vertex_color), gl.STATIC_DRAW);
+                   
+            var indexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(index), gl.STATIC_DRAW);
+            
+            //Create our shader program
+            var files = {};
+            loadFiles(files, ["shader.vs", "shader.fs"], {
+                callback: function(data) {
+
+                    var vertex_shader_file = files["shader.vs"];
+                    var fragment_shader_file = files["shader.fs"];
+                    shader = createShaderProgram(gl, vertex_shader_file, fragment_shader_file);
+
+                    draw();
+                }
+            });
+
         
-        gl.viewport(0, 0, viewportWidth, viewportHeight);
+            
+            
+           
 
-        //Define a simple object, a square using two triangles
-        var vertex = [0.0, 0.0, 0.0,
-                      0.0, 0.0, 0.0,
-                      0.0, 0.0, 0.0,
-                      0.0, 0.0, 0.0];
-        var index = [2, 1, 0, 1, 2, 3];
+            function draw() {
+                if (!gl)
+                    return;
+                
+                gl.clearColor(bg.x, bg.y, bg.z, bg.a);               // Set background color               
+                gl.enable(gl.DEPTH_TEST);                            // Enable depth testing 
+                gl.depthFunc(gl.LEQUAL);                             // Define how depth behaves, near objects oclude far object               
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear both buffers before painting
 
-        //Create our shader program
-        //Load shader files from disk
-        var   vertex_shader_file = loadFile("shader.vs");
-        var fragment_shader_file = loadFile("shader.fs");
+                //Now we ned to tell webgl how to pull the data out from the positions buffer, color buffer, etc...
+                //Positions
+                gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                gl.vertexAttribPointer(
+                    gl.getAttribLocation(shader, "a_vertex"),
+                    3,          //our 3D vertex has 3 components to locate them in space
+                    gl.Float,   //they are formated as floats
+                    false,      //we can say if we want them to be normalized or not (from -1 to 1)
+                    0,          //how many bytes to get from one set of values to the next (mayb you have vertex,normal,color,vertex,normal,color... in a single buffer)
+                    0           //offset to start from, like if we want normals in a vertex,normal,color we would want to skip vertex in the first iteration.
+                );
+                gl.enableVertexAttribArray(gl.getAttribLocation(shader, "a_vertex"));
 
-        //Create shader
-        var   vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertex_shader_file);
-        var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragment_shader_file);
+                //Color
+                gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+                gl.vertexAttribPointer(
+                    gl.getAttribLocation(shader, "a_color"),
+                    3,        
+                    gl.Float, 
+                    false, 
+                    0,     
+                    0      
+                );
+                gl.enableVertexAttribArray(gl.getAttribLocation(shader, "a_color"));
 
-        //Create program
-        var shaderProgram = gl.createProgram();
-        gl.attachShader(shaderProgram, vertexShader);
-        gl.attachShader(shaderProgram, fragmentShader);
-        gl.linkProgram(shaderProgram);
+                //Index
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
-            return null;
-        }
+                //tell webgl to use our shader program when drawing
+                gl.useProgram(shader);
 
-        
+                //Set shader uniforms
+                /*
+                    gl.uniformMat...
+                */
 
-        function onRender() {
+                gl.drawElements(gl.TRIANGLES, 6 /*vertex count*/, gl.UNSIGNED_SHORT, 0 /*offset*/)
+            }
 
-        }
-
-        function onResize() {
-
-        }
-        
     </script>
 </body>
 </html>
