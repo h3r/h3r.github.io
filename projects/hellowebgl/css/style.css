@@ -28,7 +28,8 @@ canvas {
 }
 
     #my-hover-title h1 {
-        font-size: 22px;
+        font-size: 3rem;
+        color:yellow;
         margin: 5px 0;
         line-height: 28px;
     }

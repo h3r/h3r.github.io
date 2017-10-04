@@ -107,7 +107,7 @@ loadFiles(files, ["shader.vs", "shader.fs"], {
         var fragment_shader_file = files["shader.fs"];
         shader = createShaderProgram(gl, vertex_shader_file, fragment_shader_file);
 
-        draw();
+        drawScene();
     }
 });
 
@@ -115,8 +115,13 @@ loadFiles(files, ["shader.vs", "shader.fs"], {
 
 
 
+var now,lastTime = Date.now();
+function drawScene() {
+    //Calculate time elapsed between frames
+    now = Date.now();
+    deltaTime = now - lastTime;
+    lastTime = now;
 
-function draw() {
     if (!gl)
         return;
 
@@ -162,6 +167,7 @@ function draw() {
     */
 
     gl.drawElements(gl.TRIANGLES, index.length /*index count*/, gl.UNSIGNED_SHORT, 0 /*offset*/)
+
+    requestAnimationFrame(drawScene);
 }
 
-requestAnimationFrame(drawScene);
