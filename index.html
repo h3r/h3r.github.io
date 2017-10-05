@@ -136,10 +136,10 @@
                                                         <span id="assets-count" class="badge badge-default badge-pill">0</span>
                                                     </li>
                                                 </a>
-                                                <a href="apps/">
+                                                <a href="projects/">
                                                     <li class="list-group-item justify-content-between">
-                                                        Apps
-                                                        <span id="apps-count" class="badge badge-default badge-pill">0</span>
+                                                        Projects
+                                                        <span id="projects-count" class="badge badge-default badge-pill">0</span>
                                                     </li>
                                                 </a>
                                                 <a href="lib/">
@@ -237,7 +237,7 @@
 
         countLinks("teaching/", data => { $("#teaching-count").html(data); });
         countLinks("assets/", data => { $("#assets-count").html(data); });
-        countLinks("apps/", data => { $("#apps-count").html(data); });
+        countLinks("projects/", data => { $("#projects-count").html(data); });
         countLinks("libraries/", data => { $("#libraries-count").html(data); });
 
         particlesJS.load('particles-js', '/lib/ext/particles/particlesjs-config2.json', function () {
