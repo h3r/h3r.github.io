@@ -8,7 +8,7 @@ A real-time Phisically Based Rendering algorithm on the web with webgl.
 
 ![img](https://camo.githubusercontent.com/6933b5aaf69a7bf78b74fa1aa795cedfe77aa82b/687474703a2f2f692e696d6775722e636f6d2f3962784e4357782e6a7067)
 
-[ [Demo](h3r.github.io/wpbr) | [Git](github.com/h3r/wpbr) ]
+[ [Demo](/wpbr) | [Git](http://github.com/h3r/wpbr) ]
 
 ------
 
@@ -18,7 +18,7 @@ A real-time Phisically Based Rendering algorithm on the web with webgl.
 
 A simple example of c++ compiled to wasm using emscripten.
 
-[[Demo](h3r.github.io/projects/hellowasm)|[Source](h3r.github.io/projects/hellowasm/example.zip)]
+[[Demo](/projects/hellowasm)|[Source](/projects/hellowasm/example.zip)]
 
 ------
 
@@ -28,5 +28,5 @@ A simple example of c++ compiled to wasm using emscripten.
 
 A "hello world" in webgl with raw opengl calls to display few triangles
 
-[[Demo](h3r.github.io/projects/hellowebgl)|[Source](h3r.github.io/projects/hellowebgl/webgl.zip)]
+[[Demo](/projects/hellowebgl)|[Source](/projects/hellowebgl/webgl.zip)]
 
