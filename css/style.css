@@ -25,8 +25,8 @@
 
 * {
 
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    /* backface-visibility: hidden; */
+    /* -webkit-backface-visibility: hidden; */
     /* -webkit-touch-callout: none; iOS Safari */
     /* -webkit-user-select: none; Safari */
     /* -khtml-user-select: none; Konqueror HTML */
@@ -82,8 +82,12 @@ body{
 .flip.hover .card,
 .flip:hover .card{
     transform: rotateY( -180deg ) ;
+    -moz-transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    
     transition: transform .5s;
 }
+
 /* Card */
 .card{
     position: relative;
@@ -141,7 +145,7 @@ body{
 }
 
 .back{
-    transform: rotateY( 180deg );
+    
     background:var(--card-border-color);
     font-size:2em;
     width:calc(100% - 20px);
@@ -150,6 +154,10 @@ body{
     box-shadow:inset 0 0 20px 10px var(--card-border-color);
     background-image: url(../assets/bg.jpg);
     /* filter:saturate(0.3) brightness(0.7); */
+
+    transform: rotateY( 180deg ) translateZ(1px);
+    -moz-transform: rotateY(180deg) translateZ(1px);
+    -webkit-transform: rotateY(180deg) translateZ(1px);
 }
 
 div#title1 {
@@ -310,7 +318,7 @@ div#content::after {
     margin-left: 14px;
     margin-top: 3px;
     opacity: 0;
-    transition: opacity 1s ease;
+    transition: opacity 2s ease;
 }
 .skillbar .label{
     display: inline-block;
@@ -318,6 +326,7 @@ div#content::after {
     left:22px;
     width: 15px; height:15px;
     z-index:1;
+    backface-visibility: hidden;
 }
 
 .skillbar .bar{

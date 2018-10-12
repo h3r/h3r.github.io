@@ -6,6 +6,7 @@
     <meta name="Description" content="Personal profile and resources">
     <meta name="viewport" content="width=480, initial-scale=1.0, minimum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="assets/icon.png" type="image/x-icon" />
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
     <title>h3R Site</title>
@@ -37,7 +38,7 @@
         </div> 
     </div> 
     <script>
-        if(window.location.protocol == "http:" && window.location.hostname != "localhost") window.location = "https://"+window.location.host;
+        if(window.location.protocol == "http:" && window.location.hostname != "localhost" && window.location.hostname != "127.0.0.1" ) window.location = "https://"+window.location.host;
     </script>
     <audio id="card-flip" src="assets/card-flip.mp3" type="audio/wav" controls preload="auto"></audio>
     <audio id="card-flip-out" src="assets/card-flip-out.mp3" type="audio/wav" controls preload="auto"></audio>
