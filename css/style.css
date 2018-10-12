@@ -42,7 +42,7 @@ html, body {
 
 body{
 
-    background-image: url(../assets/photoshop-paper-textures_328387.jpg);
+    background-image: url(../assets/bg.jpg);
     background-position: 50% 50%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -63,6 +63,19 @@ body{
     transition: transform .5s;
 }
 
+.flip::after{
+    content:"flip!";
+    position: absolute;
+    bottom:-30px;
+    font-family: berelen-small;
+    color: var(--card-content-color);
+    left:0;right:0;margin:auto;
+    text-shadow: 0 0 10px var(--card-content-color);
+    text-align: center;
+    z-index:1;
+}
+
+.flip.hover .card,
 .flip:hover .card{
     transform: rotateY( -180deg ) ;
     transition: transform .5s;
@@ -101,7 +114,7 @@ body{
 
 .card::after {
     content: "";
-    background-image: url(http://media.wizards.com/2017/b9jm8nwv_mm3/en_oYewlmYojE.png);
+    background-image: url(../assets/card.png);
     background-size: cover;
     background-position: 50% 50%;
     opacity: 0.99;
@@ -131,7 +144,7 @@ body{
     height:calc(100% - 20px);
     border: 10px solid var(--card-content-color);
     box-shadow:inset 0 0 20px 10px var(--card-border-color);
-    background-image: url(../assets/photoshop-paper-textures_328387.jpg);
+    background-image: url(../assets/bg.jpg);
     /* filter:saturate(0.3) brightness(0.7); */
 }
 
@@ -313,7 +326,7 @@ div#content::after {
     height: 19px;
     
     /* background-color: var(--card-content-color); */
-    background:url(../assets/bar2.png);
+    background:url(../assets/bar3.png);
 
     background-position: right;
     background-size: auto 100%;
