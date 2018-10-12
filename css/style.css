@@ -1,16 +1,19 @@
 @font-face {
     font-family: "magic";
-    src: url(../assets/magicthegathering/MAGIC.TTF);
+    font-display: auto;
+    src: local('Arvo'), url(../assets/fonts/MAGIC.TTF);
 }
 
 @font-face {
     font-family: "berelen-small";
-    src: url(../assets/magicthegathering/JaceBeleren-Bold.ttf);
+    font-display: auto;
+    src: local('Arvo'), url(../assets/fonts/JaceBeleren-Bold.ttf);
 }
 
 @font-face {
     font-family: "PLantin";
-    src: url(../assets/magicthegathering/2009\ GLC\ Plantin-Normal.otf);
+    font-display: auto;
+    src: local('Arvo'), url(../assets/fonts/2009\ GLC\ Plantin-Normal.otf);
 }
 
 :root {
@@ -36,6 +39,7 @@ audio{
 }
 
 html, body {
+    width:100%;
     height: 100%;
     overflow: hidden;
 }

@@ -1,3 +1,4 @@
+
 // var git = {
 //     repos : {
 //         get( owner, repo ){
@@ -13,7 +14,7 @@ class APP {
 
     constructor(){
         //Play flip sound when hovering card
-        var card = document.getElementById("flipcard");
+        var card = window.document.getElementById("flipcard");
         card.addEventListener("mouseenter", (function(e){
             this.playSound( "card-flip", 0.5, 1.2);
         }).bind(this));
@@ -106,4 +107,6 @@ app.skillBars('skills', {
     "C/C++": "98%",
     "Shading" : "86%"
 })
+
+
 
