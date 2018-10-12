@@ -13,14 +13,37 @@
 class APP {
 
     constructor(){
+
         //Play flip sound when hovering card
         var card = window.document.getElementById("flipcard");
-        card.addEventListener("mouseenter", (function(e){
-            this.playSound( "card-flip", 0.5, 1.2);
-        }).bind(this));
-        card.addEventListener("mouseleave", (function(e){
-            this.playSound( "card-flip-out", 0.5, 0.9);
-        }).bind(this));
+        if(Modernizr.touchevents){
+            function flip(){
+                if(card.classList.contains("hover")){
+                    this.playSound( "card-flip-out", 0.5, 0.9);
+                    card.classList.remove("hover");
+                }else{
+                    this.playSound( "card-flip", 0.5, 1.2);
+                    card.classList.add("hover");
+                }
+            }
+                  
+            var hammertime = new Hammer(card, {});
+            hammertime.on('swipe', flip.bind(this));
+        }else{
+            
+            card.addEventListener("mouseenter", (function(e){
+                this.playSound( "card-flip", 0.5, 1.2);
+            }).bind(this));
+            card.addEventListener("mouseleave", (function(e){
+                this.playSound( "card-flip-out", 0.5, 0.9);
+            }).bind(this));
+        }
+        
+
+
+
+
+
     }
 
     playSound( sound_name, volume, speed){
@@ -107,6 +130,8 @@ app.skillBars('skills', {
     "C/C++": "98%",
     "Shading" : "86%"
 })
+
+
 
 
 

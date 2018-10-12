@@ -68,7 +68,7 @@ body{
 }
 
 .flip::after{
-    content:"flip!";
+    content:"swip!";
     position: absolute;
     bottom:-30px;
     font-family: berelen-small;
@@ -76,7 +76,7 @@ body{
     left:0;right:0;margin:auto;
     text-shadow: 0 0 10px var(--card-content-color);
     text-align: center;
-    z-index:1;
+    z-index:-1;
 }
 
 .flip.hover .card,
@@ -382,4 +382,12 @@ div#content::after {
     text-decoration: none;
     text-shadow: 0 0 1px white;
     user-select: all;
+}
+
+@media (hover: none) {
+    .flip:hover .card{
+        transform: none ;
+        -moz-transform: none;
+        -webkit-transform: none;
+    }
 }
