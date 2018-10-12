@@ -18,12 +18,17 @@ class APP {
         var card = window.document.getElementById("flipcard");
         if(Modernizr.touchevents){
             function flip(){
-                if(card.classList.contains("hover")){
+                if(card.classList.contains("hover-left") || card.classList.contains("hover-right")){
                     this.playSound( "card-flip-out", 0.5, 0.9);
-                    card.classList.remove("hover");
+                    card.classList.remove("hover-left");
+                    card.classList.remove("hover-right");
                 }else{
+                    if(arguments && arguments[0].deltaX < 0)
+                        card.classList.add("hover-left");
+                    else
+                        card.classList.add("hover-right");
                     this.playSound( "card-flip", 0.5, 1.2);
-                    card.classList.add("hover");
+                   
                 }
             }
                   

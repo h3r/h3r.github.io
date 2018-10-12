@@ -79,14 +79,22 @@ body{
     z-index:-1;
 }
 
-.flip.hover .card,
+.flip.hover-left .card,
 .flip:hover .card{
     transform: rotateY( -180deg ) ;
+    -moz-transform: rotateY(-180deg);
+    -webkit-transform: rotateY(-180deg);
+    
+    transition: transform .5s;
+}
+.flip.hover-right .card{
+    transform: rotateY( 180deg ) ;
     -moz-transform: rotateY(180deg);
     -webkit-transform: rotateY(180deg);
     
     transition: transform .5s;
 }
+
 
 /* Card */
 .card{
