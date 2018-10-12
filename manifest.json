@@ -1,0 +1,25 @@
+{
+    "short_name": "h3RProfile",
+    "name": "Hermann Plass profile",
+    "theme_color":"#CAA27E",
+    "background_color":"#CAA27E",
+    "display":"minimal-ui",
+    "icons": [
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "48x48"
+      },
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "96x96"
+      },
+      {
+        "src": "assets/icon.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "index.html?launcher=true"
+  }
