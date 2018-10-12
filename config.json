@@ -1,0 +1,8 @@
+{
+    "pages":{
+        "teaching":"pages/teaching.js",
+        "projects":"pages/projects.js",
+        "fileManager":"",
+        "terminal":""
+    }
+}
