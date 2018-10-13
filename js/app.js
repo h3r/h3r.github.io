@@ -1,15 +1,3 @@
-
-// var git = {
-//     repos : {
-//         get( owner, repo ){
-//             return axios("https://api.github.com/repos/"+owner+"/"+repo).then( e => e.data );
-//         },
-//         list( user ){
-//             return axios("https://api.github.com/users/"+user+"/repos").then( e => e.data );
-//         }
-//     }
-// }
-
 class APP {
 
     constructor(){
@@ -43,12 +31,6 @@ class APP {
                 this.playSound( "card-flip-out", 0.5, 0.9);
             }).bind(this));
         }
-        
-
-
-
-
-
     }
 
     playSound( sound_name, volume, speed){
@@ -60,7 +42,7 @@ class APP {
         
         this[sound_name].playbackRate = Math.max(0,speed || 1) ;
         this[sound_name].volume = Math.max(0,volume || 1);
-        this[sound_name].play();
+        try{this[sound_name].play()}catch(e){};
     }
 
     skillBars( domID, properties ){
@@ -104,29 +86,6 @@ class APP {
         },500);
 
     }
-    /* //parallax effect : https://codemyui.com/parallax-effect-hover/
-    $('html').mousemove(function(e){
-        
-        var wx = $(window).width();
-        var wy = $(window).height();
-        
-        var x = e.pageX - this.offsetLeft;
-        var y = e.pageY - this.offsetTop;
-        
-        var newx = x - wx/2;
-        var newy = y - wy/2;
-        
-        $('span').text(newx + ", " + newy);
-        
-        $('#wrapper div').each(function(){
-            var speed = $(this).attr('data-speed');
-            if($(this).attr('data-revert')) speed *= -1;
-            TweenMax.to($(this), 1, {x: (1 - newx*speed), y: (1 - newy*speed)});
-            
-        });
-        
-    });
-    */
 }
 var app = new APP();
 
@@ -136,7 +95,10 @@ app.skillBars('skills', {
     "Shading" : "86%"
 })
 
-
-
+//document.querySelector("#projects span").innerText = 
+//document.querySelector("#teaching span").innerText =
+axios("https://api.github.com/users/h3r/repos?type=all").then(r=>r.data).then(d => document.querySelector("#projects span").innerText = d.length);
+axios("/teaching").then(r=>r.data).then(d=> document.querySelector("#teaching span").innerText = (d.match(/a href/g) || []).length);
+//https://api.github.com/users/h3r/repos?type=all
 
 

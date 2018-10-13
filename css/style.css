@@ -161,11 +161,21 @@ body{
     border: 10px solid var(--card-content-color);
     box-shadow:inset 0 0 20px 10px var(--card-border-color);
     background-image: url(../assets/bg.jpg);
+    background-size:100% 100%;
     /* filter:saturate(0.3) brightness(0.7); */
 
     transform: rotateY( 180deg ) translateZ(1px);
     -moz-transform: rotateY(180deg) translateZ(1px);
     -webkit-transform: rotateY(180deg) translateZ(1px);
+}
+.back::before{
+    content:"";
+    background: url(../assets/back.png);
+    background-size:100% 100%;
+    position:absolute;
+    left:0;top:0;
+    width:100%;height:100%;
+    z-index: -1;
 }
 
 div#title1 {
@@ -381,15 +391,91 @@ div#content::after {
     z-index: 1;
 
 }
-
+.things {
+    margin: 25px 0 0 -12.8px;
+    font-family: berelen-small;
+}
+.things p{
+    margin: -39px 0 0 42px;
+    font-size: 0.6em;
+    color: whitesmoke;
+    transition:all 0.75s ease;
+}
 .things li{
     list-style-type: none;
+    z-index: 10;
+    margin-bottom: 11.8px;
+    height: 40px;
+    transition:all 0.75s ease;
 }
+
 .things a{
-    color: whitesmoke;
+    transition:all 0.75s ease;
     text-decoration: none;
-    text-shadow: 0 0 1px white;
+    text-shadow: 0 0 24px var(--card-border-color);
     user-select: all;
+    font-size: 1.5em;
+    line-height: 25px;
+    color: var(--card-border-color);
+}
+
+.things span{
+    text-shadow: 0 0 5px hsla(195, 100%, 43%, 1);
+    right: 50px;
+    margin-top: -28.5px;
+    font-size: 0.8em;
+    position: absolute;
+    color: hsla(228, 11%, 34%, 1);
+    transition:all 2s ease;
+}
+
+
+.things li:hover a{
+    color: whitesmoke;
+    text-shadow: 0 0 3px whitesmoke;
+}
+.things li:hover p{
+    margin: -39px 0 0 32px;
+}
+.things li:hover span{
+    color: whitesmoke;
+    text-shadow: 0 0 3px whitesmoke;
+}
+#social{
+    position: absolute;
+    bottom: 25px;
+    left: -6px;
+    width: 100%;
+    font-size: 0.8em;
+}
+#social li{
+    display: inline-block;
+    margin-right: 39.3px;
+}
+#social i{
+    color: var(--card-border-color);
+    text-shadow: 0 0 1px var(--card-border-color);
+    transition:all 0.5s ease;
+}
+#social p{
+    left: 0;
+    position: absolute;
+    font-size: 0.65em;
+    text-align: center;
+    transition: all 0.5s ease;
+    color: transparent;
+    right: 0;
+    margin: auto;
+    text-shadow: none;
+}
+#social a{
+    text-decoration:none;
+    position: absolute;
+}
+#social li:hover p,
+#social li:hover i{
+    color: var(--card-content-color);
+    text-shadow: 0 0 1px white;
 }
 
 @media (hover: none) {
