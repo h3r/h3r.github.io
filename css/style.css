@@ -399,14 +399,14 @@ div#content::after {
     margin: -39px 0 0 42px;
     font-size: 0.6em;
     color: whitesmoke;
-    transition:all 0.75s ease;
+    transition:color 0.75s ease, text-shadow 0.75s ease, margin-left 0.75s ease;
 }
 .things li{
     list-style-type: none;
     z-index: 10;
     margin-bottom: 11.8px;
     height: 40px;
-    transition:all 0.75s ease;
+    transition:color 0.75s ease, text-shadow 0.75s ease;
 }
 
 .things a{
@@ -425,7 +425,7 @@ div#content::after {
     font-size: 0.8em;
     position: absolute;
     color: hsla(228, 11%, 34%, 1);
-    transition:all 2s ease;
+    transition:color 2s ease, text-shadow 2s ease;
 }
 
 
@@ -454,7 +454,7 @@ div#content::after {
 #social i{
     color: var(--card-border-color);
     text-shadow: 0 0 1px var(--card-border-color);
-    transition:all 0.5s ease;
+    transition:color 0.5s ease, text-shadow 0.5 ease;
 }
 #social p{
     left: 0;
