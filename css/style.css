@@ -27,12 +27,12 @@
 
     /* backface-visibility: hidden; */
     /* -webkit-backface-visibility: hidden; */
-    /* -webkit-touch-callout: none; iOS Safari */
-    /* -webkit-user-select: none; Safari */
-    /* -khtml-user-select: none; Konqueror HTML */
-    /* -moz-user-select: none; Firefox */
-    /* -ms-user-select: none; Internet Explorer/Edge */
-    /* user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+    -webkit-touch-callout: none; /*iOS Safari*/
+    -webkit-user-select: none; /*Safari*/
+    -khtml-user-select: none; /*Konqueror HTML*/
+    -moz-user-select: none; /*Firefox*/
+    -ms-user-select: none; /*Internet Explorer/Edge*/
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera*/
 }
 audio{
     display:none;
@@ -413,7 +413,6 @@ div#content::after {
     transition:all 0.75s ease;
     text-decoration: none;
     text-shadow: 0 0 24px var(--card-border-color);
-    user-select: all;
     font-size: 1.5em;
     line-height: 25px;
     color: var(--card-border-color);
