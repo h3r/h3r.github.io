@@ -1,7 +1,10 @@
 # Teaching
 ## LaSalle Gràfics I
 
-[P01](https://docs.google.com/presentation/d/1QgFB9ZRmt78lRaQ-uKBVSWwATta4TRK2ySV6gkJf31Q/edit#slide=id.g438c34823c_0_1179)  
+[P01](https://docs.google.com/presentation/d/1QgFB9ZRmt78lRaQ-uKBVSWwATta4TRK2ySV6gkJf31Q/edit#slide=id.g438c34823c_0_1179)
+[A1](https://drive.google.com/open?id=1pGZr_XfzW9BHtq2G3DYCMfpECPHpjtEM)
+
+
 
 
 ## Infografia
