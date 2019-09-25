@@ -3,7 +3,7 @@
 
 P1: Introduction [ [Slides](https://docs.google.com/presentation/d/1QgFB9ZRmt78lRaQ-uKBVSWwATta4TRK2ySV6gkJf31Q/edit#slide=id.g438c34823c_0_1179)| [Framework](https://drive.google.com/file/d/1pRWXr4_VaEHUvtZvWIO6ZqE0HhVgBcW0/view?usp=sharing) | [Assignment 1](https://drive.google.com/open?id=1pGZr_XfzW9BHtq2G3DYCMfpECPHpjtEM) ]
 
-P2: Loading OBJ [ [Slides](https://docs.google.com/presentation/d/1XdT-5E35HRWuBY5YO2Aj2Fqbyu6sRQmHtZ1dqYO7pwc/edit?usp=sharing) | [TinyOBJ](https://drive.google.com/open?id=1GvyVTOe35RrQNy88mBbH6Qhw2v5apqWW) | [Meshes](https://casual-effects.com/g3d/data10/index.html#) ]
+P2: Loading OBJ [ [Slides](https://docs.google.com/presentation/d/1XdT-5E35HRWuBY5YO2Aj2Fqbyu6sRQmHtZ1dqYO7pwc/edit?usp=sharing) | [TinyOBJ](https://drive.google.com/open?id=1QPRo3F2JaWflQ6IMNjDvs7lDX8SEzQSs) | [Meshes](https://casual-effects.com/g3d/data10/index.html#) ]
 
 
 ## Infografia
