@@ -1,64 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="theme-color" content="#CAA27E"/>
-    <meta name="Description" content="Personal profile and resources">
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" href="assets/icon.png" type="image/x-icon" />
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-    <title>h3R Site</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/pwa-192x192.png">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#E24329">
+  <meta name="msapplication-TileColor" content="#DC2626">
+  <meta name="theme-color" content="#ffffff">
+  <script src="jszip.min.js"></script>
+  <script type="text/javascript" src="extra/gl-matrix-min.js"></script>
+  <script type="text/javascript" src="extra/litegl.js"></script>
+  <script type="text/javascript" src="extra/litegraph.js"></script>
+  <script type="text/javascript" src="extra/litescene.js"></script>
+  <script type="text/javascript" src="extra/Canvas2DtoWebGL.js"></script>
+  <script>
+    (function() {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      const setting = localStorage.getItem('vueuse-color-scheme') || 'auto'
+      if (setting === 'dark' || (prefersDark && setting !== 'light'))
+        document.documentElement.classList.toggle('dark', true)
+    })()
+  </script>
+  <script type="module" crossorigin src="/assets/index.ca32fc5f.js"></script>
+  <link rel="modulepreload" href="/assets/vendor.ab0b39cb.js">
+  <link rel="stylesheet" href="/assets/index.53d4040a.css">
 </head>
 <body>
-
-    <div id="flipcard" class="flip" role="main"> 
-        <div class="card" draggable="true"> 
-            <div class="face front"> 
-                
-                <div id="title1"> Researchfolk Hermann Plass </div>
-                <div id="portrait">
-                    <img src="https://avatars.githubusercontent.com/h3r" alt="profile image" onerror="this.src = 'assets/images.jpg'"/> 
-                </div>
-                <div id="title2"> UPF-GTI - GFX Developer </div>
-                <div id="content" > 
-                    <p style="text-align: center;width: 100%;margin: 0;"><i>"Experience is merely the name men gave to their mistakes."</i></p>
-                    <p style="margin: 3px 0 0 0;">Skill Overview:</p>
-                    <div id="skills"></div>
-                </div>
-
-            </div> 
-            <div class="face back"> 
-                 <ul id="things" class="things">
-                        <li id="projects"><a href="projects/">P<p>rojects</p></a><span>8</span></li>
-                        <li id="teaching"><a href="teaching/">T<p>eaching</p></a><span>8</span></li>                                       
-                        <li id="shell"><a href="https://webglstudio.org/users/hermann/tools/shell.php">S<p>hell</p></a><span></span></li>                                       
-                        <li id="fm"><a href="https://webglstudio.org/users/hermann/fm">F<p>iles</p></a><span></span></li>                                       
-                        
-                    </ul>
-                 <ul id="social">
-                    <li></li>
-                    <li><a href="https://www.github.com/h3r"><i class="fab fa-github-alt"><p>Github</p></i></a></li>
-                    <li><a href="https://www.linkedin.com/in/hplass/"><i class="fab fa-linkedin"><p>LinkedIn</p></i></a></li>
-                    <li><a href="mailto:hermann.plass+web@gmail.com"><i class="fas fa-at"><p>eMail</p></i></a></li>
+  <div id="app"></div>
   
-                    
-                 </ul>
-            </div> 
-        </div> 
-    </div> 
-    <script>
-        if(window.location.protocol == "http:" && window.location.hostname != "localhost" && window.location.hostname != "127.0.0.1" ) window.location = "https://"+window.location.host;
-    </script>
-    <audio id="card-flip" src="assets/card-flip.mp3" type="audio/wav" controls preload="auto"></audio>
-    <audio id="card-flip-out" src="assets/card-flip-out.mp3" type="audio/wav" controls preload="auto"></audio>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>    
-    <script src="js/hammer.min.js"></script>
-    <script src="js/modernizr-custom.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/cache-polyfill.js"></script>
-    <script src="js/auditpass.js"></script>
 </body>
 </html>
